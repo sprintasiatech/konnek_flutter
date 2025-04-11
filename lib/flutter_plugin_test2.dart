@@ -1,4 +1,5 @@
-
+import 'package:flutter/material.dart';
+import 'package:flutter_plugin_test2/widget/chat_button_widget.dart';
 import 'flutter_plugin_test2_platform_interface.dart';
 
 export 'package:flutter_plugin_test2/export.dart';
@@ -9,6 +10,10 @@ class FlutterPluginTest2 {
   }
 
   Future<void> initialize() async {
-    // 
+    //
+  }
+
+  Widget chatButtonWidget() {
+    return ChatButtonWidget();
   }
 }
