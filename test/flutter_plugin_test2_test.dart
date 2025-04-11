@@ -4,10 +4,7 @@ import 'package:flutter_plugin_test2/flutter_plugin_test2_platform_interface.dar
 import 'package:flutter_plugin_test2/flutter_plugin_test2_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockFlutterPluginTest2Platform
-    with MockPlatformInterfaceMixin
-    implements FlutterPluginTest2Platform {
-
+class MockFlutterPluginTest2Platform with MockPlatformInterfaceMixin implements FlutterPluginTest2Platform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }

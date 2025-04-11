@@ -26,4 +26,8 @@ abstract class FlutterPluginTest2Platform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  // Widget entryPointWidget() {
+  //   throw UnimplementedError("entryPointWidget() has not been implemented");
+  // }
 }

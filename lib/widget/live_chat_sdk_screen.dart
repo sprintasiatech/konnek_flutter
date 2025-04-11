@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_plugin_test2/interface/live_chat_sdk.dart';
 
-/// Helper class to put your draggable floating top of your screen
-class DraggableFloatingWidget extends StatefulWidget {
-  /// Your main screen
+class LiveChatSdkScreen extends StatefulWidget {
   final Widget child;
 
-  /// Put your mini widget here to be draggable and floating
-  // final Widget draggableWidget;
-  // final LiveChatSdk draggableWidget;
-
-  const DraggableFloatingWidget({
+  const LiveChatSdkScreen({
     super.key,
     required this.child,
-    //   required this.draggableWidget,
   });
 
   @override
-  State<DraggableFloatingWidget> createState() => _DraggableFloatingWidgetState();
+  State<LiveChatSdkScreen> createState() => _LiveChatSdkScreenState();
 }
 
-class _DraggableFloatingWidgetState extends State<DraggableFloatingWidget> {
+class _LiveChatSdkScreenState extends State<LiveChatSdkScreen> {
   Offset position = Offset(70, -40);
 
   final LiveChatSdk liveChatSdk = LiveChatSdk();

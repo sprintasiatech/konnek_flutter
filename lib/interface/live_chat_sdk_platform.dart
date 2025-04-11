@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_plugin_test2/interface/live_chat_sdk_channel.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+abstract class LiveChatSDKPlatform extends PlatformInterface {
+  LiveChatSDKPlatform() : super(token: _token);
+
+  static final Object _token = Object();
+
+  static LiveChatSDKPlatform _instance = LiveChatSdkChannel();
+
+  static LiveChatSDKPlatform get instance => _instance;
+
+  static set instance(LiveChatSDKPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    _instance = instance;
+  }
+
+  Widget entryPoint() {
+    throw UnimplementedError("entryPointWidget() has not been implemented");
+  }
+}
