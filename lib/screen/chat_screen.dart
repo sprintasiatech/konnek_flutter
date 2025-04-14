@@ -92,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    (index.isEven) ? "Here we go $index" : "The quick brown fox jumps over the lazy d (diterjemahkan rubah coklat yang cepat melompati anjin yang pemalas) adalah pangram bahasa inggris, ..",
+                                    (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
                                     style: GoogleFonts.lato(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
