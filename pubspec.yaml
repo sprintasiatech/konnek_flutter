@@ -11,8 +11,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts: ^6.2.0
+  # google_fonts: ^6.2.0
+  google_fonts: 
   plugin_platform_interface: ^2.0.2
+  fam_coding_supply:
+    path: ../fam_coding_supply
 
 dev_dependencies:
   flutter_test:
@@ -43,7 +46,8 @@ flutter:
         pluginClass: FlutterPluginTest2Plugin
 
   # To add assets to your plugin package, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   #

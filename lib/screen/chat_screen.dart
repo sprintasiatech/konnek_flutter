@@ -1,4 +1,9 @@
+import 'dart:developer';
+
+import 'package:fam_coding_supply/logic/app_file_picker.dart';
+import 'package:fam_coding_supply/logic/export.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_plugin_test2/assets/assets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -9,6 +14,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  TextEditingController textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -34,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             centerTitle: false,
             title: Text(
-              "Title",
+              "CS 1",
               style: GoogleFonts.inter(
                 color: Colors.green,
                 fontSize: 24,
@@ -70,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(width: 10),
+                          // SizedBox(width: 10),
                           Column(
                             children: [
                               SizedBox(height: 5),
@@ -119,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       return SizedBox(height: 10);
                     },
                   ),
-                  SizedBox(height: kToolbarHeight + 16),
+                  SizedBox(height: kToolbarHeight + 30),
                 ],
               ),
             ),
@@ -128,48 +135,98 @@ class _ChatScreenState extends State<ChatScreen> {
           bottomSheet: Container(
             color: Colors.white,
             padding: EdgeInsets.all(12),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 50,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey.shade300,
-                        border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
+                Row(
+                  children: [
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: TextField(
+                          controller: textController,
+                          decoration: InputDecoration(
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                log("Debug here");
+                                textController.clear();
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(12),
+                                child: Icon(
+                                  Icons.send,
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                            hintText: "Type something...",
+                            hintStyle: GoogleFonts.lato(
+                              color: Colors.black38,
+                              fontSize: 14,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade300,
+                            border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // SizedBox(width: 12),
-                InkWell(
-                  onTap: () {
-                    //
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    child: Icon(
-                      Icons.image,
-                      size: 24,
+                    // SizedBox(width: 12),
+                    InkWell(
+                      onTap: () async {
+                        await AppImagePickerServiceCS().getImage();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(
+                          Icons.image,
+                          size: 24,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                // SizedBox(width: 12),
-                InkWell(
-                  onTap: () {
-                    //
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    child: Icon(
-                      Icons.send,
-                      size: 24,
+                    // SizedBox(width: 12),
+                    InkWell(
+                      onTap: () async {
+                        await AppFilePickerServiceCS().pickFiles();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(
+                          // Icons.send,
+                          Icons.attach_file_rounded,
+                          size: 24,
+                        ),
+                      ),
                     ),
+                    // SizedBox(width: 12),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Chat By",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Image.asset(
+                        Assets.icKonnek,
+                        package: "flutter_plugin_test2",
+                        height: 16,
+                      ),
+                    ],
                   ),
                 ),
-                // SizedBox(width: 12),
               ],
             ),
           ),
