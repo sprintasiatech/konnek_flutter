@@ -5,6 +5,7 @@ import 'package:flutter_plugin_test2/interface/live_chat_sdk.dart';
 class DraggableFloatingWidget extends StatefulWidget {
   /// Your main screen
   final Widget child;
+  final Widget? customFloatingWidget;
 
   /// Put your mini widget here to be draggable and floating
   // final Widget draggableWidget;
@@ -13,6 +14,13 @@ class DraggableFloatingWidget extends StatefulWidget {
   const DraggableFloatingWidget({
     super.key,
     required this.child,
+    //   required this.draggableWidget,
+  }) : customFloatingWidget = null;
+
+  const DraggableFloatingWidget.customFloatingWidget({
+    super.key,
+    required this.child,
+    required this.customFloatingWidget,
     //   required this.draggableWidget,
   });
 
@@ -48,7 +56,8 @@ class _DraggableFloatingWidgetState extends State<DraggableFloatingWidget> {
                 },
                 // child: widget.draggableWidget,
                 // child: widget.draggableWidget.entryPointWidget(),
-                child: liveChatSdk.entryPointWidget(),
+                // child: liveChatSdk.entryPointWidget(),
+                child: widget.customFloatingWidget ?? liveChatSdk.entryPointWidget(),
               ),
             ),
           ),

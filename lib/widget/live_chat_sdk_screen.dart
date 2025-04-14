@@ -4,10 +4,17 @@ import 'package:flutter_plugin_test2/interface/live_chat_sdk.dart';
 
 class LiveChatSdkScreen extends StatefulWidget {
   final Widget child;
+  final Widget? customFloatingWidget;
 
   const LiveChatSdkScreen({
     super.key,
     required this.child,
+  }) : customFloatingWidget = null;
+
+  const LiveChatSdkScreen.customFloatingWidget({
+    super.key,
+    required this.child,
+    required this.customFloatingWidget,
   });
 
   @override
@@ -42,7 +49,7 @@ class _LiveChatSdkScreenState extends State<LiveChatSdkScreen> {
                 },
                 // child: widget.draggableWidget,
                 // child: widget.draggableWidget.entryPointWidget(),
-                child: liveChatSdk.entryPointWidget(),
+                child: widget.customFloatingWidget ?? liveChatSdk.entryPointWidget(),
               ),
             ),
           ),
