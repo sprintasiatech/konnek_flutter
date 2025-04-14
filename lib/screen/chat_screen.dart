@@ -68,22 +68,47 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: EdgeInsets.all(0),
                     itemBuilder: (context, index) {
                       return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.purpleAccent,
+                          SizedBox(width: 10),
+                          Column(
+                            children: [
+                              SizedBox(height: 5),
+                              CircleAvatar(
+                                backgroundColor: Colors.purpleAccent,
+                                child: Text("FM"),
+                              ),
+                            ],
                           ),
                           SizedBox(width: 10),
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.purpleAccent.shade200.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              "Here $index",
-                              style: GoogleFonts.lato(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.purpleAccent.shade200.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    (index.isEven) ? "Here we go $index" : "The quick brown fox jumps over the lazy d (diterjemahkan rubah coklat yang cepat melompati anjin yang pemalas) adalah pangram bahasa inggris, ..",
+                                    style: GoogleFonts.lato(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    // "15:29",
+                                    "${DateTime.now().hour}:${DateTime.now().minute}",
+                                    style: GoogleFonts.lato(
+                                      color: Colors.black45,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -94,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       return SizedBox(height: 10);
                     },
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: kToolbarHeight + 16),
                 ],
               ),
             ),
