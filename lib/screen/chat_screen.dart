@@ -15,6 +15,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textController = TextEditingController();
+  bool isTextFieldFocused = false;
+  bool isTextFieldEmpty = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             forceMaterialTransparency: true,
-            leadingWidth: 90,
+            leadingWidth: 70,
             leading: Center(
               child: Text(
                 "App!",
@@ -41,10 +43,10 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             centerTitle: false,
             title: Text(
-              "CS 1",
+              "Bot Cust Service 1",
               style: GoogleFonts.inter(
                 color: Colors.green,
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -145,31 +147,66 @@ class _ChatScreenState extends State<ChatScreen> {
                     Expanded(
                       child: SizedBox(
                         height: 50,
-                        child: TextField(
-                          controller: textController,
-                          decoration: InputDecoration(
-                            suffixIcon: InkWell(
-                              onTap: () {
+                        child: FocusScope(
+                          child: Focus(
+                            onFocusChange: (focus) {
+                              log("focus: $focus");
+                              setState(() {
+                                isTextFieldFocused = focus;
+                              });
+                            },
+                            child: TextField(
+                              controller: textController,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value != "" && value != null) {
+                                    isTextFieldEmpty = true;
+                                  } else {
+                                    isTextFieldEmpty = false;
+                                  }
+                                });
+                              },
+                              onSubmitted: (value) {
                                 log("Debug here");
                                 textController.clear();
+                                isTextFieldEmpty = true;
                                 FocusManager.instance.primaryFocus?.unfocus();
                               },
-                              child: Container(
-                                padding: EdgeInsets.all(12),
-                                child: Icon(
-                                  Icons.send,
-                                  size: 24,
+                              decoration: InputDecoration(
+                                suffixIcon: (isTextFieldFocused && isTextFieldEmpty)
+                                    ? InkWell(
+                                        onTap: () {
+                                          log("Debug here");
+                                          textController.clear();
+                                          isTextFieldEmpty = true;
+                                          FocusManager.instance.primaryFocus?.unfocus();
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(8),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 20,
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.send,
+                                                size: 16,
+                                                color: isTextFieldFocused ? Colors.green : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                                hintText: "Type something...",
+                                hintStyle: GoogleFonts.lato(
+                                  color: Colors.black38,
+                                  fontSize: 14,
                                 ),
+                                filled: true,
+                                fillColor: Colors.grey.shade300,
+                                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
                               ),
                             ),
-                            hintText: "Type something...",
-                            hintStyle: GoogleFonts.lato(
-                              color: Colors.black38,
-                              fontSize: 14,
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade300,
-                            border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
                           ),
                         ),
                       ),
