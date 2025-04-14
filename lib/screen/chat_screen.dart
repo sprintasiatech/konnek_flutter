@@ -159,7 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               controller: textController,
                               onChanged: (value) {
                                 setState(() {
-                                  if (value != "" && value != null) {
+                                  if (value != "") {
                                     isTextFieldEmpty = true;
                                   } else {
                                     isTextFieldEmpty = false;
