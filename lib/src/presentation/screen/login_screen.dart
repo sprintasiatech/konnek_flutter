@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_test2/assets/assets.dart';
-import 'package:flutter_plugin_test2/screen/chat_screen.dart';
+import 'package:flutter_plugin_test2/src/presentation/screen/chat_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {

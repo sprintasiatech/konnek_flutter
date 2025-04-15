@@ -1,34 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_plugin_test2/interface/live_chat_sdk.dart';
 
-/// Helper class to put your draggable floating top of your screen
-class DraggableFloatingWidget extends StatefulWidget {
-  /// Your main screen
+import 'package:flutter_plugin_test2/src/presentation/interface/live_chat_sdk.dart';
+
+class LiveChatSdkScreen extends StatefulWidget {
   final Widget child;
   final Widget? customFloatingWidget;
 
-  /// Put your mini widget here to be draggable and floating
-  // final Widget draggableWidget;
-  // final LiveChatSdk draggableWidget;
-
-  const DraggableFloatingWidget({
+  const LiveChatSdkScreen({
     super.key,
     required this.child,
-    //   required this.draggableWidget,
   }) : customFloatingWidget = null;
 
-  const DraggableFloatingWidget.customFloatingWidget({
+  const LiveChatSdkScreen.customFloatingWidget({
     super.key,
     required this.child,
     required this.customFloatingWidget,
-    //   required this.draggableWidget,
   });
 
   @override
-  State<DraggableFloatingWidget> createState() => _DraggableFloatingWidgetState();
+  State<LiveChatSdkScreen> createState() => _LiveChatSdkScreenState();
 }
 
-class _DraggableFloatingWidgetState extends State<DraggableFloatingWidget> {
+class _LiveChatSdkScreenState extends State<LiveChatSdkScreen> {
   Offset position = Offset(70, -40);
 
   final LiveChatSdk liveChatSdk = LiveChatSdk();
@@ -56,8 +49,9 @@ class _DraggableFloatingWidgetState extends State<DraggableFloatingWidget> {
                 },
                 // child: widget.draggableWidget,
                 // child: widget.draggableWidget.entryPointWidget(),
-                // child: liveChatSdk.entryPointWidget(),
-                child: widget.customFloatingWidget ?? liveChatSdk.entryPointWidget(),
+                child: liveChatSdk.entryPointWidget(
+                  customFloatingWidget: widget.customFloatingWidget,
+                ),
               ),
             ),
           ),

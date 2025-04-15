@@ -3,7 +3,7 @@ library flutter_plugin_test2;
 import 'flutter_plugin_test2_platform_interface.dart';
 
 // export 'package:flutter_plugin_test2/export.dart';
-export 'package:flutter_plugin_test2/widget/live_chat_sdk_screen.dart';
+export 'package:flutter_plugin_test2/src/presentation/widget/live_chat_sdk_screen.dart';
 
 class FlutterPluginTest2 {
   static String? clientId;
