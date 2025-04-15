@@ -16,7 +16,9 @@ abstract class LiveChatSDKPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Widget entryPoint() {
+  Widget entryPoint({
+    Widget? customFloatingWidget,
+  }) {
     throw UnimplementedError("entryPointWidget() has not been implemented");
   }
 }

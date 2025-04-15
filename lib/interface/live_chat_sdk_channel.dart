@@ -6,7 +6,11 @@ import '../widget/chat_button_widget.dart';
 
 class LiveChatSdkChannel extends LiveChatSDKPlatform {
   @override
-  Widget entryPoint() {
-    return ChatButtonWidget();
+  Widget entryPoint({
+    Widget? customFloatingWidget,
+  }) {
+    return ChatButtonWidget(
+      customFloatingWidget: customFloatingWidget,
+    );
   }
 }

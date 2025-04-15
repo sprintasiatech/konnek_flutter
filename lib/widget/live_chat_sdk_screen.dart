@@ -49,7 +49,9 @@ class _LiveChatSdkScreenState extends State<LiveChatSdkScreen> {
                 },
                 // child: widget.draggableWidget,
                 // child: widget.draggableWidget.entryPointWidget(),
-                child: widget.customFloatingWidget ?? liveChatSdk.entryPointWidget(),
+                child: liveChatSdk.entryPointWidget(
+                  customFloatingWidget: widget.customFloatingWidget,
+                ),
               ),
             ),
           ),
