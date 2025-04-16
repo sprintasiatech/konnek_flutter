@@ -10,10 +10,10 @@ abstract class ChatRepository {
     required SendChatRequestModel request,
   });
   Future<GetConversationResponseModel?> getConversation({
-    required int pages,
+    required int limit,
     required String roomId,
     required int currentPage,
-    required int sesionId,
+    required String sesionId,
   });
   Future<GetConfigResponseModel?> getConfig({
     required String clientId,

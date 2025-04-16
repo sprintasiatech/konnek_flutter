@@ -1,5 +1,7 @@
 import 'package:fam_coding_supply/fam_coding_supply.dart';
+import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
 import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
+import 'package:flutter_plugin_test2/src/env.dart';
 
 abstract class ChatRemoteSource {
   Future<Response?> sendChat({
@@ -7,30 +9,22 @@ abstract class ChatRemoteSource {
     required SendChatRequestModel request,
   });
   Future<Response?> getConversation({
-    required int pages,
+    required int limit,
     required String roomId,
     required int currentPage,
-    required int sesionId,
+    required String sesionId,
   });
   Future<Response?> getConfig({
     required String clientId,
   });
   Future<Response?> uploadMedia({
-    // String? text,
-    // String? mediaData,
     required Map<String, dynamic> requestData,
   });
 }
 
 class ChatRemoteSourceImpl extends ChatRemoteSource {
-  static const apiKey = "";
-  static const baseUrl = "";
-  String accessToken = "";
-
-  final AppApiServiceCS apiService;
-  ChatRemoteSourceImpl(this.apiService) {
-    accessToken = "";
-  }
+  static String baseUrl = EnvironmentConfig.baseUrl();
+  static AppApiServiceCS apiService = FlutterPluginTest2.appApiService;
 
   @override
   Future<Response?> getConfig({required String clientId}) async {
@@ -48,18 +42,21 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
 
   @override
   Future<Response?> getConversation({
-    required int pages,
+    required int limit,
     required String roomId,
     required int currentPage,
-    required int sesionId,
+    required String sesionId,
   }) async {
     try {
+      AppLoggerCS.debugLog("[remoteSource] currentPage: $currentPage");
+      AppLoggerCS.debugLog("baseUrl: $baseUrl");
       String url = "$baseUrl/room/conversation/$roomId?page=$currentPage&limit=20&session_id=$sesionId";
       Response? response = await apiService.call(
         url,
         method: MethodRequestCS.get,
         header: {
-          'Authorization': accessToken,
+          // 'Authorization': accessToken,
+          'Authorization': FlutterPluginTest2.accessToken,
         },
       );
       return response;
@@ -74,6 +71,7 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
     required SendChatRequestModel request,
   }) async {
     try {
+      AppLoggerCS.debugLog("baseUrl: $baseUrl");
       String url = "$baseUrl/webhook/widget/$clientId";
       Response? response = await apiService.call(
         url,
@@ -82,14 +80,13 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
       );
       return response;
     } catch (e) {
+      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][sendChat] error: $e");
       rethrow;
     }
   }
 
   @override
   Future<Response?> uploadMedia({
-    // String? text,
-    // String? mediaData,
     required Map<String, dynamic> requestData,
   }) async {
     try {
@@ -98,7 +95,8 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
         url,
         header: {
           "Access-Control-Allow-Origin": "*",
-          'Authorization': accessToken,
+          'Authorization': FlutterPluginTest2.accessToken,
+          // 'Authorization': accessToken,
         },
         request: requestData,
         method: MethodRequestCS.post,
