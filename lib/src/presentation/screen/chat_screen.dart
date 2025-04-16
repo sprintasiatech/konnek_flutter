@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:fam_coding_supply/logic/app_file_picker.dart';
 import 'package:fam_coding_supply/logic/export.dart';
@@ -124,6 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
     const months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     return months[month];
   }
+
+  File? uploadFile;
 
   @override
   Widget build(BuildContext context) {
@@ -298,189 +300,248 @@ class _ChatScreenState extends State<ChatScreen> {
                               },
                             ),
                           ],
-                          SizedBox(height: kToolbarHeight + 30),
+                          SizedBox(
+                            height: kToolbarHeight + 30 + ((uploadFile != null) ? 80 : 0),
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
                 resizeToAvoidBottomInset: true,
-                bottomSheet: Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
+                bottomSheet: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (uploadFile != null)
+                      Container(
+                        // color: Colors.amber,
+                        color: Colors.grey.shade300,
+                        width: MediaQuery.of(context).size.width,
+                        height: 80,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Image.network(
+                            //   "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+                            //   height: 60,
+                            //   width: 60,
+                            //   fit: BoxFit.cover,
+                            // ),
+                            Image.file(
+                              uploadFile!,
+                              height: 60,
+                              width: 60,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(width: 12),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  uploadFile = null;
+                                });
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 24,
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                          ],
+                        ),
+                      ),
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              height: 50,
-                              child: FocusScope(
-                                child: Focus(
-                                  onFocusChange: (focus) {
-                                    AppLoggerCS.debugLog("focus: $focus");
-                                    setState(() {
-                                      isTextFieldFocused = focus;
-                                    });
-                                  },
-                                  child: TextField(
-                                    controller: textController,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (value != "") {
-                                          isTextFieldEmpty = true;
-                                        } else {
-                                          isTextFieldEmpty = false;
-                                        }
-                                      });
-                                    },
-                                    onSubmitted: (value) async {
-                                      await AppController().sendChat(
-                                        text: textController.text,
-                                        // onLoading: (isLoadingValue) {
-                                        //   AppLoggerCS.debugLog("isLoading1: $isLoadingValue");
-                                        //   if (isLoadingValue) {
-                                        //     isLoading = true;
-                                        //   } else {
-                                        //     isLoading = false;
-                                        //   }
-                                        //   setState(() {});
-                                        // },
-                                        onSuccess: () {
-                                          _chatItems = buildChatListWithSeparators(AppController.conversationList);
-                                          AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
-                                          if (AppController.isLoading) {
-                                            isLoading = true;
-                                          } else {
-                                            isLoading = false;
-                                          }
-                                          setState(() {});
+                          Row(
+                            children: [
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 50,
+                                  child: FocusScope(
+                                    child: Focus(
+                                      onFocusChange: (focus) {
+                                        AppLoggerCS.debugLog("focus: $focus");
+                                        setState(() {
+                                          isTextFieldFocused = focus;
+                                        });
+                                      },
+                                      child: TextField(
+                                        controller: textController,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value != "") {
+                                              isTextFieldEmpty = true;
+                                            } else {
+                                              isTextFieldEmpty = false;
+                                            }
+                                          });
                                         },
-                                      );
-                                      AppLoggerCS.debugLog("Debug here");
-                                      textController.clear();
-                                      isTextFieldEmpty = true;
-                                      FocusManager.instance.primaryFocus?.unfocus();
-                                    },
-                                    decoration: InputDecoration(
-                                      suffixIcon: (isTextFieldFocused && isTextFieldEmpty)
-                                          ? InkWell(
-                                              onTap: () async {
-                                                await AppController().sendChat(
-                                                  text: textController.text,
-                                                  // onLoading: (isLoadingValue) {
-                                                  //   AppLoggerCS.debugLog("isLoading1: $isLoadingValue");
-                                                  //   if (isLoadingValue) {
-                                                  //     isLoading = true;
-                                                  //   } else {
-                                                  //     isLoading = false;
-                                                  //   }
-                                                  //   setState(() {});
-                                                  // },
-                                                  onSuccess: () {
-                                                    _chatItems = buildChatListWithSeparators(AppController.conversationList);
-                                                    AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
-                                                    if (AppController.isLoading) {
-                                                      isLoading = true;
-                                                    } else {
-                                                      isLoading = false;
-                                                    }
-                                                  },
-                                                );
-
-                                                AppLoggerCS.debugLog("Debug here");
-                                                textController.clear();
-                                                isTextFieldEmpty = true;
-                                                FocusManager.instance.primaryFocus?.unfocus();
+                                        onSubmitted: (value) async {
+                                          if (uploadFile != null) {
+                                            await AppController().uploadMedia(
+                                              text: textController.text,
+                                              mediaData: uploadFile!,
+                                              onSuccess: () {
+                                                uploadFile = null;
+                                                setState(() {});
                                               },
-                                              child: Container(
-                                                padding: EdgeInsets.all(8),
-                                                child: CircleAvatar(
-                                                  backgroundColor: Colors.white,
-                                                  radius: 20,
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.send,
-                                                      size: 16,
-                                                      color: isTextFieldFocused ? Colors.green : Colors.black,
+                                              onFailed: (errorMessage) {
+                                                uploadFile = null;
+                                                setState(() {});
+                                              },
+                                            );
+                                          } else {
+                                            await AppController().sendChat(
+                                              text: textController.text,
+                                              onSuccess: () {
+                                                _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                                                AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
+                                                if (AppController.isLoading) {
+                                                  isLoading = true;
+                                                } else {
+                                                  isLoading = false;
+                                                }
+                                                setState(() {});
+                                              },
+                                            );
+                                          }
+
+                                          AppLoggerCS.debugLog("Debug here");
+                                          textController.clear();
+                                          isTextFieldEmpty = true;
+                                          FocusManager.instance.primaryFocus?.unfocus();
+                                        },
+                                        decoration: InputDecoration(
+                                          suffixIcon: (isTextFieldFocused && isTextFieldEmpty)
+                                              ? InkWell(
+                                                  onTap: () async {
+                                                    if (uploadFile != null) {
+                                                      await AppController().uploadMedia(
+                                                        text: textController.text,
+                                                        mediaData: uploadFile!,
+                                                        onSuccess: () {
+                                                          uploadFile = null;
+                                                          setState(() {});
+                                                        },
+                                                        onFailed: (errorMessage) {
+                                                          uploadFile = null;
+                                                          setState(() {});
+                                                        },
+                                                      );
+                                                    } else {
+                                                      await AppController().sendChat(
+                                                        text: textController.text,
+                                                        onSuccess: () {
+                                                          _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                                                          AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
+                                                          if (AppController.isLoading) {
+                                                            isLoading = true;
+                                                          } else {
+                                                            isLoading = false;
+                                                          }
+                                                        },
+                                                      );
+                                                    }
+
+                                                    AppLoggerCS.debugLog("Debug here");
+                                                    textController.clear();
+                                                    isTextFieldEmpty = true;
+                                                    FocusManager.instance.primaryFocus?.unfocus();
+                                                  },
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: CircleAvatar(
+                                                      backgroundColor: Colors.white,
+                                                      radius: 20,
+                                                      child: Center(
+                                                        child: Icon(
+                                                          Icons.send,
+                                                          size: 16,
+                                                          color: isTextFieldFocused ? Colors.green : Colors.black,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                            )
-                                          : null,
-                                      hintText: "Type something...",
-                                      hintStyle: GoogleFonts.lato(
-                                        color: Colors.black38,
-                                        fontSize: 14,
+                                                )
+                                              : null,
+                                          hintText: "Type something...",
+                                          hintStyle: GoogleFonts.lato(
+                                            color: Colors.black38,
+                                            fontSize: 14,
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.grey.shade300,
+                                          border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
+                                        ),
                                       ),
-                                      filled: true,
-                                      fillColor: Colors.grey.shade300,
-                                      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          // SizedBox(width: 12),
-                          InkWell(
-                            onTap: () async {
-                              await AppImagePickerServiceCS().getImage();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(12),
-                              child: Icon(
-                                Icons.image,
-                                size: 24,
+                              // SizedBox(width: 12),
+                              InkWell(
+                                onTap: () async {
+                                  uploadFile = await AppImagePickerServiceCS().getImageAsFile();
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(12),
+                                  child: Icon(
+                                    Icons.image,
+                                    size: 24,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          // SizedBox(width: 12),
-                          InkWell(
-                            onTap: () async {
-                              await AppFilePickerServiceCS().pickFiles();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(12),
-                              child: Icon(
-                                // Icons.send,
-                                Icons.attach_file_rounded,
-                                size: 24,
+                              // SizedBox(width: 12),
+                              InkWell(
+                                onTap: () async {
+                                  uploadFile = await AppFilePickerServiceCS().pickFiles();
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(12),
+                                  child: Icon(
+                                    // Icons.send,
+                                    Icons.attach_file_rounded,
+                                    size: 24,
+                                  ),
+                                ),
                               ),
+                              // SizedBox(width: 12),
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Chat By",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.lato(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Image.asset(
+                                  Assets.icKonnek,
+                                  package: "flutter_plugin_test2",
+                                  height: 16,
+                                ),
+                              ],
                             ),
                           ),
-                          // SizedBox(width: 12),
                         ],
                       ),
-                      SizedBox(height: 5),
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Chat By",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.lato(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Image.asset(
-                              Assets.icKonnek,
-                              package: "flutter_plugin_test2",
-                              height: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               // if (isLoading)

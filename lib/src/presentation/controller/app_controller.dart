@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:fam_coding_supply/logic/app_logger.dart';
 import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_m
 import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
+import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/repositories/chat_repository_impl.dart';
 import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
 import 'package:flutter_plugin_test2/src/support/jwt_converter.dart';
@@ -230,6 +232,65 @@ class AppController {
       AppLoggerCS.debugLog("[loadMoreConversation] error: $e");
       isLoading = false;
       onFailed?.call(e.toString());
+    }
+  }
+
+  Future<void> uploadMedia({
+    required String? text,
+    required File mediaData,
+    void Function()? onSuccess,
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      UploadFilesResponseModel? output = await ChatRepositoryImpl().uploadMedia(
+        text: text,
+        mediaData: mediaData.path,
+      );
+      AppLoggerCS.debugLog("[uploadMedia] output ${jsonEncode(output?.meta?.toJson())}");
+
+      if (output == null) {
+        onFailed?.call("empty data");
+        return;
+      }
+
+      if (output.meta == null) {
+        onFailed?.call("empty data 2");
+        return;
+      }
+
+      if (output.meta?.code != 201) {
+        onFailed?.call("${output.meta?.message}");
+        return;
+      }
+
+      if (output.meta?.code == 201) {
+        // onSuccess?.call();
+        // return;
+        
+        String? token = await ChatLocalSource().getAccessToken();
+        if (token == null) {
+          onFailed?.call("process don't success");
+          return;
+        }
+        Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
+        AppLoggerCS.debugLog("[loadMoreConversation] decodeJwt $decodeJwt");
+
+        await _getConversation(
+          text: text,
+          roomId: decodeJwt["payload"]["data"]["room_id"],
+          onSuccess: () {
+            isLoading = false;
+            onSuccess?.call();
+          },
+          onFailed: (errorMessage) {
+            isLoading = false;
+            onFailed?.call(errorMessage);
+          },
+        );
+      }
+    } catch (e) {
+      onFailed?.call(e.toString());
+      return;
     }
   }
 }

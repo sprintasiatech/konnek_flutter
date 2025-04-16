@@ -78,7 +78,7 @@ class ChatRepositoryImpl extends ChatRepository {
       MultipartFile media = await MultipartFile.fromFile(
         '$mediaData',
         filename: mediaData.toString().split('/').last,
-        contentType: MediaType('image', 'jpg'),
+        // contentType: MediaType('image', 'jpg'),
       );
 
       String uuid = const Uuid().v4();
@@ -97,11 +97,23 @@ class ChatRepositoryImpl extends ChatRepository {
         );
       }
 
+      // String timeFormat = "2025-04-15T08:10:19.992Z";
+      String date1 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      AppLoggerCS.debugLog("date1: $date1");
+      String time1 = DateFormat("hh:mm:ss.").format(DateTime.now());
+      AppLoggerCS.debugLog("time1: $time1");
+      String concatDateTime = date1 + "T" + time1 + "992Z";
+      AppLoggerCS.debugLog("concatDateTime: $concatDateTime");
+
       requestData.addAll(
         {
-          "time": DateTime.now().toLocal(),
+          // "time": DateTime.now().toLocal(),
+          "time": concatDateTime,
+          // "time": DateTime.now().toUtc(),
         },
       );
+
+      // AppLoggerCS.debugLog("[uploadMedia] requestData: ${jsonEncode(requestData)}");
 
       Response? response = await remoteSource.uploadMedia(
         requestData: requestData,
@@ -112,6 +124,8 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
+      AppLoggerCS.debugLog("[uploadMedia] response.data: ${jsonEncode(response.data)}");
+
       UploadFilesResponseModel mapping = UploadFilesResponseModel.fromJson(
         response.data,
       );
