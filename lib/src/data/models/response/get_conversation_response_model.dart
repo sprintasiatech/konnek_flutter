@@ -1,3 +1,5 @@
+import 'package:flutter_plugin_test2/src/presentation/screen/chat_screen.dart';
+
 class GetConversationResponseModel {
   MetaGetConversation? meta;
   DataGetConversation? data;
@@ -46,7 +48,7 @@ class DataGetConversation {
       };
 }
 
-class ConversationList {
+class ConversationList extends ChatItem {
   int? seqId;
   String? roomId;
   String? sessionId;

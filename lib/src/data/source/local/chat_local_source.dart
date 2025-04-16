@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
+import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
 
 class LocalKey {
   static const String accessToken = "accessToken";
   static const String clientData = "clientData";
   static const String supportData = "supportData";
+  static const String configData = "configData";
 }
 
 class ChatLocalSource {
@@ -15,6 +17,36 @@ class ChatLocalSource {
   // ChatLocalSource(this.localServiceHive);
 
   static LocalServiceHive localServiceHive = FlutterPluginTest2.famCodingSupply.localServiceHive;
+
+  Future<void> setConfigData(DataGetConfig value) async {
+    try {
+      String data = jsonEncode(value.toJson());
+      await localServiceHive.user.putSecure(
+        key: LocalKey.configData,
+        data: data,
+      );
+    } catch (e) {
+      AppLoggerCS.debugLog("[setConfigData] error: $e");
+      rethrow;
+    }
+  }
+
+  Future<DataGetConfig?> getConfigData() async {
+    try {
+      String? value = await localServiceHive.user.getSecure(
+        key: LocalKey.configData,
+      );
+      if (value != null) {
+        Map<String, dynamic> formatMap = jsonDecode(value);
+        DataGetConfig data = DataGetConfig.fromJson(formatMap);
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<void> setSupportData(DataSendChat value) async {
     try {

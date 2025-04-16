@@ -22,6 +22,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     nameController.text = "test";
     emailController.text = "test@test.com";
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await AppController().getConfig(
+        onSuccess: () async {
+          AppLoggerCS.debugLog("[getConfig] success");
+        },
+        onFailed: (errorMessage) {
+          AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+        },
+      );
+    });
   }
 
   @override
@@ -172,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         });
-            
+
                         await ChatLocalSource().getClientData();
                       },
                     ),

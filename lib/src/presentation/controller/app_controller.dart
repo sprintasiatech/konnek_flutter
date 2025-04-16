@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fam_coding_supply/logic/app_logger.dart';
 import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
 import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
+import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/repositories/chat_repository_impl.dart';
@@ -11,6 +12,59 @@ import 'package:flutter_plugin_test2/src/support/jwt_converter.dart';
 
 class AppController {
   static bool isLoading = false;
+
+  Future<void> getConfig({
+    void Function()? onSuccess,
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      GetConfigResponseModel? getConfigResponseModel = await ChatRepositoryImpl().getConfig(
+        clientId: FlutterPluginTest2.clientId,
+      );
+      if (getConfigResponseModel == null) {
+        onFailed?.call("empty data");
+        return;
+      }
+
+      if (getConfigResponseModel.meta == null || getConfigResponseModel.data == null) {
+        onFailed?.call("empty data 2");
+        return;
+      }
+
+      if (getConfigResponseModel.meta?.code != 200) {
+        onFailed?.call("${getConfigResponseModel.meta?.message}");
+        return;
+      }
+
+      if (getConfigResponseModel.meta?.code == 200) {
+        await ChatLocalSource().setConfigData(getConfigResponseModel.data!);
+        onSuccess?.call();
+        return;
+      }
+    } catch (e) {
+      onFailed?.call(e.toString());
+      return;
+    }
+  }
+
+  Future<void> getConfigFromLocal({
+    void Function(DataGetConfig data)? onSuccess,
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      DataGetConfig? dataGetConfig = await ChatLocalSource().getConfigData();
+      if (dataGetConfig == null) {
+        onFailed?.call("empty data");
+        return;
+      }
+
+      onSuccess?.call(dataGetConfig);
+      return;
+    } catch (e) {
+      onFailed?.call(e.toString());
+      return;
+    }
+  }
 
   Future<void> loadData({
     required String name,
