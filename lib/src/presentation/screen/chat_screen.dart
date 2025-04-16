@@ -203,7 +203,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   enablePullUp: true,
                   enablePullDown: false,
                   onLoading: () async {
-                    AppLoggerCS.debugLog("onLoading");
                     await AppController().loadMoreConversation(
                       onSuccess: () {
                         // refreshController.loadComplete();
@@ -388,6 +387,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                               mediaData: uploadFile!,
                                               onSuccess: () {
                                                 uploadFile = null;
+                                                _chatItems = buildChatListWithSeparators(AppController.conversationList);
                                                 setState(() {});
                                               },
                                               onFailed: (errorMessage) {
@@ -400,7 +400,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                               text: textController.text,
                                               onSuccess: () {
                                                 _chatItems = buildChatListWithSeparators(AppController.conversationList);
-                                                AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
                                                 if (AppController.isLoading) {
                                                   isLoading = true;
                                                 } else {
@@ -438,7 +437,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         text: textController.text,
                                                         onSuccess: () {
                                                           _chatItems = buildChatListWithSeparators(AppController.conversationList);
-                                                          AppLoggerCS.debugLog("isLoading1: ${AppController.isLoading}");
                                                           if (AppController.isLoading) {
                                                             isLoading = true;
                                                           } else {

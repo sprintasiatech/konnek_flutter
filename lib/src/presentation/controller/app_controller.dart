@@ -161,7 +161,7 @@ class AppController {
       }
 
       Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
-      AppLoggerCS.debugLog("[_getConversation] decodeJwt $decodeJwt");
+      // AppLoggerCS.debugLog("[_getConversation] decodeJwt $decodeJwt");
 
       DataSendChat? supportData = await ChatLocalSource().getSupportData();
       if (supportData == null) {
@@ -180,6 +180,9 @@ class AppController {
       conversationData = output;
       conversationList.addAll(output!.data!.conversations!);
       // conversationList = conversationList.reversed.toList();
+
+      FlutterPluginTest2.accessToken = output.data!.token!;
+      await ChatLocalSource().setAccessToken(output.data!.token!);
 
       isLoading = false;
       onSuccess?.call();
@@ -266,7 +269,7 @@ class AppController {
       if (output.meta?.code == 201) {
         // onSuccess?.call();
         // return;
-        
+
         String? token = await ChatLocalSource().getAccessToken();
         if (token == null) {
           onFailed?.call("process don't success");
@@ -274,6 +277,10 @@ class AppController {
         }
         Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
         AppLoggerCS.debugLog("[loadMoreConversation] decodeJwt $decodeJwt");
+
+        conversationData = null;
+        conversationList = [];
+        currentPage = 1;
 
         await _getConversation(
           text: text,
