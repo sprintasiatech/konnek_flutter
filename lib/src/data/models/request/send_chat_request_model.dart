@@ -1,11 +1,11 @@
 class SendChatRequestModel {
   String name;
-  String text;
+  String? text;
   String username;
 
   SendChatRequestModel({
     required this.name,
-    required this.text,
+    this.text,
     required this.username,
   });
 
