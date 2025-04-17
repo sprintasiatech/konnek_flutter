@@ -42,8 +42,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool isLoading = false;
 
-  DataGetConfig? dataGetConfig;
-
   // Sample data
   // final List<ChatMessage> _messages = [
   //   ChatMessage(text: 'Hey!', timestamp: DateTime.now().subtract(Duration(minutes: 5))),
@@ -64,17 +62,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToBottom();
-      await AppController().getConfigFromLocal(
-        onSuccess: (data) {
-          // AppLoggerCS.debugLog("[getConfigFromLocal] onSuccess: ${jsonEncode(data.toJson())}");
-          setState(() {
-            dataGetConfig = data;
-          });
-        },
-        onFailed: (errorMessage) {
-          AppLoggerCS.debugLog("[getConfigFromLocal] onFailed: $errorMessage");
-        },
-      );
     });
   }
 
@@ -151,9 +138,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   forceMaterialTransparency: true,
                   leadingWidth: 70,
                   leading: Center(
-                    child: (dataGetConfig != null)
+                    child: (AppController.dataGetConfigValue != null)
                         ? Image.memory(
-                            Uri.parse(dataGetConfig!.avatarImage!).data!.contentAsBytes(),
+                            Uri.parse(AppController.dataGetConfigValue!.avatarImage!).data!.contentAsBytes(),
                             // base64Decode(dataGetConfig!.avatarImage!),
                             height: 50,
                             width: 50,
@@ -178,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   centerTitle: false,
                   title: Text(
-                    (dataGetConfig != null) ? "${dataGetConfig?.avatarName}" : "Bot Cust Service 1",
+                    (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
                     style: GoogleFonts.inter(
                       color: Colors.green,
                       fontSize: 20,
@@ -289,7 +276,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                     child: ChatBubbleWidget(
                                       data: item,
-                                      dataGetConfig: dataGetConfig,
+                                      dataGetConfig: AppController.dataGetConfigValue,
                                     ),
                                   );
                                   // return ListTile(
@@ -424,6 +411,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                         });
                                       },
                                       child: TextField(
+                                        style: GoogleFonts.lato(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                         controller: textController,
                                         onChanged: (value) {
                                           setState(() {

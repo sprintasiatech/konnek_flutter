@@ -26,10 +26,12 @@ class _LoginScreenState extends State<LoginScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppController().getConfig(
         onSuccess: () async {
-          AppLoggerCS.debugLog("[getConfig] success");
+          // AppLoggerCS.debugLog("[getConfig] success");
+          setState(() {});
         },
         onFailed: (errorMessage) {
-          AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+          // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+          setState(() {});
         },
       );
     });
@@ -59,14 +61,48 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   SizedBox(height: 100),
                   Center(
-                    child: Text(
-                      "App!",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lato(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    // child: (AppController.dataGetConfigValue != null)
+                    //     ? Image.memory(
+                    //         Uri.parse(AppController.dataGetConfigValue!.avatarImage!).data!.contentAsBytes(),
+                    //         // base64Decode(dataGetConfig!.avatarImage!),
+                    //         height: 100,
+                    //         width: 100,
+                    //         fit: BoxFit.cover,
+                    //       )
+                    //     : Text(
+                    //         // "App!",
+                    //         (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
+                    //         textAlign: TextAlign.center,
+                    //         style: GoogleFonts.lato(
+                    //           fontSize: 34,
+                    //           fontWeight: FontWeight.w700,
+                    //         ),
+                    //       ),
+                    child: (AppController.dataGetConfigValue != null)
+                        ? Text(
+                            (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          )
+                        : Text(
+                            "App!",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                    // child: Text(
+                    //   "App!",
+                    //   textAlign: TextAlign.center,
+                    //   style: GoogleFonts.lato(
+                    //     fontSize: 34,
+                    //     fontWeight: FontWeight.w700,
+                    //   ),
+                    // ),
                   ),
                   SizedBox(height: 80),
                   Text(
@@ -79,6 +115,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 45,
                     child: TextField(
+                      style: GoogleFonts.lato(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                       controller: nameController,
                       decoration: InputDecoration(
                         hintText: "Your name",
@@ -114,6 +154,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 45,
                     child: TextField(
+                      style: GoogleFonts.lato(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                       controller: emailController,
                       decoration: InputDecoration(
                         hintText: "Your email",

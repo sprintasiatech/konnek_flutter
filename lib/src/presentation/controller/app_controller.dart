@@ -39,6 +39,7 @@ class AppController {
       }
 
       if (getConfigResponseModel.meta?.code == 200) {
+        dataGetConfigValue = getConfigResponseModel.data;
         await ChatLocalSource().setConfigData(getConfigResponseModel.data!);
         onSuccess?.call();
         return;
@@ -49,18 +50,21 @@ class AppController {
     }
   }
 
+  static DataGetConfig? dataGetConfigValue;
+
   Future<void> getConfigFromLocal({
     void Function(DataGetConfig data)? onSuccess,
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      DataGetConfig? dataGetConfig = await ChatLocalSource().getConfigData();
-      if (dataGetConfig == null) {
+      DataGetConfig? data = await ChatLocalSource().getConfigData();
+      if (data == null) {
         onFailed?.call("empty data");
         return;
       }
+      dataGetConfigValue = data;
 
-      onSuccess?.call(dataGetConfig);
+      onSuccess?.call(data);
       return;
     } catch (e) {
       onFailed?.call(e.toString());
@@ -160,7 +164,7 @@ class AppController {
         return;
       }
 
-      Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
+      // Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
       // AppLoggerCS.debugLog("[_getConversation] decodeJwt $decodeJwt");
 
       DataSendChat? supportData = await ChatLocalSource().getSupportData();
