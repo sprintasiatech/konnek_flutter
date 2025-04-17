@@ -126,6 +126,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   File? uploadFile;
+  String metaFile = "";
+  String fileName = "";
+  double fileSize = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ],
                           SizedBox(
-                            height: kToolbarHeight + 30 + ((uploadFile != null) ? 80 : 0),
+                            height: kToolbarHeight + 30 + ((uploadFile != null) ? 90 : 0),
                           ),
                         ],
                       ),
@@ -316,9 +319,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         // color: Colors.amber,
                         color: Colors.grey.shade300,
                         width: MediaQuery.of(context).size.width,
-                        height: 80,
+                        height: 90,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // Image.network(
                             //   "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
@@ -326,12 +330,62 @@ class _ChatScreenState extends State<ChatScreen> {
                             //   width: 60,
                             //   fit: BoxFit.cover,
                             // ),
+                            SizedBox(width: 16),
                             Image.file(
                               uploadFile!,
-                              height: 60,
-                              width: 60,
+                              height: 70,
+                              width: 70,
                               fit: BoxFit.cover,
                             ),
+                            SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'File Name: ',
+                                    style: GoogleFonts.lato(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: ' $fileName',
+                                        style: GoogleFonts.lato(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'File Size: ',
+                                    style: GoogleFonts.lato(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: ' ${fileSize.toStringAsFixed(4)} MB',
+                                        style: GoogleFonts.lato(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Spacer(),
                             SizedBox(width: 12),
                             InkWell(
                               onTap: () {
@@ -484,7 +538,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               // SizedBox(width: 12),
                               InkWell(
                                 onTap: () async {
-                                  uploadFile = await AppImagePickerServiceCS().getImageAsFile();
+                                  uploadFile = await AppImagePickerServiceCS().getImageAsFile(
+                                    onFileName: (fileNameValue) {
+                                      fileName = fileNameValue;
+                                    },
+                                    onSizeFile: (sizeFileValue) {
+                                      fileSize = sizeFileValue;
+                                    },
+                                  );
+                                  metaFile = "File Name: $fileName\nSize File: ${fileSize.toStringAsFixed(3)} MB";
                                   setState(() {});
                                 },
                                 child: Container(
