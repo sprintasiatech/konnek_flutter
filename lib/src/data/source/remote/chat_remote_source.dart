@@ -2,6 +2,8 @@ import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
 import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
 import 'package:flutter_plugin_test2/src/env.dart';
+import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 abstract class ChatRemoteSource {
   Future<Response?> sendChat({
@@ -20,11 +22,30 @@ abstract class ChatRemoteSource {
   Future<Response?> uploadMedia({
     required Map<String, dynamic> requestData,
   });
+  IO.Socket startWebSocketIO();
 }
 
 class ChatRemoteSourceImpl extends ChatRemoteSource {
   static String baseUrl = EnvironmentConfig.baseUrl();
+  static String baseUrlSocket = EnvironmentConfig.baseUrlSocket();
   static AppApiServiceCS apiService = FlutterPluginTest2.appApiService;
+
+  @override
+  IO.Socket startWebSocketIO() {
+    try {
+      IO.Socket socket = AppSocketioService.connect(
+        url: baseUrlSocket,
+        token: FlutterPluginTest2.accessToken,
+        // token: token ?? "",
+      );
+      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
+      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
+      return socket;
+    } catch (e) {
+      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] error: $e");
+      rethrow;
+    }
+  }
 
   @override
   Future<Response?> getConfig({required String clientId}) async {
@@ -49,13 +70,11 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
   }) async {
     try {
       AppLoggerCS.debugLog("[remoteSource] currentPage: $currentPage");
-      AppLoggerCS.debugLog("baseUrl: $baseUrl");
       String url = "$baseUrl/room/conversation/$roomId?page=$currentPage&limit=20&session_id=$sesionId";
       Response? response = await apiService.call(
         url,
         method: MethodRequestCS.get,
         header: {
-          // 'Authorization': accessToken,
           'Authorization': FlutterPluginTest2.accessToken,
         },
       );
@@ -71,7 +90,6 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
     required SendChatRequestModel request,
   }) async {
     try {
-      AppLoggerCS.debugLog("baseUrl: $baseUrl");
       String url = "$baseUrl/webhook/widget/$clientId";
       Response? response = await apiService.call(
         url,

@@ -123,6 +123,19 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.data.payload != null && widget.data.payload != "")
+                    Column(
+                      children: [
+                        Image.network(
+                          // "https://cms.shootingstar.id/74/main.jpg",
+                          jsonDecode(widget.data.payload ?? "")['url'],
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
+                        ),
+                        SizedBox(height: 5),
+                      ],
+                    ),
                   Text(
                     widget.data.text ?? "null",
                     // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",

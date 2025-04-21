@@ -4,7 +4,7 @@ import 'package:flutter_plugin_test2/assets/assets.dart';
 import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
 import 'package:flutter_plugin_test2/src/presentation/controller/app_controller.dart';
 import 'package:flutter_plugin_test2/src/presentation/screen/chat_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_plugin_test2/src/support/string_extension.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,6 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
     nameController.text = "test";
     emailController.text = "test@test.com";
 
+    // nameController.text = "test1";
+    // emailController.text = "test1@test.com";
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppController().getConfig(
         onSuccess: () async {
@@ -35,6 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
     });
+  }
+
+  String errorText = "";
+
+  void _validateEmail(String email) {
+    if (email.isEmpty) {
+      setState(() => errorText = 'Email is required');
+    } else if (!email.isValidEmail) {
+      setState(() => errorText = 'Enter a valid email');
+    } else {
+      setState(() => errorText = "");
+    }
   }
 
   @override
@@ -154,6 +169,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 45,
                     child: TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) {
+                        _validateEmail(value);
+                      },
                       style: GoogleFonts.lato(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -182,6 +201,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+                  if (errorText != "")
+                    Text(
+                      errorText,
+                      style: GoogleFonts.lato(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   SizedBox(height: 24),
                   Center(
                     child: InkWell(
@@ -212,23 +240,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       onTap: () async {
-                        await AppController()
-                            .loadData(
-                          name: nameController.text,
-                          email: emailController.text,
-                        )
-                            .then((value) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ChatScreen();
-                              },
-                            ),
-                          );
-                        });
+                        if (errorText != "") {
+                          //
+                        } else if (nameController.text.isEmpty || emailController.text.isEmpty) {
+                          errorText = "field is empty";
+                        } else {
+                          errorText = "";
+                          await AppController()
+                              .loadData(
+                            name: nameController.text,
+                            email: emailController.text,
+                          )
+                              .then((value) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ChatScreen();
+                                },
+                              ),
+                            );
+                          });
 
-                        await ChatLocalSource().getClientData();
+                          await ChatLocalSource().getClientData();
+                        }
+                        setState(() {});
                       },
                     ),
                   ),

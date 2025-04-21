@@ -1,30 +1,16 @@
 import 'dart:io';
 
-import 'package:fam_coding_supply/logic/app_file_picker.dart';
 import 'package:fam_coding_supply/logic/export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_test2/assets/assets.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
 import 'package:flutter_plugin_test2/src/presentation/controller/app_controller.dart';
+import 'package:flutter_plugin_test2/src/presentation/controller/chat_controller.dart';
 import 'package:flutter_plugin_test2/src/presentation/widget/chat_bubble_widget.dart';
+import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-abstract class ChatItem {}
-
-// class ChatMessage extends ChatItem {
-//   final String text;
-//   final DateTime timestamp;
-
-//   ChatMessage({required this.text, required this.timestamp});
-// }
-
-class DateSeparator extends ChatItem {
-  final String label;
-
-  DateSeparator(this.label);
-}
+import 'package:socket_io_client/socket_io_client.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -42,26 +28,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool isLoading = false;
 
-  // Sample data
-  // final List<ChatMessage> _messages = [
-  //   ChatMessage(text: 'Hey!', timestamp: DateTime.now().subtract(Duration(minutes: 5))),
-  //   ChatMessage(text: 'How are you?', timestamp: DateTime.now().subtract(Duration(minutes: 4))),
-  //   ChatMessage(text: 'Yesterday\'s message', timestamp: DateTime.now().subtract(Duration(days: 1, minutes: 10))),
-  //   ChatMessage(text: 'Another one from yesterday', timestamp: DateTime.now().subtract(Duration(days: 1, minutes: 5))),
-  //   ChatMessage(text: 'Old one', timestamp: DateTime.now().subtract(Duration(days: 3))),
-  // ];
-
   late List<ChatItem> _chatItems;
 
   @override
   void initState() {
     super.initState();
-    // Jump to bottom after the widget is built
-    // _chatItems = buildChatListWithSeparators(_messages);
-    _chatItems = buildChatListWithSeparators(AppController.conversationList);
+    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToBottom();
+      await AppController().startWebSocketIO();
+      await AppController().handleWebSocketIO(
+        onSuccess: () {
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          setState(() {});
+        },
+      );
     });
   }
 
@@ -73,49 +55,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
   RefreshController refreshController = RefreshController(initialRefresh: false);
 
-  List<ChatItem> buildChatListWithSeparators(List<ConversationList> messages) {
-    messages.sort((a, b) => a.messageTime!.compareTo(b.messageTime!)); // optional: sort oldest to newest
-    // List<ChatItem> result = [];
-    List<ChatItem> result = [];
-
-    for (int i = 0; i < messages.length; i++) {
-      final current = messages[i];
-      final previous = i > 0 ? messages[i - 1] : null;
-
-      if (previous == null || !isSameDate(current.messageTime!, previous.messageTime!)) {
-        result.add(DateSeparator(formatDate(current.messageTime!)));
-      }
-
-      result.add(current);
-    }
-
-    return result;
-  }
-
-  bool isSameDate(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
-
-  String formatDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(Duration(days: 1));
-    final msgDate = DateTime(date.year, date.month, date.day);
-
-    if (msgDate == today) return "Today";
-    if (msgDate == yesterday) return "Yesterday";
-    return "${date.day} ${_monthName(date.month)} ${date.year}";
-  }
-
-  String _monthName(int month) {
-    const months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    return months[month];
-  }
-
   File? uploadFile;
   String metaFile = "";
   String fileName = "";
   double fileSize = 0;
+
+  @override
+  void dispose() {
+    super.dispose();
+    AppSocketioService.socket.disconnect();
+    AppSocketioService.socket.onDisconnect((_) {
+      AppLoggerCS.debugLog("disconnected");
+      AppLoggerCS.debugLog("disconnected id: ${AppSocketioService.socket.id}");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     await AppController().loadMoreConversation(
                       onSuccess: () {
                         // refreshController.loadComplete();
-                        _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                        _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                         setState(() {});
                       },
                       onFailed: (errorMessage) {
@@ -405,7 +358,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   child: FocusScope(
                                     child: Focus(
                                       onFocusChange: (focus) {
-                                        AppLoggerCS.debugLog("focus: $focus");
                                         setState(() {
                                           isTextFieldFocused = focus;
                                         });
@@ -432,7 +384,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                               mediaData: uploadFile!,
                                               onSuccess: () {
                                                 uploadFile = null;
-                                                _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                 setState(() {});
                                               },
                                               onFailed: (errorMessage) {
@@ -444,7 +396,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             await AppController().sendChat(
                                               text: textController.text,
                                               onSuccess: () {
-                                                _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                 if (AppController.isLoading) {
                                                   isLoading = true;
                                                 } else {
@@ -470,6 +422,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         mediaData: uploadFile!,
                                                         onSuccess: () {
                                                           uploadFile = null;
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                           setState(() {});
                                                         },
                                                         onFailed: (errorMessage) {
@@ -481,7 +434,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                       await AppController().sendChat(
                                                         text: textController.text,
                                                         onSuccess: () {
-                                                          _chatItems = buildChatListWithSeparators(AppController.conversationList);
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                           if (AppController.isLoading) {
                                                             isLoading = true;
                                                           } else {

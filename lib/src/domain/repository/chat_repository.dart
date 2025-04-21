@@ -3,6 +3,7 @@ import 'package:flutter_plugin_test2/src/data/models/response/get_config_respons
 import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 abstract class ChatRepository {
   Future<SendChatResponseModel?> sendChat({
@@ -22,4 +23,5 @@ abstract class ChatRepository {
     String? text,
     String? mediaData,
   });
+  IO.Socket startWebSocketIO();
 }

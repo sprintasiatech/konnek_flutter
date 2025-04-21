@@ -1,19 +1,126 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fam_coding_supply/logic/app_logger.dart';
+import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
 import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
+import 'package:flutter_plugin_test2/src/data/models/response/socket_chat_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/repositories/chat_repository_impl.dart';
 import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
+import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
 import 'package:flutter_plugin_test2/src/support/jwt_converter.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AppController {
   static bool isLoading = false;
+
+  static bool socketCalled = false;
+
+  Future<void> startWebSocketIO({
+    void Function()? onSuccess,
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      AppLoggerCS.debugLog("Call here AppController startWebSocketIO");
+      await sendChat(
+        onSuccess: () {
+          ChatRepositoryImpl().startWebSocketIO();
+        },
+        onFailed: (errorMessage) {
+          onFailed?.call(errorMessage);
+        },
+      );
+    } catch (e) {
+      AppLoggerCS.debugLog('[startWebSocketIO] e: $e');
+      onFailed?.call(e.toString());
+    }
+  }
+
+  void listenToMessages(String eventName, Function(dynamic) onMessage) {
+    AppSocketioService.socket.on(
+      // 'new_message',
+      eventName,
+      (data) {
+        onMessage(data); // callback
+      },
+    );
+  }
+
+  void sendMessage(String eventName, Map<String, dynamic> message) {
+    AppSocketioService.socket.emit(
+      // 'send_message',
+      eventName,
+      message,
+    );
+  }
+
+  Future<void> handleWebSocketIO({
+    void Function()? onSuccess,
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      // ChatRepositoryImpl().startWebSocketIO();
+
+      AppSocketioService.socket.onConnect((_) {
+        AppLoggerCS.debugLog("onConnect: ${AppSocketioService.socket.toString()}");
+      });
+
+      AppSocketioService.socket.on("chat", (output) async {
+        AppLoggerCS.debugLog("socket output: ${jsonEncode(output)}");
+        SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
+
+        // conversationData = null;
+        // conversationList = [];
+        // currentPage = 1;
+        ConversationList? chatModel;
+        chatModel = null;
+
+        chatModel = ConversationList(
+          // widget.data.session?.agent?.id
+          session: SessionGetConversation(
+            agent: UserGetConversation(
+              id: socket.agent?.userId,
+              name: socket.agent?.name,
+              username: socket.agent?.username,
+            ),
+          ),
+          fromType: socket.message?.fromType,
+          text: socket.message?.text,
+          messageId: socket.messageId,
+          user: UserGetConversation(
+            username: socket.customer?.username,
+            name: socket.customer?.name,
+          ),
+          messageTime: socket.message?.time,
+          sessionId: socket.session?.id,
+          roomId: socket.session?.roomId,
+          replyId: socket.replyId,
+          payload: socket.message?.payload,
+          type: socket.message?.type,
+        );
+        conversationList.add(chatModel);
+        onSuccess?.call();
+
+        // Map<String, dynamic>? decodeJwt = await _decodeJwt();
+        // await _getConversation(
+        //   roomId: decodeJwt!["payload"]["data"]["room_id"],
+        //   onSuccess: () {
+        //     onSuccess?.call();
+        //   },
+        //   onFailed: (errorMessage) {
+        //     onFailed?.call(errorMessage);
+        //   },
+        // );
+      });
+    } catch (e) {
+      AppLoggerCS.debugLog('[handleWebSocketIO] e: $e');
+      onFailed?.call(e.toString());
+    }
+  }
 
   Future<void> getConfig({
     void Function()? onSuccess,
@@ -97,30 +204,20 @@ class AppController {
     void Function(String errorMessage)? onFailed,
   }) async {
     isLoading = true;
-
-    AppLoggerCS.debugLog("work here");
     try {
-      conversationData = null;
-      conversationList = [];
-      currentPage = 1;
-
       Map<String, dynamic>? localDataFormatted = await ChatLocalSource().getClientData();
-      AppLoggerCS.debugLog("localDataFormatted: $localDataFormatted");
 
       SendChatRequestModel requestBody = SendChatRequestModel(
         name: localDataFormatted?["name"],
         text: text,
         username: localDataFormatted?["username"],
       );
-      AppLoggerCS.debugLog("requestBody: ${requestBody.toJson()}");
-
-      AppLoggerCS.debugLog("FlutterPluginTest2.clientId: ${FlutterPluginTest2.clientId}");
 
       SendChatResponseModel? output = await ChatRepositoryImpl().sendChat(
         clientId: FlutterPluginTest2.clientId,
         request: requestBody,
       );
-      AppLoggerCS.debugLog("output: $output");
+      // AppLoggerCS.debugLog("output: ${output?.toJson()}");
 
       Map jwtValue = JwtConverter().decodeJwt(output!.data!.token!);
       // AppLoggerCS.debugLog("jwtValue: ${jsonEncode(jwtValue)}");
@@ -130,10 +227,24 @@ class AppController {
       FlutterPluginTest2.accessToken = output.data!.token!;
       await ChatLocalSource().setAccessToken(output.data!.token!);
 
+      conversationData = null;
+      conversationList = [];
+      currentPage = 1;
+
+      // await handleWebSocketIO(
+      //   onSuccess: () {
+      //     isLoading = false;
+      //     onSuccess?.call();
+      //   },
+      //   onFailed: (errorMessage) {
+      //     isLoading = false;
+      //     onFailed?.call(errorMessage);
+      //   },
+      // );
+
       await _getConversation(
-        text: text,
         roomId: jwtValue["payload"]["data"]["room_id"],
-        onSuccess: () {
+        onSuccess: () async {
           onSuccess?.call();
         },
         onFailed: (errorMessage) {
@@ -150,23 +261,23 @@ class AppController {
   static GetConversationResponseModel? conversationData;
   static List<ConversationList> conversationList = [];
 
+  List<ConversationList> removeDuplicatesById(List<ConversationList> originalList) {
+    final seenIds = <String>{};
+    return originalList.where((item) {
+      final isNew = !seenIds.contains(item.messageId);
+      seenIds.add(item.messageId!);
+      return isNew;
+    }).toList();
+  }
+
   Future<void> _getConversation({
-    String? text,
+    // String? text,
     required String roomId,
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
   }) async {
     isLoading = true;
     try {
-      String? token = await ChatLocalSource().getAccessToken();
-      if (token == null) {
-        onFailed?.call("process don't success");
-        return;
-      }
-
-      // Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
-      // AppLoggerCS.debugLog("[_getConversation] decodeJwt $decodeJwt");
-
       DataSendChat? supportData = await ChatLocalSource().getSupportData();
       if (supportData == null) {
         onFailed?.call("process 2 don't success");
@@ -183,6 +294,7 @@ class AppController {
 
       conversationData = output;
       conversationList.addAll(output!.data!.conversations!);
+      conversationList = removeDuplicatesById(conversationList);
       // conversationList = conversationList.reversed.toList();
 
       FlutterPluginTest2.accessToken = output.data!.token!;
@@ -205,23 +317,14 @@ class AppController {
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
   }) async {
-    AppLoggerCS.debugLog("call here [loadMoreConversation]");
     try {
       if (conversationData != null && conversationData!.meta != null) {
         if (currentPage <= conversationData!.meta!.pageCount!) {
           currentPage++;
-          String? token = await ChatLocalSource().getAccessToken();
-          if (token == null) {
-            onFailed?.call("process don't success");
-            return;
-          }
-
-          Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
-          AppLoggerCS.debugLog("[loadMoreConversation] decodeJwt $decodeJwt");
+          Map<String, dynamic>? decodeJwt = await _decodeJwt();
 
           await _getConversation(
-            text: text,
-            roomId: decodeJwt["payload"]["data"]["room_id"],
+            roomId: decodeJwt!["payload"]["data"]["room_id"],
             onSuccess: () {
               isLoading = false;
               onSuccess?.call();
@@ -274,21 +377,25 @@ class AppController {
         // onSuccess?.call();
         // return;
 
-        String? token = await ChatLocalSource().getAccessToken();
-        if (token == null) {
-          onFailed?.call("process don't success");
-          return;
-        }
-        Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
-        AppLoggerCS.debugLog("[loadMoreConversation] decodeJwt $decodeJwt");
+        Map<String, dynamic>? decodeJwt = await _decodeJwt();
 
         conversationData = null;
         conversationList = [];
         currentPage = 1;
 
+        // await handleWebSocketIO(
+        //   onSuccess: () {
+        //     isLoading = false;
+        //     onSuccess?.call();
+        //   },
+        //   onFailed: (errorMessage) {
+        //     isLoading = false;
+        //     onFailed?.call(errorMessage);
+        //   },
+        // );
+
         await _getConversation(
-          text: text,
-          roomId: decodeJwt["payload"]["data"]["room_id"],
+          roomId: decodeJwt!["payload"]["data"]["room_id"],
           onSuccess: () {
             isLoading = false;
             onSuccess?.call();
@@ -302,6 +409,25 @@ class AppController {
     } catch (e) {
       onFailed?.call(e.toString());
       return;
+    }
+  }
+
+  Future<Map<String, dynamic>?> _decodeJwt({
+    void Function(String errorMessage)? onFailed,
+  }) async {
+    try {
+      String? token = await ChatLocalSource().getAccessToken();
+      if (token == null) {
+        onFailed?.call("process don't success");
+        return null;
+      }
+
+      Map<String, dynamic> decodeJwt = JwtConverter().decodeJwt(token);
+      // AppLoggerCS.debugLog("[_decodeJwt] $decodeJwt");
+      return decodeJwt;
+    } catch (e) {
+      onFailed?.call("e: $e");
+      return null;
     }
   }
 }

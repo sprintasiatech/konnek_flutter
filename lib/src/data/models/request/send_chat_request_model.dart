@@ -20,4 +20,9 @@ class SendChatRequestModel {
         "text": text,
         "username": username,
       };
+
+  Map<String, dynamic> toJson2() => {
+        "name": name,
+        "username": username,
+      };
 }

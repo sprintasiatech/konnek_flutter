@@ -1,4 +1,4 @@
-import 'package:flutter_plugin_test2/src/presentation/screen/chat_screen.dart';
+import 'package:flutter_plugin_test2/src/presentation/controller/chat_controller.dart';
 
 class GetConversationResponseModel {
   MetaGetConversation? meta;

@@ -8,7 +8,7 @@ import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response
 import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/source/remote/chat_remote_source.dart';
 import 'package:flutter_plugin_test2/src/domain/repository/chat_repository.dart';
-import 'package:http_parser/http_parser.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:uuid/uuid.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
@@ -16,6 +16,17 @@ class ChatRepositoryImpl extends ChatRepository {
   // ChatRepositoryImpl(this.remoteSource);
 
   static ChatRemoteSource remoteSource = ChatRemoteSourceImpl();
+
+  @override
+  IO.Socket startWebSocketIO() {
+    try {
+      IO.Socket socket = remoteSource.startWebSocketIO();
+      return socket;
+    } catch (e) {
+      AppLoggerCS.debugLog("[ChatRepositoryImpl][startWebSocketIO] error: $e");
+      rethrow;
+    }
+  }
 
   @override
   Future<GetConfigResponseModel?> getConfig({
@@ -102,7 +113,7 @@ class ChatRepositoryImpl extends ChatRepository {
       AppLoggerCS.debugLog("date1: $date1");
       String time1 = DateFormat("hh:mm:ss.").format(DateTime.now());
       AppLoggerCS.debugLog("time1: $time1");
-      String concatDateTime = date1 + "T" + time1 + "992Z";
+      String concatDateTime = "${date1}T${time1}992Z";
       AppLoggerCS.debugLog("concatDateTime: $concatDateTime");
 
       requestData.addAll(
@@ -151,7 +162,7 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
-      AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] response.data: ${jsonEncode(response.data)}");
+      // AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] response.data: ${jsonEncode(response.data)}");
       SendChatResponseModel mapping = SendChatResponseModel.fromJson(
         response.data,
       );
