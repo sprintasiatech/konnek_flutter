@@ -1,10 +1,10 @@
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_plugin_test2/assets/assets.dart';
-import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
-import 'package:flutter_plugin_test2/src/presentation/controller/app_controller.dart';
-import 'package:flutter_plugin_test2/src/presentation/screen/chat_screen.dart';
-import 'package:flutter_plugin_test2/src/support/string_extension.dart';
+import 'package:konnek_flutter/assets/assets.dart';
+import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
+import 'package:konnek_flutter/src/presentation/screen/chat_screen.dart';
+import 'package:konnek_flutter/src/support/string_extension.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -285,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(width: 5),
                         Image.asset(
                           Assets.icKonnek,
-                          package: "flutter_plugin_test2",
+                          package: "konnek_flutter",
                           height: 16,
                         ),
                       ],

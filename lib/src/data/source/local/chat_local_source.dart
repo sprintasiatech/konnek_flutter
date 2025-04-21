@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
+import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
 
 class LocalKey {
   static const String accessToken = "accessToken";
@@ -16,7 +16,7 @@ class ChatLocalSource {
   // final LocalServiceHive localServiceHive;
   // ChatLocalSource(this.localServiceHive);
 
-  static LocalServiceHive localServiceHive = FlutterPluginTest2.famCodingSupply.localServiceHive;
+  static LocalServiceHive localServiceHive = KonnekFlutter.famCodingSupply.localServiceHive;
 
   Future<void> setConfigData(DataGetConfig value) async {
     try {

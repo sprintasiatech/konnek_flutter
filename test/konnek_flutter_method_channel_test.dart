@@ -1,12 +1,12 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2_method_channel.dart';
+import 'package:konnek_flutter/konnek_flutter_method_channel.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelFlutterPluginTest2 platform = MethodChannelFlutterPluginTest2();
-  const MethodChannel channel = MethodChannel('flutter_plugin_test2');
+  MethodChannelKonnekFlutter platform = MethodChannelKonnekFlutter();
+  const MethodChannel channel = MethodChannel('konnek_flutter');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(

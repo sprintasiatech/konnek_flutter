@@ -1,4 +1,4 @@
-import 'package:flutter_plugin_test2/src/domain/entities/send_chat_entity.dart';
+import 'package:konnek_flutter/src/domain/entities/send_chat_entity.dart';
 
 class SendChatResponseModel {
   MetaSendChat? meta;

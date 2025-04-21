@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
-import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/socket_chat_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/repositories/chat_repository_impl.dart';
-import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
-import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
-import 'package:flutter_plugin_test2/src/support/jwt_converter.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
+import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/socket_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
+import 'package:konnek_flutter/src/data/repositories/chat_repository_impl.dart';
+import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/support/app_socketio_service.dart';
+import 'package:konnek_flutter/src/support/jwt_converter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AppController {
@@ -128,7 +128,7 @@ class AppController {
   }) async {
     try {
       GetConfigResponseModel? getConfigResponseModel = await ChatRepositoryImpl().getConfig(
-        clientId: FlutterPluginTest2.clientId,
+        clientId: KonnekFlutter.clientId,
       );
       if (getConfigResponseModel == null) {
         onFailed?.call("empty data");
@@ -214,7 +214,7 @@ class AppController {
       );
 
       SendChatResponseModel? output = await ChatRepositoryImpl().sendChat(
-        clientId: FlutterPluginTest2.clientId,
+        clientId: KonnekFlutter.clientId,
         request: requestBody,
       );
       // AppLoggerCS.debugLog("output: ${output?.toJson()}");
@@ -224,7 +224,7 @@ class AppController {
 
       await ChatLocalSource().setSupportData(output.data!);
 
-      FlutterPluginTest2.accessToken = output.data!.token!;
+      KonnekFlutter.accessToken = output.data!.token!;
       await ChatLocalSource().setAccessToken(output.data!.token!);
 
       conversationData = null;
@@ -297,7 +297,7 @@ class AppController {
       conversationList = removeDuplicatesById(conversationList);
       // conversationList = conversationList.reversed.toList();
 
-      FlutterPluginTest2.accessToken = output.data!.token!;
+      KonnekFlutter.accessToken = output.data!.token!;
       await ChatLocalSource().setAccessToken(output.data!.token!);
 
       isLoading = false;

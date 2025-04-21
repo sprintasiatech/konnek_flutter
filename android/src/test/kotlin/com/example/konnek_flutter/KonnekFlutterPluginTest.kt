@@ -1,4 +1,4 @@
-package com.example.flutter_plugin_test2
+package com.example.konnek_flutter
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -13,10 +13,10 @@ import org.mockito.Mockito
  * you can run them directly from IDEs that support JUnit such as Android Studio.
  */
 
-internal class FlutterPluginTest2PluginTest {
+internal class KonnekFlutterPluginTest {
   @Test
   fun onMethodCall_getPlatformVersion_returnsExpectedValue() {
-    val plugin = FlutterPluginTest2Plugin()
+    val plugin = KonnekFlutterPlugin()
 
     val call = MethodCall("getPlatformVersion", null)
     val mockResult: MethodChannel.Result = Mockito.mock(MethodChannel.Result::class.java)

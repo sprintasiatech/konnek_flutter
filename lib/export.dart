@@ -1,2 +1,2 @@
-// export 'package:flutter_plugin_test2/widget/export.dart';
-// export 'package:flutter_plugin_test2/interface/export.dart';
+// export 'package:konnek_flutter/widget/export.dart';
+// export 'package:konnek_flutter/interface/export.dart';

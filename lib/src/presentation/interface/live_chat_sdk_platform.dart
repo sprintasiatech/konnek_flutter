@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_plugin_test2/src/presentation/interface/live_chat_sdk_channel.dart';
+import 'package:konnek_flutter/src/presentation/interface/live_chat_sdk_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 abstract class LiveChatSDKPlatform extends PlatformInterface {

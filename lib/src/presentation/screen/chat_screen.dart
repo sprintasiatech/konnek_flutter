@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:fam_coding_supply/logic/export.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_plugin_test2/assets/assets.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
-import 'package:flutter_plugin_test2/src/presentation/controller/app_controller.dart';
-import 'package:flutter_plugin_test2/src/presentation/controller/chat_controller.dart';
-import 'package:flutter_plugin_test2/src/presentation/widget/chat_bubble_widget.dart';
-import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
+import 'package:konnek_flutter/assets/assets.dart';
+import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
+import 'package:konnek_flutter/src/presentation/controller/chat_controller.dart';
+import 'package:konnek_flutter/src/presentation/widget/chat_bubble_widget.dart';
+import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -536,7 +536,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 SizedBox(width: 5),
                                 Image.asset(
                                   Assets.icKonnek,
-                                  package: "flutter_plugin_test2",
+                                  package: "konnek_flutter",
                                   height: 16,
                                 ),
                               ],
