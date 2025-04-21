@@ -4,6 +4,7 @@ import 'package:fam_coding_supply/logic/export.dart';
 import 'package:flutter/material.dart';
 import 'package:konnek_flutter/assets/assets.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/presentation/controller/chat_controller.dart';
 import 'package:konnek_flutter/src/presentation/widget/chat_bubble_widget.dart';
@@ -35,16 +36,24 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
+    });
+  }
+
+  void _checkAccessTokenAndFetch() async {
+    if (AppController.socketReady) {
       await AppController().startWebSocketIO();
       await AppController().handleWebSocketIO(
-        onSuccess: () {
+        onSuccess: () async {
+          await ChatLocalSource().setSocketReady(true);
+          AppController.socketReady = true;
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           setState(() {});
         },
+        onFailed: (errorMessage) {},
       );
-    });
+    }
   }
 
   void _scrollToBottom() {
@@ -395,13 +404,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                           } else {
                                             await AppController().sendChat(
                                               text: textController.text,
-                                              onSuccess: () {
-                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                if (AppController.isLoading) {
-                                                  isLoading = true;
-                                                } else {
-                                                  isLoading = false;
+                                              onSuccess: () async {
+                                                if (AppController.socketReady == false) {
+                                                  _checkAccessTokenAndFetch();
                                                 }
+                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                 setState(() {});
                                               },
                                             );
@@ -433,13 +440,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     } else {
                                                       await AppController().sendChat(
                                                         text: textController.text,
-                                                        onSuccess: () {
-                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                          if (AppController.isLoading) {
-                                                            isLoading = true;
-                                                          } else {
-                                                            isLoading = false;
+                                                        onSuccess: () async {
+                                                          if (AppController.socketReady == false) {
+                                                            _checkAccessTokenAndFetch();
                                                           }
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                          setState(() {});
                                                         },
                                                       );
                                                     }

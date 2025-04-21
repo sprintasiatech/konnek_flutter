@@ -21,7 +21,7 @@ class AppSocketioService {
     required String token,
   }) {
     try {
-      AppLoggerCS.debugLog("connect socket");
+      // AppLoggerCS.debugLog("connect socket");
       socket = IO.io(
         // "your-socket-url",
         url,

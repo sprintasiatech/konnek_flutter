@@ -20,11 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    nameController.text = "test";
-    emailController.text = "test@test.com";
+    // nameController.text = "test";
+    // emailController.text = "test@test.com";
 
-    // nameController.text = "test1";
-    // emailController.text = "test1@test.com";
+    nameController.text = "test1";
+    emailController.text = "test1@test.com";
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppController().getConfig(
