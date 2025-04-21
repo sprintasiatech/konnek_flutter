@@ -1,10 +1,12 @@
+import 'package:flutter_plugin_test2/src/presentation/controller/chat_controller.dart';
+
 class GetConversationResponseModel {
-  MetaGetConversation meta;
-  DataGetConversation data;
+  MetaGetConversation? meta;
+  DataGetConversation? data;
 
   GetConversationResponseModel({
-    required this.meta,
-    required this.data,
+    this.meta,
+    this.data,
   });
 
   factory GetConversationResponseModel.fromJson(Map<String, dynamic> json) => GetConversationResponseModel(
@@ -13,22 +15,22 @@ class GetConversationResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "meta": meta.toJson(),
-        "data": data.toJson(),
+        "meta": meta?.toJson(),
+        "data": data?.toJson(),
       };
 }
 
 class DataGetConversation {
-  List<ConversationList> conversations;
-  DateTime expire;
-  RoomGetConversation room;
-  String token;
+  List<ConversationList>? conversations;
+  DateTime? expire;
+  RoomGetConversation? room;
+  String? token;
 
   DataGetConversation({
-    required this.conversations,
-    required this.expire,
-    required this.room,
-    required this.token,
+    this.conversations,
+    this.expire,
+    this.room,
+    this.token,
   });
 
   factory DataGetConversation.fromJson(Map<String, dynamic> json) => DataGetConversation(
@@ -39,52 +41,52 @@ class DataGetConversation {
       );
 
   Map<String, dynamic> toJson() => {
-        "conversations": List<dynamic>.from(conversations.map((x) => x.toJson())),
-        "expire": expire.toIso8601String(),
-        "room": room.toJson(),
+        "conversations": List<dynamic>.from(conversations!.map((x) => x.toJson())),
+        "expire": expire?.toIso8601String(),
+        "room": room?.toJson(),
         "token": token,
       };
 }
 
-class ConversationList {
-  int seqId;
-  String roomId;
-  String sessionId;
-  String id;
-  String userId;
-  String messageId;
-  String replyId;
-  String fromType;
-  Type type;
-  String text;
-  String payload;
-  int status;
-  DateTime messageTime;
-  DateTime createdAt;
-  String createdBy;
-  Session session;
-  UserGetConversation user;
-  int unixMsgTime;
+class ConversationList extends ChatItem {
+  int? seqId;
+  String? roomId;
+  String? sessionId;
+  String? id;
+  String? userId;
+  String? messageId;
+  String? replyId;
+  String? fromType;
+  String? type;
+  String? text;
+  String? payload;
+  int? status;
+  DateTime? messageTime;
+  DateTime? createdAt;
+  String? createdBy;
+  SessionGetConversation? session;
+  UserGetConversation? user;
+  int? unixMsgTime;
 
   ConversationList({
-    required this.seqId,
-    required this.roomId,
-    required this.sessionId,
-    required this.id,
-    required this.userId,
-    required this.messageId,
-    required this.replyId,
-    required this.fromType,
-    required this.type,
-    required this.text,
-    required this.payload,
-    required this.status,
-    required this.messageTime,
-    required this.createdAt,
-    required this.createdBy,
-    required this.session,
-    required this.user,
-    required this.unixMsgTime,
+    this.seqId,
+    this.roomId,
+    this.sessionId,
+    this.id,
+    this.userId,
+    this.messageId,
+    this.replyId,
+    this.fromType,
+    this.type,
+    this.text,
+    this.payload,
+    this.status,
+    this.messageTime,
+    this.createdAt,
+    this.createdBy,
+    this.session,
+    this.user,
+    this.unixMsgTime,
   });
 
   factory ConversationList.fromJson(Map<String, dynamic> json) => ConversationList(
@@ -103,7 +105,7 @@ class ConversationList {
         messageTime: DateTime.parse(json["message_time"]),
         createdAt: DateTime.parse(json["created_at"]),
         createdBy: json["created_by"],
-        session: Session.fromJson(json["session"]),
+        session: SessionGetConversation.fromJson(json["session"]),
         user: UserGetConversation.fromJson(json["user"]),
         unixMsgTime: json["unix_msg_time"],
       );
@@ -121,59 +123,59 @@ class ConversationList {
         "text": text,
         "payload": payload,
         "status": status,
-        "message_time": messageTime.toIso8601String(),
-        "created_at": createdAt.toIso8601String(),
+        "message_time": messageTime?.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
         "created_by": createdBy,
-        "session": session.toJson(),
-        "user": user.toJson(),
+        "session": session?.toJson(),
+        "user": user?.toJson(),
         "unix_msg_time": unixMsgTime,
       };
 }
 
-class Session {
-  String id;
-  String roomId;
-  String divisionId;
-  String agentUserId;
-  UserGetConversation agent;
-  String categories;
-  bool botStatus;
-  int status;
-  String openBy;
-  String handoverBy;
-  String closeBy;
-  UserGetConversation closeUser;
-  DateTime openTime;
-  DateTime queueTime;
+class SessionGetConversation {
+  String? id;
+  String? roomId;
+  String? divisionId;
+  String? agentUserId;
+  UserGetConversation? agent;
+  String? categories;
+  bool? botStatus;
+  int? status;
+  String? openBy;
+  String? handoverBy;
+  String? closeBy;
+  UserGetConversation? closeUser;
+  DateTime? openTime;
+  DateTime? queueTime;
   DateTime? assignTime;
   dynamic firstResponseTime;
   dynamic lastAgentChatTime;
   DateTime? closeTime;
-  String sessionPriorityLevelId;
+  String? sessionPriorityLevelId;
 
-  Session({
-    required this.id,
-    required this.roomId,
-    required this.divisionId,
-    required this.agentUserId,
-    required this.agent,
-    required this.categories,
-    required this.botStatus,
-    required this.status,
-    required this.openBy,
-    required this.handoverBy,
-    required this.closeBy,
-    required this.closeUser,
-    required this.openTime,
-    required this.queueTime,
-    required this.assignTime,
-    required this.firstResponseTime,
-    required this.lastAgentChatTime,
-    required this.closeTime,
-    required this.sessionPriorityLevelId,
+  SessionGetConversation({
+    this.id,
+    this.roomId,
+    this.divisionId,
+    this.agentUserId,
+    this.agent,
+    this.categories,
+    this.botStatus,
+    this.status,
+    this.openBy,
+    this.handoverBy,
+    this.closeBy,
+    this.closeUser,
+    this.openTime,
+    this.queueTime,
+    this.assignTime,
+    this.firstResponseTime,
+    this.lastAgentChatTime,
+    this.closeTime,
+    this.sessionPriorityLevelId,
   });
 
-  factory Session.fromJson(Map<String, dynamic> json) => Session(
+  factory SessionGetConversation.fromJson(Map<String, dynamic> json) => SessionGetConversation(
         id: json["id"],
         roomId: json["room_id"],
         divisionId: json["division_id"],
@@ -200,16 +202,16 @@ class Session {
         "room_id": roomId,
         "division_id": divisionId,
         "agent_user_id": agentUserId,
-        "agent": agent.toJson(),
+        "agent": agent?.toJson(),
         "categories": categories,
         "bot_status": botStatus,
         "status": status,
         "open_by": openBy,
         "handover_by": handoverBy,
         "close_by": closeBy,
-        "close_user": closeUser.toJson(),
-        "open_time": openTime.toIso8601String(),
-        "queue_time": queueTime.toIso8601String(),
+        "close_user": closeUser?.toJson(),
+        "open_time": openTime?.toIso8601String(),
+        "queue_time": queueTime?.toIso8601String(),
         "assign_time": assignTime?.toIso8601String(),
         "first_response_time": firstResponseTime,
         "last_agent_chat_time": lastAgentChatTime,
@@ -219,34 +221,34 @@ class Session {
 }
 
 class UserGetConversation {
-  String id;
-  String name;
-  String username;
-  String email;
-  String phone;
-  String avatar;
-  String description;
-  String tags;
-  String customerChannel;
-  int status;
-  int onlineStatus;
-  String divisionId;
-  bool isBlocked;
+  String? id;
+  String? name;
+  String? username;
+  String? email;
+  String? phone;
+  String? avatar;
+  String? description;
+  String? tags;
+  String? customerChannel;
+  int? status;
+  int? onlineStatus;
+  String? divisionId;
+  bool? isBlocked;
 
   UserGetConversation({
-    required this.id,
-    required this.name,
-    required this.username,
-    required this.email,
-    required this.phone,
-    required this.avatar,
-    required this.description,
-    required this.tags,
-    required this.customerChannel,
-    required this.status,
-    required this.onlineStatus,
-    required this.divisionId,
-    required this.isBlocked,
+    this.id,
+    this.name,
+    this.username,
+    this.email,
+    this.phone,
+    this.avatar,
+    this.description,
+    this.tags,
+    this.customerChannel,
+    this.status,
+    this.onlineStatus,
+    this.divisionId,
+    this.isBlocked,
   });
 
   factory UserGetConversation.fromJson(Map<String, dynamic> json) => UserGetConversation(
@@ -311,62 +313,62 @@ class UserGetConversation {
 // final typeValues = EnumValues({"text": Type.TEXT});
 
 class RoomGetConversation {
-  String agentUserId;
+  String? agentUserId;
   dynamic assignTime;
-  bool botStatus;
-  String categories;
-  String channelCode;
-  String closeBy;
+  bool? botStatus;
+  String? categories;
+  String? channelCode;
+  String? closeBy;
   dynamic closeTime;
-  String companyId;
-  String customerAvatar;
-  String customerDescription;
-  String customerEmail;
-  String customerId;
-  String customerName;
-  String customerUsername;
-  String divisionId;
+  String? companyId;
+  String? customerAvatar;
+  String? customerDescription;
+  String? customerEmail;
+  String? customerId;
+  String? customerName;
+  String? customerUsername;
+  String? divisionId;
   dynamic firstResponseTime;
-  String handoverBy;
-  String id;
+  String? handoverBy;
+  String? id;
   dynamic lastAgentChatTime;
-  DateTime lastCustomerMessageTime;
-  String openBy;
-  DateTime openTime;
-  DateTime queueTime;
-  bool sendOutboundFlag;
-  String sessionId;
-  int status;
-  String windowMessaging;
+  DateTime? lastCustomerMessageTime;
+  String? openBy;
+  DateTime? openTime;
+  DateTime? queueTime;
+  bool? sendOutboundFlag;
+  String? sessionId;
+  int? status;
+  String? windowMessaging;
 
   RoomGetConversation({
-    required this.agentUserId,
-    required this.assignTime,
-    required this.botStatus,
-    required this.categories,
-    required this.channelCode,
-    required this.closeBy,
-    required this.closeTime,
-    required this.companyId,
-    required this.customerAvatar,
-    required this.customerDescription,
-    required this.customerEmail,
-    required this.customerId,
-    required this.customerName,
-    required this.customerUsername,
-    required this.divisionId,
-    required this.firstResponseTime,
-    required this.handoverBy,
-    required this.id,
-    required this.lastAgentChatTime,
-    required this.lastCustomerMessageTime,
-    required this.openBy,
-    required this.openTime,
-    required this.queueTime,
-    required this.sendOutboundFlag,
-    required this.sessionId,
-    required this.status,
-    required this.windowMessaging,
+    this.agentUserId,
+    this.assignTime,
+    this.botStatus,
+    this.categories,
+    this.channelCode,
+    this.closeBy,
+    this.closeTime,
+    this.companyId,
+    this.customerAvatar,
+    this.customerDescription,
+    this.customerEmail,
+    this.customerId,
+    this.customerName,
+    this.customerUsername,
+    this.divisionId,
+    this.firstResponseTime,
+    this.handoverBy,
+    this.id,
+    this.lastAgentChatTime,
+    this.lastCustomerMessageTime,
+    this.openBy,
+    this.openTime,
+    this.queueTime,
+    this.sendOutboundFlag,
+    this.sessionId,
+    this.status,
+    this.windowMessaging,
   });
 
   factory RoomGetConversation.fromJson(Map<String, dynamic> json) => RoomGetConversation(
@@ -419,10 +421,10 @@ class RoomGetConversation {
         "handover_by": handoverBy,
         "id": id,
         "last_agent_chat_time": lastAgentChatTime,
-        "last_customer_message_time": lastCustomerMessageTime.toIso8601String(),
+        "last_customer_message_time": lastCustomerMessageTime?.toIso8601String(),
         "open_by": openBy,
-        "open_time": openTime.toIso8601String(),
-        "queue_time": queueTime.toIso8601String(),
+        "open_time": openTime?.toIso8601String(),
+        "queue_time": queueTime?.toIso8601String(),
         "send_outbound_flag": sendOutboundFlag,
         "session_id": sessionId,
         "status": status,
@@ -431,30 +433,30 @@ class RoomGetConversation {
 }
 
 class MetaGetConversation {
-  bool status;
-  int code;
-  String message;
-  String logId;
+  bool? status;
+  int? code;
+  String? message;
+  String? logId;
   dynamic errors;
-  int currentPage;
-  bool nextPage;
-  bool prevPage;
-  int perPage;
-  int pageCount;
-  int totalCount;
+  int? currentPage;
+  bool? nextPage;
+  bool? prevPage;
+  int? perPage;
+  int? pageCount;
+  int? totalCount;
 
   MetaGetConversation({
-    required this.status,
-    required this.code,
-    required this.message,
-    required this.logId,
-    required this.errors,
-    required this.currentPage,
-    required this.nextPage,
-    required this.prevPage,
-    required this.perPage,
-    required this.pageCount,
-    required this.totalCount,
+    this.status,
+    this.code,
+    this.message,
+    this.logId,
+    this.errors,
+    this.currentPage,
+    this.nextPage,
+    this.prevPage,
+    this.perPage,
+    this.pageCount,
+    this.totalCount,
   });
 
   factory MetaGetConversation.fromJson(Map<String, dynamic> json) => MetaGetConversation(

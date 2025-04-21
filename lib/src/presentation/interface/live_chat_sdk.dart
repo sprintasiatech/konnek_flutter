@@ -9,4 +9,8 @@ class LiveChatSdk {
       customFloatingWidget: customFloatingWidget,
     );
   }
+
+  Future<void> initialize() async {
+    await LiveChatSDKPlatform.instance.initialize();
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
 import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
@@ -6,12 +8,25 @@ import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response
 import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
 import 'package:flutter_plugin_test2/src/data/source/remote/chat_remote_source.dart';
 import 'package:flutter_plugin_test2/src/domain/repository/chat_repository.dart';
-import 'package:http_parser/http_parser.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:uuid/uuid.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
-  final ChatRemoteSource remoteSource;
-  ChatRepositoryImpl(this.remoteSource);
+  // final ChatRemoteSource remoteSource;
+  // ChatRepositoryImpl(this.remoteSource);
+
+  static ChatRemoteSource remoteSource = ChatRemoteSourceImpl();
+
+  @override
+  IO.Socket startWebSocketIO() {
+    try {
+      IO.Socket socket = remoteSource.startWebSocketIO();
+      return socket;
+    } catch (e) {
+      AppLoggerCS.debugLog("[ChatRepositoryImpl][startWebSocketIO] error: $e");
+      rethrow;
+    }
+  }
 
   @override
   Future<GetConfigResponseModel?> getConfig({
@@ -27,7 +42,9 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
-      GetConfigResponseModel mapping = GetConfigResponseModel.fromJson(response.data);
+      GetConfigResponseModel mapping = GetConfigResponseModel.fromJson(
+        response.data,
+      );
       return mapping;
     } catch (e) {
       rethrow;
@@ -36,14 +53,14 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<GetConversationResponseModel?> getConversation({
-    required int pages,
+    required int limit,
     required String roomId,
     required int currentPage,
-    required int sesionId,
+    required String sesionId,
   }) async {
     try {
       Response? response = await remoteSource.getConversation(
-        pages: pages,
+        limit: limit,
         roomId: roomId,
         currentPage: currentPage,
         sesionId: sesionId,
@@ -54,7 +71,9 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
-      GetConversationResponseModel mapping = GetConversationResponseModel.fromJson(response.data);
+      GetConversationResponseModel mapping = GetConversationResponseModel.fromJson(
+        response.data,
+      );
       return mapping;
     } catch (e) {
       rethrow;
@@ -67,10 +86,10 @@ class ChatRepositoryImpl extends ChatRepository {
     String? mediaData,
   }) async {
     try {
-       MultipartFile media = await MultipartFile.fromFile(
+      MultipartFile media = await MultipartFile.fromFile(
         '$mediaData',
         filename: mediaData.toString().split('/').last,
-        contentType: MediaType('image', 'jpg'),
+        // contentType: MediaType('image', 'jpg'),
       );
 
       String uuid = const Uuid().v4();
@@ -89,15 +108,25 @@ class ChatRepositoryImpl extends ChatRepository {
         );
       }
 
+      // String timeFormat = "2025-04-15T08:10:19.992Z";
+      String date1 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      AppLoggerCS.debugLog("date1: $date1");
+      String time1 = DateFormat("hh:mm:ss.").format(DateTime.now());
+      AppLoggerCS.debugLog("time1: $time1");
+      String concatDateTime = "${date1}T${time1}992Z";
+      AppLoggerCS.debugLog("concatDateTime: $concatDateTime");
+
       requestData.addAll(
         {
-          "time": DateTime.now().toLocal(),
+          // "time": DateTime.now().toLocal(),
+          "time": concatDateTime,
+          // "time": DateTime.now().toUtc(),
         },
       );
-      
+
+      // AppLoggerCS.debugLog("[uploadMedia] requestData: ${jsonEncode(requestData)}");
+
       Response? response = await remoteSource.uploadMedia(
-        // text: text,
-        // mediaData: mediaData,
         requestData: requestData,
       );
       if (response == null) {
@@ -106,7 +135,11 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
-      UploadFilesResponseModel mapping = UploadFilesResponseModel.fromJson(response.data);
+      AppLoggerCS.debugLog("[uploadMedia] response.data: ${jsonEncode(response.data)}");
+
+      UploadFilesResponseModel mapping = UploadFilesResponseModel.fromJson(
+        response.data,
+      );
       return mapping;
     } catch (e) {
       rethrow;
@@ -129,9 +162,13 @@ class ChatRepositoryImpl extends ChatRepository {
       if (response.data == null) {
         return null;
       }
-      SendChatResponseModel mapping = SendChatResponseModel.fromJson(response.data);
+      // AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] response.data: ${jsonEncode(response.data)}");
+      SendChatResponseModel mapping = SendChatResponseModel.fromJson(
+        response.data,
+      );
       return mapping;
     } catch (e) {
+      AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] error: $e");
       rethrow;
     }
   }

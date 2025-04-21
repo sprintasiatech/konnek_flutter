@@ -21,4 +21,8 @@ abstract class LiveChatSDKPlatform extends PlatformInterface {
   }) {
     throw UnimplementedError("entryPointWidget() has not been implemented");
   }
+
+  Future<void> initialize() async {
+    throw UnimplementedError("initialize() has not been implemented");
+  }
 }

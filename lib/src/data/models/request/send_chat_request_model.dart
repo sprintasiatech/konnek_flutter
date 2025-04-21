@@ -1,11 +1,11 @@
 class SendChatRequestModel {
   String name;
-  String text;
+  String? text;
   String username;
 
   SendChatRequestModel({
     required this.name,
-    required this.text,
+    this.text,
     required this.username,
   });
 
@@ -18,6 +18,11 @@ class SendChatRequestModel {
   Map<String, dynamic> toJson() => {
         "name": name,
         "text": text,
+        "username": username,
+      };
+
+  Map<String, dynamic> toJson2() => {
+        "name": name,
         "username": username,
       };
 }
