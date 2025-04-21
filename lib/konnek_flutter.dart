@@ -18,7 +18,11 @@ class KonnekFlutter {
     return KonnekFlutterPlatform.instance.getPlatformVersion();
   }
 
-  Future<void> initialize({required String inputClientId, required String inputClientSecret, dynamic configuration}) async {
+  Future<void> initialize({
+    required String inputClientId,
+    required String inputClientSecret,
+    dynamic configuration,
+  }) async {
     clientId = inputClientId;
     clientSecret = inputClientSecret;
 
