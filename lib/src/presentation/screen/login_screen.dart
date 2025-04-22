@@ -25,21 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     nameController.text = "test1";
     emailController.text = "test1@test.com";
-  }
 
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    await AppController().getConfig(
-      onSuccess: () async {
-        // AppLoggerCS.debugLog("[getConfig] success");
-        setState(() {});
-      },
-      onFailed: (errorMessage) {
-        // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
-        setState(() {});
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await AppController().getConfig(
+        onSuccess: () async {
+          // AppLoggerCS.debugLog("[getConfig] success");
+          setState(() {});
+        },
+        onFailed: (errorMessage) {
+          // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+          setState(() {});
+        },
+      );
+    });
   }
 
   String errorText = "";
