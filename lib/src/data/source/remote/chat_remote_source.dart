@@ -1,8 +1,8 @@
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
-import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
-import 'package:flutter_plugin_test2/src/env.dart';
-import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
+import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
+import 'package:konnek_flutter/src/env.dart';
+import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 abstract class ChatRemoteSource {
@@ -22,25 +22,29 @@ abstract class ChatRemoteSource {
   Future<Response?> uploadMedia({
     required Map<String, dynamic> requestData,
   });
-  IO.Socket startWebSocketIO();
+  IO.Socket? startWebSocketIO();
 }
 
 class ChatRemoteSourceImpl extends ChatRemoteSource {
   static String baseUrl = EnvironmentConfig.baseUrl();
   static String baseUrlSocket = EnvironmentConfig.baseUrlSocket();
-  static AppApiServiceCS apiService = FlutterPluginTest2.appApiService;
+  static AppApiServiceCS apiService = KonnekFlutter.appApiService;
 
   @override
-  IO.Socket startWebSocketIO() {
+  IO.Socket? startWebSocketIO() {
     try {
-      IO.Socket socket = AppSocketioService.connect(
-        url: baseUrlSocket,
-        token: FlutterPluginTest2.accessToken,
-        // token: token ?? "",
-      );
-      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
-      AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
-      return socket;
+      if (KonnekFlutter.accessToken == "") {
+        return null;
+      } else {
+        IO.Socket socket = AppSocketioService.connect(
+          url: baseUrlSocket,
+          token: KonnekFlutter.accessToken,
+          // token: token ?? "",
+        );
+        AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
+        AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
+        return socket;
+      }
     } catch (e) {
       AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] error: $e");
       rethrow;
@@ -75,7 +79,7 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
         url,
         method: MethodRequestCS.get,
         header: {
-          'Authorization': FlutterPluginTest2.accessToken,
+          'Authorization': KonnekFlutter.accessToken,
         },
       );
       return response;
@@ -113,7 +117,7 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
         url,
         header: {
           "Access-Control-Allow-Origin": "*",
-          'Authorization': FlutterPluginTest2.accessToken,
+          'Authorization': KonnekFlutter.accessToken,
           // 'Authorization': accessToken,
         },
         request: requestData,

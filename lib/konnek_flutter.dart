@@ -1,14 +1,11 @@
-library flutter_plugin_test2;
-
+import 'konnek_flutter_platform_interface.dart';
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/src/env.dart';
+import 'package:konnek_flutter/src/env.dart';
 
-import 'flutter_plugin_test2_platform_interface.dart';
+// export 'package:konnek_flutter/export.dart';
+export 'package:konnek_flutter/src/presentation/widget/live_chat_sdk_screen.dart';
 
-// export 'package:flutter_plugin_test2/export.dart';
-export 'package:flutter_plugin_test2/src/presentation/widget/live_chat_sdk_screen.dart';
-
-class FlutterPluginTest2 {
+class KonnekFlutter {
   static String clientId = "";
   static String clientSecret = "";
 
@@ -18,7 +15,7 @@ class FlutterPluginTest2 {
   static AppApiServiceCS appApiService = AppApiServiceCS(EnvironmentConfig.baseUrl());
 
   Future<String?> getPlatformVersion() {
-    return FlutterPluginTest2Platform.instance.getPlatformVersion();
+    return KonnekFlutterPlatform.instance.getPlatformVersion();
   }
 
   Future<void> initialize({
@@ -32,6 +29,10 @@ class FlutterPluginTest2 {
     EnvironmentConfig.flavor = Flavor.staging;
     // await LiveChatSdk().initialize();
     AppLoggerCS.useLogger = true;
+    //
+    appApiService.useFoundation = true;
+    appApiService.useLogger = true;
+    //
     await famCodingSupply.appInfo.init();
     await famCodingSupply.appConnectivityService.init();
     await famCodingSupply.appDeviceInfo.getDeviceData();
@@ -39,6 +40,6 @@ class FlutterPluginTest2 {
   }
 
   // Widget entryPointWidget() {
-  //   return FlutterPluginTest2Platform.instance.entryPointWidget();
+  //   return KonnekFlutterPlatform.instance.entryPointWidget();
   // }
 }

@@ -1,4 +1,4 @@
-package com.example.flutter_plugin_test2_example
+package com.example.konnek_flutter_example
 
 import io.flutter.embedding.android.FlutterActivity
 

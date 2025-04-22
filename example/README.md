@@ -1,6 +1,6 @@
-# flutter_plugin_test2_example
+# konnek_flutter_example
 
-Demonstrates how to use the flutter_plugin_test2 plugin.
+Demonstrates how to use the konnek_flutter plugin.
 
 ## Getting Started
 

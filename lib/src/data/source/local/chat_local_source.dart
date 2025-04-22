@@ -1,22 +1,50 @@
 import 'dart:convert';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
+import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
 
 class LocalKey {
   static const String accessToken = "accessToken";
   static const String clientData = "clientData";
   static const String supportData = "supportData";
   static const String configData = "configData";
+  static const String socketReady = "socketReady";
 }
 
 class ChatLocalSource {
   // final LocalServiceHive localServiceHive;
   // ChatLocalSource(this.localServiceHive);
 
-  static LocalServiceHive localServiceHive = FlutterPluginTest2.famCodingSupply.localServiceHive;
+  static LocalServiceHive localServiceHive = KonnekFlutter.famCodingSupply.localServiceHive;
+
+  Future<void> setSocketReady(bool value) async {
+    try {
+      await localServiceHive.user.putSecure(
+        key: LocalKey.socketReady,
+        data: value,
+      );
+    } catch (e) {
+      AppLoggerCS.debugLog("[setConfigData] error: $e");
+      rethrow;
+    }
+  }
+
+  Future<bool?> getSocketReady() async {
+    try {
+      bool? value = await localServiceHive.user.getSecure(
+        key: LocalKey.socketReady,
+      );
+      if (value != null) {
+        return value;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<void> setConfigData(DataGetConfig value) async {
     try {

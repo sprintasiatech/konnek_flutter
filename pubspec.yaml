@@ -1,4 +1,4 @@
-name: flutter_plugin_test2
+name: konnek_flutter
 description: "A new Flutter plugin project."
 version: 0.0.1
 homepage:
@@ -21,6 +21,7 @@ dependencies:
   http_parser: ^4.1.2
   pull_to_refresh: ^2.0.0
   socket_io_client: ^3.1.1
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
@@ -45,10 +46,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.flutter_plugin_test2
-        pluginClass: FlutterPluginTest2Plugin
+        package: com.example.konnek_flutter
+        pluginClass: KonnekFlutterPlugin
       ios:
-        pluginClass: FlutterPluginTest2Plugin
+        pluginClass: KonnekFlutterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   assets:

@@ -1,10 +1,10 @@
 import Flutter
 import UIKit
 
-public class FlutterPluginTest2Plugin: NSObject, FlutterPlugin {
+public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_plugin_test2", binaryMessenger: registrar.messenger())
-    let instance = FlutterPluginTest2Plugin()
+    let channel = FlutterMethodChannel(name: "konnek_flutter", binaryMessenger: registrar.messenger())
+    let instance = KonnekFlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

@@ -2,23 +2,23 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/flutter_plugin_test2.dart';
-import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/socket_chat_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/repositories/chat_repository_impl.dart';
-import 'package:flutter_plugin_test2/src/data/source/local/chat_local_source.dart';
-import 'package:flutter_plugin_test2/src/support/app_socketio_service.dart';
-import 'package:flutter_plugin_test2/src/support/jwt_converter.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
+import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/socket_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
+import 'package:konnek_flutter/src/data/repositories/chat_repository_impl.dart';
+import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/support/app_socketio_service.dart';
+import 'package:konnek_flutter/src/support/jwt_converter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AppController {
   static bool isLoading = false;
 
-  static bool socketCalled = false;
+  static bool socketReady = false;
 
   Future<void> startWebSocketIO({
     void Function()? onSuccess,
@@ -28,7 +28,13 @@ class AppController {
       AppLoggerCS.debugLog("Call here AppController startWebSocketIO");
       await sendChat(
         onSuccess: () {
-          ChatRepositoryImpl().startWebSocketIO();
+          IO.Socket? data = ChatRepositoryImpl().startWebSocketIO();
+          if (data == null) {
+            onSuccess?.call();
+          } else {
+            AppLoggerCS.debugLog("empty socket");
+            onFailed?.call("empty socket");
+          }
         },
         onFailed: (errorMessage) {
           onFailed?.call(errorMessage);
@@ -63,8 +69,6 @@ class AppController {
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      // ChatRepositoryImpl().startWebSocketIO();
-
       AppSocketioService.socket.onConnect((_) {
         AppLoggerCS.debugLog("onConnect: ${AppSocketioService.socket.toString()}");
       });
@@ -73,9 +77,6 @@ class AppController {
         AppLoggerCS.debugLog("socket output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
 
-        // conversationData = null;
-        // conversationList = [];
-        // currentPage = 1;
         ConversationList? chatModel;
         chatModel = null;
 
@@ -104,17 +105,6 @@ class AppController {
         );
         conversationList.add(chatModel);
         onSuccess?.call();
-
-        // Map<String, dynamic>? decodeJwt = await _decodeJwt();
-        // await _getConversation(
-        //   roomId: decodeJwt!["payload"]["data"]["room_id"],
-        //   onSuccess: () {
-        //     onSuccess?.call();
-        //   },
-        //   onFailed: (errorMessage) {
-        //     onFailed?.call(errorMessage);
-        //   },
-        // );
       });
     } catch (e) {
       AppLoggerCS.debugLog('[handleWebSocketIO] e: $e');
@@ -127,8 +117,13 @@ class AppController {
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
+      bool? valueSocketReady = await ChatLocalSource().getSocketReady();
+      if (valueSocketReady != null) {
+        AppController.socketReady = valueSocketReady;
+      }
+
       GetConfigResponseModel? getConfigResponseModel = await ChatRepositoryImpl().getConfig(
-        clientId: FlutterPluginTest2.clientId,
+        clientId: KonnekFlutter.clientId,
       );
       if (getConfigResponseModel == null) {
         onFailed?.call("empty data");
@@ -214,43 +209,46 @@ class AppController {
       );
 
       SendChatResponseModel? output = await ChatRepositoryImpl().sendChat(
-        clientId: FlutterPluginTest2.clientId,
+        clientId: KonnekFlutter.clientId,
         request: requestBody,
       );
       // AppLoggerCS.debugLog("output: ${output?.toJson()}");
+      if (output == null) {
+        onFailed?.call("empty data #1110");
+        return;
+      }
+      if (output.meta == null) {
+        onFailed?.call("empty data #1111");
+        return;
+      }
+      if (output.meta?.code != 200) {
+        onFailed?.call("${output.meta?.message}");
+        return;
+      }
+      if (output.meta?.code == 200) {
+        Map jwtValue = JwtConverter().decodeJwt(output.data!.token!);
+        // AppLoggerCS.debugLog("jwtValue: ${jsonEncode(jwtValue)}");
 
-      Map jwtValue = JwtConverter().decodeJwt(output!.data!.token!);
-      // AppLoggerCS.debugLog("jwtValue: ${jsonEncode(jwtValue)}");
+        await ChatLocalSource().setSupportData(output.data!);
 
-      await ChatLocalSource().setSupportData(output.data!);
+        KonnekFlutter.accessToken = output.data!.token!;
+        await ChatLocalSource().setAccessToken(output.data!.token!);
 
-      FlutterPluginTest2.accessToken = output.data!.token!;
-      await ChatLocalSource().setAccessToken(output.data!.token!);
+        conversationData = null;
+        conversationList = [];
+        currentPage = 1;
 
-      conversationData = null;
-      conversationList = [];
-      currentPage = 1;
-
-      // await handleWebSocketIO(
-      //   onSuccess: () {
-      //     isLoading = false;
-      //     onSuccess?.call();
-      //   },
-      //   onFailed: (errorMessage) {
-      //     isLoading = false;
-      //     onFailed?.call(errorMessage);
-      //   },
-      // );
-
-      await _getConversation(
-        roomId: jwtValue["payload"]["data"]["room_id"],
-        onSuccess: () async {
-          onSuccess?.call();
-        },
-        onFailed: (errorMessage) {
-          onFailed?.call(errorMessage);
-        },
-      );
+        await _getConversation(
+          roomId: jwtValue["payload"]["data"]["room_id"],
+          onSuccess: () async {
+            onSuccess?.call();
+          },
+          onFailed: (errorMessage) {
+            onFailed?.call(errorMessage);
+          },
+        );
+        return;
+      }
     } catch (e) {
       AppLoggerCS.debugLog("[sendChat] error: $e");
       onFailed?.call(e.toString());
@@ -290,14 +288,26 @@ class AppController {
         currentPage: currentPage,
         sesionId: supportData.sessionId ?? "",
       );
-      AppLoggerCS.debugLog("[_getConversation] output ${jsonEncode(output?.meta?.toJson())}");
+      // AppLoggerCS.debugLog("[_getConversation] output ${jsonEncode(output?.meta?.toJson())}");
+      if (output == null) {
+        onFailed?.call("empty data #1110");
+        return;
+      }
+      if (output.meta == null) {
+        onFailed?.call("empty data #1111");
+        return;
+      }
+      if (output.meta?.code != 200) {
+        onFailed?.call("${output.meta?.message}");
+        return;
+      }
 
       conversationData = output;
-      conversationList.addAll(output!.data!.conversations!);
+      conversationList.addAll(output.data!.conversations!);
       conversationList = removeDuplicatesById(conversationList);
       // conversationList = conversationList.reversed.toList();
 
-      FlutterPluginTest2.accessToken = output.data!.token!;
+      KonnekFlutter.accessToken = output.data!.token!;
       await ChatLocalSource().setAccessToken(output.data!.token!);
 
       isLoading = false;
@@ -374,25 +384,11 @@ class AppController {
       }
 
       if (output.meta?.code == 201) {
-        // onSuccess?.call();
-        // return;
-
         Map<String, dynamic>? decodeJwt = await _decodeJwt();
 
         conversationData = null;
         conversationList = [];
         currentPage = 1;
-
-        // await handleWebSocketIO(
-        //   onSuccess: () {
-        //     isLoading = false;
-        //     onSuccess?.call();
-        //   },
-        //   onFailed: (errorMessage) {
-        //     isLoading = false;
-        //     onFailed?.call(errorMessage);
-        //   },
-        // );
 
         await _getConversation(
           roomId: decodeJwt!["payload"]["data"]["room_id"],

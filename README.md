@@ -1,4 +1,4 @@
-# flutter_plugin_test2
+# konnek_flutter
 
 A new Flutter plugin project.
 
@@ -13,5 +13,3 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-
-DraggableFloatingWidget

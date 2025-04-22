@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
-import 'package:flutter_plugin_test2/src/data/models/request/send_chat_request_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_config_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/get_conversation_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/send_chat_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/models/response/upload_media_response_model.dart';
-import 'package:flutter_plugin_test2/src/data/source/remote/chat_remote_source.dart';
-import 'package:flutter_plugin_test2/src/domain/repository/chat_repository.dart';
+import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
+import 'package:konnek_flutter/src/data/source/remote/chat_remote_source.dart';
+import 'package:konnek_flutter/src/domain/repository/chat_repository.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:uuid/uuid.dart';
 
@@ -18,9 +18,9 @@ class ChatRepositoryImpl extends ChatRepository {
   static ChatRemoteSource remoteSource = ChatRemoteSourceImpl();
 
   @override
-  IO.Socket startWebSocketIO() {
+  IO.Socket? startWebSocketIO() {
     try {
-      IO.Socket socket = remoteSource.startWebSocketIO();
+      IO.Socket? socket = remoteSource.startWebSocketIO();
       return socket;
     } catch (e) {
       AppLoggerCS.debugLog("[ChatRepositoryImpl][startWebSocketIO] error: $e");
