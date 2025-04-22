@@ -29,6 +29,10 @@ class KonnekFlutter {
     EnvironmentConfig.flavor = Flavor.staging;
     // await LiveChatSdk().initialize();
     AppLoggerCS.useLogger = true;
+    //
+    appApiService.useFoundation = true;
+    appApiService.useLogger = true;
+    //
     await famCodingSupply.appInfo.init();
     await famCodingSupply.appConnectivityService.init();
     await famCodingSupply.appDeviceInfo.getDeviceData();
