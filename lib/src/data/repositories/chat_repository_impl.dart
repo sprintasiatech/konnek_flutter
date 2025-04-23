@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fam_coding_supply/fam_coding_supply.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
@@ -33,18 +34,27 @@ class ChatRepositoryImpl extends ChatRepository {
     required String clientId,
   }) async {
     try {
-      Response? response = await remoteSource.getConfig(
-        clientId: clientId,
-      );
+      String? response = await KonnekFlutter().getConfig(clientId);
+      // AppLoggerCS.debugLog("Flutter [getConfig] result: $response");
       if (response == null) {
         return null;
       }
-      if (response.data == null) {
-        return null;
-      }
       GetConfigResponseModel mapping = GetConfigResponseModel.fromJson(
-        response.data,
+        jsonDecode(response),
       );
+
+      // Response? response = await remoteSource.getConfig(
+      //   clientId: clientId,
+      // );
+      // if (response == null) {
+      //   return null;
+      // }
+      // if (response.data == null) {
+      //   return null;
+      // }
+      // GetConfigResponseModel mapping = GetConfigResponseModel.fromJson(
+      //   response.data,
+      // );
       return mapping;
     } catch (e) {
       rethrow;
@@ -59,21 +69,36 @@ class ChatRepositoryImpl extends ChatRepository {
     required String sesionId,
   }) async {
     try {
-      Response? response = await remoteSource.getConversation(
-        limit: limit,
-        roomId: roomId,
-        currentPage: currentPage,
-        sesionId: sesionId,
-      );
+      Map<String, dynamic> data = {
+        "limit": "$limit",
+        "roomId": roomId,
+        "currentPage": "$currentPage",
+        "sesionId": sesionId,
+      };
+      String? response = await KonnekFlutter().getConversation(data);
+      // AppLoggerCS.debugLog("Flutter [getConversation] result: $response");
       if (response == null) {
         return null;
       }
-      if (response.data == null) {
-        return null;
-      }
       GetConversationResponseModel mapping = GetConversationResponseModel.fromJson(
-        response.data,
+        jsonDecode(response),
       );
+
+      // Response? response = await remoteSource.getConversation(
+      //   limit: limit,
+      //   roomId: roomId,
+      //   currentPage: currentPage,
+      //   sesionId: sesionId,
+      // );
+      // if (response == null) {
+      //   return null;
+      // }
+      // if (response.data == null) {
+      //   return null;
+      // }
+      // GetConversationResponseModel mapping = GetConversationResponseModel.fromJson(
+      //   response.data,
+      // );
       return mapping;
     } catch (e) {
       rethrow;
@@ -126,20 +151,42 @@ class ChatRepositoryImpl extends ChatRepository {
 
       // AppLoggerCS.debugLog("[uploadMedia] requestData: ${jsonEncode(requestData)}");
 
-      Response? response = await remoteSource.uploadMedia(
-        requestData: requestData,
-      );
+      Map<String, dynamic> data = {
+        "fileData": "$mediaData",
+        "messageId": uuid,
+        "replyId": "",
+        "time": concatDateTime,
+      };
+      if (text != null) {
+        data.addAll(
+          {
+            "text": text,
+          },
+        );
+      }
+      String? response = await KonnekFlutter().uploadMedia(data);
+      // AppLoggerCS.debugLog("Flutter [uploadMedia] result: $response");
       if (response == null) {
         return null;
       }
-      if (response.data == null) {
-        return null;
-      }
-      AppLoggerCS.debugLog("[uploadMedia] response.data: ${jsonEncode(response.data)}");
-
       UploadFilesResponseModel mapping = UploadFilesResponseModel.fromJson(
-        response.data,
+        jsonDecode(response),
       );
+
+      // Response? response = await remoteSource.uploadMedia(
+      //   requestData: requestData,
+      // );
+      // if (response == null) {
+      //   return null;
+      // }
+      // if (response.data == null) {
+      //   return null;
+      // }
+      // AppLoggerCS.debugLog("[uploadMedia] response.data: ${jsonEncode(response.data)}");
+
+      // UploadFilesResponseModel mapping = UploadFilesResponseModel.fromJson(
+      //   response.data,
+      // );
       return mapping;
     } catch (e) {
       rethrow;
@@ -152,20 +199,35 @@ class ChatRepositoryImpl extends ChatRepository {
     required SendChatRequestModel request,
   }) async {
     try {
-      Response? response = await remoteSource.sendChat(
-        clientId: clientId,
-        request: request,
-      );
+      Map<String, dynamic> reqData = {
+        'clientId': clientId,
+      };
+      reqData.addAll(request.toJson());
+      AppLoggerCS.debugLog("[sendChat] reqData: $reqData");
+
+      String? response = await KonnekFlutter().sendChat(reqData);
+      AppLoggerCS.debugLog("Flutter [sendChat] result: $response");
       if (response == null) {
         return null;
       }
-      if (response.data == null) {
-        return null;
-      }
-      // AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] response.data: ${jsonEncode(response.data)}");
       SendChatResponseModel mapping = SendChatResponseModel.fromJson(
-        response.data,
+        jsonDecode(response),
       );
+
+      // Response? response = await remoteSource.sendChat(
+      //   clientId: clientId,
+      //   request: request,
+      // );
+      // if (response == null) {
+      //   return null;
+      // }
+      // if (response.data == null) {
+      //   return null;
+      // }
+      // // AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] response.data: ${jsonEncode(response.data)}");
+      // SendChatResponseModel mapping = SendChatResponseModel.fromJson(
+      //   response.data,
+      // );
       return mapping;
     } catch (e) {
       AppLoggerCS.debugLog("[ChatRepositoryImpl][sendChat] error: $e");
