@@ -117,12 +117,14 @@ class AppController {
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      bool? valueSocketReady = await ChatLocalSource().getSocketReady();
-      if (valueSocketReady != null) {
-        AppController.socketReady = valueSocketReady;
-      } else {
-        AppController.socketReady = false;
-      }
+      // bool? valueSocketReady = await ChatLocalSource().getSocketReady();
+      // if (valueSocketReady != null) {
+      //   AppController.socketReady = valueSocketReady;
+      // } else {
+      //   AppController.socketReady = false;
+      // }
+
+      AppController.socketReady = false;
 
       GetConfigResponseModel? getConfigResponseModel = await ChatRepositoryImpl().getConfig(
         clientId: KonnekFlutter.clientId,
