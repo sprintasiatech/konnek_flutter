@@ -139,7 +139,8 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
-                      let clientId = args["clientId"] as? String else {
+                        let clientId = args["clientId"] as? String,
+                        let platformData = args["platform"] as? String else {
                     result(FlutterError(code: "INVALID_ARGUMENTS", message: "Missing clientId", details: nil))
                     return
                 }
@@ -148,7 +149,12 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 
                 Task {
                     do {
-                        var apiService = try await ApiConfig().provideApiService().getConfig(clientId: clientId, completion: completion)
+                        var apiService = try await ApiConfig().provideApiService()
+                        var data = try await apiService.getConfig(
+                            clientId: clientId,
+                            platform: platformData,
+                            completion: completion
+                        )
                         //                    var data = try await apiService().getConfig(
                         //                        clientId: clientId,
                         //                        completion: completion
@@ -220,9 +226,10 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 completion: @escaping (Result<String, Error>) -> Void,
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
-                      let clientId = args["clientId"] as? String,
-                      let name = args["name"] as? String,
-                      let username = args["username"] as? String else {
+                    let clientId = args["clientId"] as? String,
+                    let name = args["name"] as? String,
+                    let username = args["username"] as? String,
+                    let platformData = args["platform"] as? String else {
                     result(FlutterError(code: "INVALID_ARGUMENTS", message: "Missing parameters", details: nil))
                     return
                 }
@@ -243,6 +250,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                         var apiService = try await ApiConfig().provideApiService()
                         var data = try await apiService.sendChat(
                             clientId: clientId,
+                            platform: platformData,
                             body: payload,
                             completion: completion
                         )
@@ -390,9 +398,10 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             // MARK: - GET: Config
             func getConfig(
                 clientId: String,
+                platform: String,
                 completion: @escaping (Result<String, Error>) -> Void
             ) {
-                let urlString = "\(baseUrl)channel/config/\(clientId)/web"
+                let urlString = "\(baseUrl)channel/config/\(clientId)/\(platform)"
                 guard let url = URL(string: urlString) else { return }
                 
                 var request = URLRequest(url: url)
@@ -430,10 +439,11 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             // MARK: - POST: Send Chat
             func sendChat(
                 clientId: String,
+                platform: String,
                 body: [String: Any],
                 completion: @escaping (Result<String, Error>) -> Void
             ) {
-                let urlString = "\(baseUrl)webhook/widget/\(clientId)"
+                let urlString = "\(baseUrl)webhook/\(platform)/\(clientId)"
                 guard let url = URL(string: urlString) else { return }
                 
                 var request = URLRequest(url: url)
@@ -518,8 +528,8 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                         return completion(.failure(NSError(domain: "Invalid response", code: -1, userInfo: nil)))
                     }
                     
-                    //                print("[perform] httpResponse \(httpResponse)")
-//                    print("[perform] httpResponse.statusCode \(httpResponse.statusCode)")
+                    // print("[perform] httpResponse \(httpResponse)")
+                    // print("[perform] httpResponse.statusCode \(httpResponse.statusCode)")
                     
                     guard let data = data else {
                         return completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
