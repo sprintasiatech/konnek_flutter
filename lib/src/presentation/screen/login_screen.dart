@@ -27,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
     // nameController.text = "test1";
     // emailController.text = "test1@test.com";
 
-    nameController.text = "testX";
-    emailController.text = "testX@test.com";
+    // nameController.text = "testX";
+    // emailController.text = "testX@test.com";
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppController().getConfig(
