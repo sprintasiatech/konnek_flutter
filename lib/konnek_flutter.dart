@@ -59,10 +59,10 @@ class KonnekFlutter {
     clientSecret = inputClientSecret;
 
     // await LiveChatSdk().initialize();
-    AppLoggerCS.useLogger = true;
+    AppLoggerCS.useLogger = false;
     //
-    appApiService.useFoundation = true;
-    appApiService.useLogger = true;
+    appApiService.useFoundation = false;
+    appApiService.useLogger = false;
     //
     EnvironmentConfig.flavor = flavor ?? Flavor.staging;
     String? result = await initialize(EnvironmentConfig.flavor.name);
