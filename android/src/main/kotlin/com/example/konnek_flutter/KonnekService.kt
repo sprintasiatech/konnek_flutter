@@ -150,11 +150,11 @@ class KonnekService {
                     platform = platform ?: "",
                     requestBody,
                 )
-                println("[sendChat] response: $response")
+                // println("[sendChat] response: $response")
                 if (response.isSuccessful) {
                     val data = response.body()
                     val json: String = gson.toJson(data)
-                    println("[sendChat] json: $json")
+                    // println("[sendChat] json: $json")
                     KonnekFlutterPlugin.access = "${data?.data?.token}"
                     onSuccess(json)
                 } else {
@@ -174,7 +174,7 @@ class KonnekService {
     ) {
         try {
             val map: Map<*, *> = call.arguments as Map<*, *>
-            println("map uploadMedia: $map")
+            // println("map uploadMedia: $map")
 
             val fileData: String? = map.get("fileData") as String?
             val messageId: String? = map.get("messageId") as String?
@@ -185,8 +185,8 @@ class KonnekService {
             val file = File(fileData ?: "")
             if (file.exists()) {
                 // Do something with the file
-                println("Received file: ${file.absolutePath}")
-                println("Received ${file.name}")
+                // println("Received file: ${file.absolutePath}")
+                // println("Received ${file.name}")
             } else {
                 onFailed("FILE NOT FOUND")
             }
