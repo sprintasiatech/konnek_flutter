@@ -290,7 +290,7 @@ class AppController {
         limit: limit,
         roomId: roomId,
         currentPage: currentPage,
-        sesionId: supportData.sessionId ?? "",
+        sessionId: supportData.sessionId ?? "",
       );
       // AppLoggerCS.debugLog("[_getConversation] output ${jsonEncode(output?.meta?.toJson())}");
       if (output == null) {

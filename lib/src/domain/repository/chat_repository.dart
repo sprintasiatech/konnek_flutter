@@ -14,7 +14,7 @@ abstract class ChatRepository {
     required int limit,
     required String roomId,
     required int currentPage,
-    required String sesionId,
+    required String sessionId,
   });
   Future<GetConfigResponseModel?> getConfig({
     required String clientId,

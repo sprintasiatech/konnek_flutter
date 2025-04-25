@@ -66,14 +66,14 @@ class ChatRepositoryImpl extends ChatRepository {
     required int limit,
     required String roomId,
     required int currentPage,
-    required String sesionId,
+    required String sessionId,
   }) async {
     try {
       Map<String, dynamic> data = {
         "limit": "$limit",
         "roomId": roomId,
         "currentPage": "$currentPage",
-        "sesionId": sesionId,
+        "sessionId": sessionId,
       };
       String? response = await KonnekFlutter().getConversation(data);
       // AppLoggerCS.debugLog("Flutter [getConversation] result: $response");
