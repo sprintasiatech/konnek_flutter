@@ -27,6 +27,26 @@ abstract class KonnekFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
+  Future<String?> initialize(String flavor) {
+    throw UnimplementedError('initialize() has not been implemented.');
+  }
+
+  Future<String?> getConfig(String clientId) {
+    throw UnimplementedError('getConfig() has not been implemented.');
+  }
+
+  Future<String?> sendChat(Map<String, dynamic> data) {
+    throw UnimplementedError('sendChat() has not been implemented.');
+  }
+
+  Future<String?> getConversation(Map<String, dynamic> data) {
+    throw UnimplementedError('getConversation() has not been implemented.');
+  }
+
+  Future<String?> uploadMedia(Map<String, dynamic> data) {
+    throw UnimplementedError('getConversation() has not been implemented.');
+  }
+
   // Widget entryPointWidget() {
   //   throw UnimplementedError("entryPointWidget() has not been implemented");
   // }

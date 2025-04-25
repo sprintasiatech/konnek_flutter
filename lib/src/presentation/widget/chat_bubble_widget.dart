@@ -53,12 +53,15 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     if (widget.data.payload != null && widget.data.payload != "")
                       Column(
                         children: [
-                          Image.network(
-                            // "https://cms.shootingstar.id/74/main.jpg",
-                            jsonDecode(widget.data.payload ?? "")['url'],
-                            height: 80,
-                            width: 80,
-                            fit: BoxFit.cover,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              // "https://cms.shootingstar.id/74/main.jpg",
+                              jsonDecode(widget.data.payload ?? "")['url'],
+                              height: 80,
+                              width: 80,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                           SizedBox(height: 5),
                         ],
@@ -145,12 +148,15 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     if (widget.data.payload != null && widget.data.payload != "")
                       Column(
                         children: [
-                          Image.network(
-                            // "https://cms.shootingstar.id/74/main.jpg",
-                            jsonDecode(widget.data.payload ?? "")['url'],
-                            height: 80,
-                            width: 80,
-                            fit: BoxFit.cover,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              // "https://cms.shootingstar.id/74/main.jpg",
+                              jsonDecode(widget.data.payload ?? "")['url'],
+                              height: 80,
+                              width: 80,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                           SizedBox(height: 5),
                         ],

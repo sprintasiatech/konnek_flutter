@@ -15,6 +15,55 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
     return version;
   }
 
+  @override
+  Future<String?> initialize(String flavor) async {
+    final version = await methodChannel.invokeMethod<String>(
+      'initialize',
+      {
+        'flavor': flavor,
+      },
+    );
+    return version;
+  }
+
+  @override
+  Future<String?> getConfig(String clientId) async {
+    final version = await methodChannel.invokeMethod<String>(
+      'getConfig',
+      {
+        'clientId': clientId,
+      },
+    );
+    return version;
+  }
+
+  @override
+  Future<String?> sendChat(Map<String, dynamic> data) async {
+    final version = await methodChannel.invokeMethod<String>(
+      'sendChat',
+      data,
+    );
+    return version;
+  }
+
+  @override
+  Future<String?> getConversation(Map<String, dynamic> data) async {
+    final version = await methodChannel.invokeMethod<String>(
+      'getConversation',
+      data,
+    );
+    return version;
+  }
+
+  @override
+  Future<String?> uploadMedia(Map<String, dynamic> data) async {
+    final version = await methodChannel.invokeMethod<String>(
+      'uploadMedia',
+      data,
+    );
+    return version;
+  }
+
   // @override
   // Widget entryPointWidget() {
   //   return ChatButtonWidget();

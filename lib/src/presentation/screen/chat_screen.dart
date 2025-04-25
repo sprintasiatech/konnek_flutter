@@ -37,8 +37,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToBottom();
+      if (AppController.socketReady == false) {
+        _checkAccessTokenAndFetch();
+      }
     });
   }
 
@@ -49,7 +52,9 @@ class _ChatScreenState extends State<ChatScreen> {
         await ChatLocalSource().setSocketReady(true);
         AppController.socketReady = true;
         _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       },
       onFailed: (errorMessage) async {
         await ChatLocalSource().setSocketReady(false);
@@ -82,6 +87,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void disconnectSocket() async {
     try {
+      AppController.socketReady = false;
+      await ChatLocalSource().setSocketReady(false);
       AppSocketioService.socket.disconnect();
       AppSocketioService.socket.onDisconnect((_) {
         AppLoggerCS.debugLog("disconnected");
@@ -271,7 +278,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             // color: Colors.amber,
                             color: Colors.grey.shade300,
                             width: MediaQuery.of(context).size.width,
-                            height: 90,
+                            // height: 90,
+                            padding: EdgeInsets.all(12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -290,54 +298,55 @@ class _ChatScreenState extends State<ChatScreen> {
                                   fit: BoxFit.cover,
                                 ),
                                 SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'File Name: ',
-                                        style: GoogleFonts.lato(
-                                          color: Colors.black,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          text: 'File Name: ',
+                                          style: GoogleFonts.lato(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: ' $fileName',
+                                              style: GoogleFonts.lato(
+                                                color: Colors.black,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: ' $fileName',
-                                            style: GoogleFonts.lato(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          )
-                                        ],
                                       ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'File Size: ',
-                                        style: GoogleFonts.lato(
-                                          color: Colors.black,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                      SizedBox(height: 5),
+                                      RichText(
+                                        text: TextSpan(
+                                          text: 'File Size: ',
+                                          style: GoogleFonts.lato(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: ' ${fileSize.toStringAsFixed(4)} MB',
+                                              style: GoogleFonts.lato(
+                                                color: Colors.black,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: ' ${fileSize.toStringAsFixed(4)} MB',
-                                            style: GoogleFonts.lato(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          )
-                                        ],
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                Spacer(),
                                 SizedBox(width: 12),
                                 InkWell(
                                   onTap: () {
