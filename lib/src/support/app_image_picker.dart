@@ -79,7 +79,7 @@ class AppImagePickerServiceCS {
         maxWidth: 400,
       );
       File fileFormat = File(image!.path);
-      
+
       String fileName = getFileName(fileFormat);
       onFileName?.call(fileName);
 
@@ -133,6 +133,27 @@ class AppImagePickerServiceCS {
     String fileName = fileFormat.path.split('/').last;
     AppLoggerCS.debugLog("[getFileName]: $fileName");
     return fileName;
+  }
+
+  String getExtensionFile(File fileFormat) {
+    String fileName = (fileFormat.path.split('/').last).split('.').last;
+    AppLoggerCS.debugLog("[getExtensionFile]: $fileName");
+    return fileName;
+  }
+
+  String getExtensionFileFromPath(String filePath) {
+    String fileName = (filePath.split('/').last).split('.').last;
+    AppLoggerCS.debugLog("[getExtensionFileFromPath]: $fileName");
+    return fileName;
+  }
+
+  bool isImageFile(String path) {
+    final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif', '.tiff', '.tif', '.svg'];
+
+    final lowerPath = path.toLowerCase();
+    bool result = imageExtensions.any((ext) => lowerPath.endsWith(ext));
+    AppLoggerCS.debugLog("result: $result");
+    return result;
   }
 
   Future<void> calculateSize(File fileFormat) async {

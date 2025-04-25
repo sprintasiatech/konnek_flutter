@@ -15,6 +15,7 @@ import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -99,6 +100,12 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       AppController.socketReady = false;
       await ChatLocalSource().setSocketReady(false);
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      AppLoggerCS.debugLog('Could not launch $url');
     }
   }
 
@@ -245,12 +252,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                           vertical: 5,
                                         ),
                                         child: ChatBubbleWidget(
-                                          openImageCallback: (src) {
+                                          openImageCallback: (src) async {
                                             if (src != "") {
-                                              setState(() {
-                                                openImage = true;
-                                                srcImage = src;
-                                              });
+                                              AppLoggerCS.debugLog("src: $src");
+                                              if (AppImagePickerServiceCS().isImageFile(src)) {
+                                                setState(() {
+                                                  openImage = true;
+                                                  srcImage = src;
+                                                });
+                                              } else {
+                                                await _launchUrl(src);
+                                              }
                                             }
                                           },
                                           data: item,
