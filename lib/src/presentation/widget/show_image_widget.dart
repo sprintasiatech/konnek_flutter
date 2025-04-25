@@ -28,7 +28,7 @@ class _ShowImageWidgetState extends State<ShowImageWidget> {
       child: PhotoView(
         // imageProvider: AssetImage(widget.image),
         imageProvider: NetworkImage(widget.image),
-        maxScale: 2.5,
+        maxScale: 1.0,
         backgroundDecoration: const BoxDecoration(
           color: Colors.transparent,
         ),

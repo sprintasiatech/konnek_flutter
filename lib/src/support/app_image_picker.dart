@@ -65,6 +65,7 @@ class AppImagePickerServiceCS {
   }
 
   Future<File?> getImageAsFile({
+    int quality = 30,
     ImageSource imageSource = ImageSource.gallery,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     void Function(double sizeFileValue)? onSizeFile,
@@ -74,7 +75,7 @@ class AppImagePickerServiceCS {
       final XFile? image = await _picker.pickImage(
         source: imageSource,
         preferredCameraDevice: preferredCameraDevice,
-        imageQuality: 10,
+        imageQuality: quality,
         maxHeight: 400,
         maxWidth: 400,
       );
