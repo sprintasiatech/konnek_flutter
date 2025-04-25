@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
@@ -11,6 +10,7 @@ import 'package:konnek_flutter/src/data/models/response/socket_chat_response_mod
 import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
 import 'package:konnek_flutter/src/data/repositories/chat_repository_impl.dart';
 import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:konnek_flutter/src/support/jwt_converter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;

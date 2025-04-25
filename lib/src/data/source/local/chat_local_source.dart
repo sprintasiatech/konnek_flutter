@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
+import 'package:konnek_flutter/src/support/local_service_hive.dart';
 
 class LocalKey {
   static const String accessToken = "accessToken";
@@ -17,7 +18,8 @@ class ChatLocalSource {
   // final LocalServiceHive localServiceHive;
   // ChatLocalSource(this.localServiceHive);
 
-  static LocalServiceHive localServiceHive = KonnekFlutter.famCodingSupply.localServiceHive;
+  // static LocalServiceHive localServiceHive = KonnekFlutter.famCodingSupply.localServiceHive;
+  static LocalServiceHive localServiceHive = KonnekFlutter.localServiceHive;
 
   Future<void> setSocketReady(bool value) async {
     try {

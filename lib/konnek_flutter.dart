@@ -1,5 +1,11 @@
+import 'package:konnek_flutter/src/support/app_api_service.dart';
+import 'package:konnek_flutter/src/support/app_connectivity_service.dart';
+import 'package:konnek_flutter/src/support/app_device_info.dart';
+import 'package:konnek_flutter/src/support/app_info.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
+import 'package:konnek_flutter/src/support/local_service_hive.dart';
+
 import 'konnek_flutter_platform_interface.dart';
-import 'package:fam_coding_supply/fam_coding_supply.dart';
 import 'package:konnek_flutter/src/env.dart';
 
 // export 'package:konnek_flutter/export.dart';
@@ -12,7 +18,7 @@ class KonnekFlutter {
 
   static String accessToken = "";
 
-  static FamCodingSupply famCodingSupply = FamCodingSupply();
+  // static FamCodingSupply famCodingSupply = FamCodingSupply();
   static AppApiServiceCS appApiService = AppApiServiceCS(EnvironmentConfig.baseUrl());
 
   Future<String?> getPlatformVersion() {
@@ -39,6 +45,11 @@ class KonnekFlutter {
     return KonnekFlutterPlatform.instance.uploadMedia(data);
   }
 
+  static AppConnectivityServiceCS appConnectivityServiceCS = AppConnectivityServiceCS();
+  static AppDeviceInfoCS appDeviceInfo = AppDeviceInfoCS();
+  static AppInfoCS appInfoCS = AppInfoCS();
+  static LocalServiceHive localServiceHive = LocalServiceHive();
+
   Future<void> initKonnek({
     required String inputClientId,
     required String inputClientSecret,
@@ -57,10 +68,10 @@ class KonnekFlutter {
     String? result = await initialize(EnvironmentConfig.flavor.name);
     AppLoggerCS.debugLog("value methodChannel: $result");
 
-    await famCodingSupply.appInfo.init();
-    await famCodingSupply.appConnectivityService.init();
-    await famCodingSupply.appDeviceInfo.getDeviceData();
-    await famCodingSupply.localServiceHive.init();
+    await appInfoCS.init();
+    await appConnectivityServiceCS.init();
+    await appDeviceInfo.getDeviceData();
+    await localServiceHive.init();
   }
 
   // Widget entryPointWidget() {
