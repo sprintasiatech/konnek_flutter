@@ -10,7 +10,7 @@ object ApiConfig {
     private val BASE_URL = EnvironmentConfig.baseUrl() // Replace with your API base URL
 
     private fun loggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
     }
 
     private fun provideOkHttpClient(): OkHttpClient {

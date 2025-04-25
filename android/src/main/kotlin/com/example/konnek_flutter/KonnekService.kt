@@ -24,13 +24,22 @@ class KonnekService {
     ) {
         try {
             val map: Map<*, *> = call.arguments as Map<*, *>
-            val clientId = map.get("clientId") as String?
+            val clientId: String? = map.get("clientId") as String?
+            val platform: String? = map.get("platform") as String?
+
+            if (clientId == null && platform == null) {
+                onFailed.invoke("empty params")
+                return
+            }
 
             KonnekFlutterPlugin.clientId = clientId ?: ""
 
             CoroutineScope(Dispatchers.IO).launch {
                 val apiService = ApiConfig.provideApiService()
-                val response = apiService.getConfig(clientId ?: "")
+                val response = apiService.getConfig(
+                    clientId ?: "",
+                    platform = platform ?: "",
+                )
 //                println("[getConfig] response: $response")
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -104,6 +113,17 @@ class KonnekService {
             val name: String? = map.get("name") as String?
             val text: String? = map.get("text") as String?
             val username: String? = map.get("username") as String?
+            val platform: String? = map.get("platform") as String?
+
+            if (
+                clientId == null &&
+                name == null &&
+                username == null &&
+                platform == null
+            ) {
+                onFailed.invoke("empty params")
+                return
+            }
 
             KonnekFlutterPlugin.clientId = clientId ?: ""
 
@@ -127,6 +147,7 @@ class KonnekService {
                 val apiService = ApiConfig.provideApiService()
                 val response = apiService.sendChat(
                     KonnekFlutterPlugin.clientId,
+                    platform = platform ?: "",
                     requestBody,
                 )
                 println("[sendChat] response: $response")

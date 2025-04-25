@@ -11,9 +11,10 @@ import retrofit2.http.*
 
 interface ApiService {
     // GET - Get Config
-    @GET("channel/config/{clientId}/web")
+    @GET("channel/config/{clientId}/{platform}")
     suspend fun getConfig(
-        @Path("clientId") clientId: String
+        @Path("clientId") clientId: String,
+        @Path("platform") platform: String,
     ): Response<GetConfigResponseModel>
 
     // GET - Get Chat Conversation
@@ -27,9 +28,10 @@ interface ApiService {
     ): Response<GetConversationResponseModel>
 
     // POST - Send Chat
-    @POST("webhook/widget/{clientId}")
+    @POST("webhook/{platform}/{clientId}")
     suspend fun sendChat(
         @Path("clientId") clientId: String,
+        @Path("platform") platform: String,
         @Body body: RequestBody,
     ): Response<SendChatResponseModel>
 
