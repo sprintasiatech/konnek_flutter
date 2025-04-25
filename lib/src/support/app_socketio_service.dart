@@ -1,4 +1,4 @@
-import 'package:fam_coding_supply/logic/export.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AppSocketioService {

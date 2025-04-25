@@ -1,7 +1,9 @@
-import 'package:fam_coding_supply/fam_coding_supply.dart';
+import 'package:dio/dio.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
 import 'package:konnek_flutter/src/env.dart';
+import 'package:konnek_flutter/src/support/app_api_service.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
