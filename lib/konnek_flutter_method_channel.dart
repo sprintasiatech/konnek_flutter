@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -17,51 +19,88 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
 
   @override
   Future<String?> initialize(String flavor) async {
+    Map<String, dynamic> data = {
+      'flavor': flavor,
+    };
+    Map<String, dynamic> newData = checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'initialize',
-      {
-        'flavor': flavor,
-      },
+      newData,
     );
     return version;
   }
 
   @override
   Future<String?> getConfig(String clientId) async {
+    Map<String, dynamic> data = {
+      'clientId': clientId,
+    };
+    Map<String, dynamic> newData = checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'getConfig',
-      {
-        'clientId': clientId,
-      },
+      newData,
     );
     return version;
   }
 
   @override
   Future<String?> sendChat(Map<String, dynamic> data) async {
+    Map<String, dynamic> newData = checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'sendChat',
-      data,
+      newData,
     );
     return version;
   }
 
   @override
   Future<String?> getConversation(Map<String, dynamic> data) async {
+    Map<String, dynamic> newData = checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'getConversation',
-      data,
+      newData,
     );
     return version;
   }
 
   @override
   Future<String?> uploadMedia(Map<String, dynamic> data) async {
+    Map<String, dynamic> newData = checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'uploadMedia',
-      data,
+      newData,
     );
     return version;
+  }
+
+  String checkPlatform() {
+    String platform = "webhook";
+    if (Platform.isAndroid) {
+      platform = "android";
+    } else if (Platform.isIOS) {
+      platform = "ios";
+    } else {
+      platform = "web";
+    }
+    return platform;
+  }
+
+  Map<String, dynamic> checkPlatformWithData(Map<String, dynamic> data) {
+    String platform = "web";
+    if (Platform.isAndroid) {
+      platform = "android";
+    } else if (Platform.isIOS) {
+      platform = "ios";
+    } else {
+      platform = "web";
+    }
+    Map<String, dynamic> newData = data;
+    newData.addAll(
+      {
+        'platform': platform,
+      },
+    );
+    return newData;
   }
 
   // @override
