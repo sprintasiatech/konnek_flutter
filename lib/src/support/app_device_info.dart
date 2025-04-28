@@ -23,7 +23,7 @@ class AppDeviceInfoCS {
       // AppLoggerCS.debugLog("webBrowserInfo ${(webBrowserInfo.productSub)}");
       // AppLoggerCS.debugLog("webBrowserInfo ${webBrowserInfo.appCodeName} ${webBrowserInfo.appName} ${webBrowserInfo.appVersion}");
       deviceId = webBrowserInfo.productSub ?? const Uuid().v4();
-      deviceName = "${webBrowserInfo.appCodeName} ${webBrowserInfo.appName} ${webBrowserInfo.appVersion}" ?? "Unknown Device";
+      deviceName = "${webBrowserInfo.appCodeName} ${webBrowserInfo.appName} ${webBrowserInfo.appVersion}";
       deviceType = "Web";
       osVersion = "${webBrowserInfo.appVersion}";
     } else {

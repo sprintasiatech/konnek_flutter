@@ -13,7 +13,7 @@ import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:konnek_flutter/src/support/jwt_converter.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class AppController {
   static bool isLoading = false;
@@ -28,7 +28,7 @@ class AppController {
       AppLoggerCS.debugLog("Call here AppController startWebSocketIO");
       await sendChat(
         onSuccess: () {
-          IO.Socket? data = ChatRepositoryImpl().startWebSocketIO();
+          io.Socket? data = ChatRepositoryImpl().startWebSocketIO();
           if (data == null) {
             onSuccess?.call();
           } else {
@@ -201,6 +201,7 @@ class AppController {
     String? text,
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
+    void Function(MetaSendChat value)? onGreetingsFailed,
   }) async {
     isLoading = true;
     try {
@@ -223,6 +224,10 @@ class AppController {
       }
       if (output.meta == null) {
         onFailed?.call("empty data #1111");
+        return;
+      }
+      if (output.meta?.code == 403) {
+        onGreetingsFailed?.call(output.meta!);
         return;
       }
       if (output.meta?.code != 200) {

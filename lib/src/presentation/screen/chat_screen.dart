@@ -8,6 +8,7 @@ import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/presentation/controller/chat_controller.dart';
 import 'package:konnek_flutter/src/presentation/widget/chat_bubble_widget.dart';
 import 'package:konnek_flutter/src/presentation/widget/show_image_widget.dart';
+import 'package:konnek_flutter/src/support/app_dialog_action.dart';
 import 'package:konnek_flutter/src/support/app_file_picker.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
@@ -115,6 +116,9 @@ class _ChatScreenState extends State<ChatScreen> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) async {
         isLoading = false;
+        AppController.conversationData = null;
+        AppController.conversationList.clear();
+        await ChatLocalSource.localServiceHive.user.clear();
         setState(() {});
       },
       child: GestureDetector(
@@ -168,7 +172,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       actions: [
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
+                            AppController.conversationData = null;
+                            AppController.conversationList.clear();
+                            await ChatLocalSource.localServiceHive.user.clear();
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -405,7 +412,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             controller: textController,
                                             onChanged: (value) {
                                               setState(() {
-                                                if (value != "") {
+                                                if (value == "") {
                                                   isTextFieldEmpty = true;
                                                 } else {
                                                   isTextFieldEmpty = false;
@@ -437,16 +444,33 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                     setState(() {});
                                                   },
+                                                  onGreetingsFailed: (value) {
+                                                    AppDialogActionCS.showWarningPopup(
+                                                      context: context,
+                                                      title: "Warning",
+                                                      description: "#${value.code}\n${value.message}",
+                                                      mainButtonTitle: "Kembali",
+                                                      mainButtonColor: Colors.green,
+                                                      mainButtonAction: () {
+                                                        Navigator.pop(context);
+                                                        setState(() {
+                                                          isTextFieldFocused = true;
+                                                          isTextFieldEmpty = false;
+                                                          String valueGreetings = value.message!.split(' ').last;
+                                                          textController.text = valueGreetings;
+                                                        });
+                                                      },
+                                                    );
+                                                  },
                                                 );
                                               }
 
-                                              AppLoggerCS.debugLog("Debug here");
                                               textController.clear();
                                               isTextFieldEmpty = true;
                                               FocusManager.instance.primaryFocus?.unfocus();
                                             },
                                             decoration: InputDecoration(
-                                              suffixIcon: (isTextFieldFocused && isTextFieldEmpty)
+                                              suffixIcon: (isTextFieldFocused && !isTextFieldEmpty)
                                                   ? InkWell(
                                                       onTap: () async {
                                                         if (uploadFile != null) {
@@ -473,10 +497,27 @@ class _ChatScreenState extends State<ChatScreen> {
                                                               _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                               setState(() {});
                                                             },
+                                                            onGreetingsFailed: (value) {
+                                                              AppDialogActionCS.showWarningPopup(
+                                                                context: context,
+                                                                title: "Warning",
+                                                                description: "#${value.code}\n${value.message}",
+                                                                mainButtonTitle: "Kembali",
+                                                                mainButtonColor: Colors.green,
+                                                                mainButtonAction: () {
+                                                                  Navigator.pop(context);
+                                                                  setState(() {
+                                                                    isTextFieldFocused = true;
+                                                                    isTextFieldEmpty = false;
+                                                                    String valueGreetings = value.message!.split(' ').last;
+                                                                    textController.text = valueGreetings;
+                                                                  });
+                                                                },
+                                                              );
+                                                            },
                                                           );
                                                         }
 
-                                                        AppLoggerCS.debugLog("Debug here");
                                                         textController.clear();
                                                         isTextFieldEmpty = true;
                                                         FocusManager.instance.primaryFocus?.unfocus();
