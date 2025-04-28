@@ -52,7 +52,7 @@ class ChatLocalSource {
   Future<void> setConfigData(DataGetConfig value) async {
     try {
       String data = jsonEncode(value.toJson());
-      await localServiceHive.user.putSecure(
+      await localServiceHive.config.putSecure(
         key: LocalKey.configData,
         data: data,
       );
@@ -64,7 +64,7 @@ class ChatLocalSource {
 
   Future<DataGetConfig?> getConfigData() async {
     try {
-      String? value = await localServiceHive.user.getSecure(
+      String? value = await localServiceHive.config.getSecure(
         key: LocalKey.configData,
       );
       if (value != null) {
