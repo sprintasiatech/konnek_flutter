@@ -3,7 +3,7 @@ import 'package:konnek_flutter/src/data/models/response/get_config_response_mode
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 abstract class ChatRepository {
   Future<SendChatResponseModel?> sendChat({
@@ -23,5 +23,5 @@ abstract class ChatRepository {
     String? text,
     String? mediaData,
   });
-  IO.Socket? startWebSocketIO();
+  io.Socket? startWebSocketIO();
 }

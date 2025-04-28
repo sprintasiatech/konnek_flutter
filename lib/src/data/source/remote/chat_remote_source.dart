@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
-import 'package:konnek_flutter/src/env.dart';
 import 'package:konnek_flutter/src/support/app_api_service.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 abstract class ChatRemoteSource {
   Future<Response?> sendChat({
@@ -24,7 +23,7 @@ abstract class ChatRemoteSource {
   Future<Response?> uploadMedia({
     required Map<String, dynamic> requestData,
   });
-  IO.Socket? startWebSocketIO();
+  io.Socket? startWebSocketIO();
 }
 
 class ChatRemoteSourceImpl extends ChatRemoteSource {
@@ -33,12 +32,12 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
   static AppApiServiceCS apiService = KonnekFlutter.appApiService;
 
   @override
-  IO.Socket? startWebSocketIO() {
+  io.Socket? startWebSocketIO() {
     try {
       if (KonnekFlutter.accessToken == "") {
         return null;
       } else {
-        IO.Socket socket = AppSocketioService.connect(
+        io.Socket socket = AppSocketioService.connect(
           url: baseUrlSocket,
           token: KonnekFlutter.accessToken,
           // token: token ?? "",

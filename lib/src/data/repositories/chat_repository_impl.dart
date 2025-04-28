@@ -11,7 +11,7 @@ import 'package:konnek_flutter/src/data/models/response/upload_media_response_mo
 import 'package:konnek_flutter/src/data/source/remote/chat_remote_source.dart';
 import 'package:konnek_flutter/src/domain/repository/chat_repository.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:uuid/uuid.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
@@ -21,9 +21,9 @@ class ChatRepositoryImpl extends ChatRepository {
   static ChatRemoteSource remoteSource = ChatRemoteSourceImpl();
 
   @override
-  IO.Socket? startWebSocketIO() {
+  io.Socket? startWebSocketIO() {
     try {
-      IO.Socket? socket = remoteSource.startWebSocketIO();
+      io.Socket? socket = remoteSource.startWebSocketIO();
       return socket;
     } catch (e) {
       AppLoggerCS.debugLog("[ChatRepositoryImpl][startWebSocketIO] error: $e");
