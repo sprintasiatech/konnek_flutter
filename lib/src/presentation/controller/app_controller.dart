@@ -20,6 +20,15 @@ class AppController {
 
   static bool socketReady = false;
 
+  static void clear() {
+    nameUser = "";
+    usernameUser = "";
+    currentPage = 1;
+    limit = 20;
+    conversationData = null;
+    conversationList = [];
+  }
+
   Future<void> startWebSocketIO({
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
@@ -79,6 +88,8 @@ class AppController {
 
         ConversationList? chatModel;
         chatModel = null;
+        // AppLoggerCS.debugLog("socket.customer?.username: ${socket.customer?.username}");
+        // AppLoggerCS.debugLog("socket.customer?.name: ${socket.customer?.name}");
 
         chatModel = ConversationList(
           // widget.data.session?.agent?.id
@@ -93,6 +104,7 @@ class AppController {
           text: socket.message?.text,
           messageId: socket.messageId,
           user: UserGetConversation(
+            id: socket.customer?.userId,
             username: socket.customer?.username,
             name: socket.customer?.name,
           ),
@@ -178,12 +190,17 @@ class AppController {
     }
   }
 
+  static String nameUser = "";
+  static String usernameUser = "";
+
   Future<void> loadData({
     required String name,
     required String email,
   }) async {
     isLoading = true;
     try {
+      nameUser = name;
+      usernameUser = email;
       await ChatLocalSource()
           .setClientData(
         name: name,

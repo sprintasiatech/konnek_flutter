@@ -116,8 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) async {
         isLoading = false;
-        AppController.conversationData = null;
-        AppController.conversationList.clear();
+        AppController.clear();
         await ChatLocalSource.localServiceHive.user.clear();
         setState(() {});
       },
@@ -173,8 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       actions: [
                         InkWell(
                           onTap: () async {
-                            AppController.conversationData = null;
-                            AppController.conversationList.clear();
+                            AppController.clear();
                             await ChatLocalSource.localServiceHive.user.clear();
                             Navigator.pop(context);
                           },

@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/support/app_file_helper.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
@@ -38,9 +40,32 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   //   return data;
   // }
 
+  bool chatCategoryValidation(ConversationList datas) {
+    // Map<String, dynamic>? userData = await ChatLocalSource().getClientData();
+    String name = "";
+    String username = "";
+    // if (userData != null) {
+    name = AppController.nameUser;
+    username = AppController.usernameUser;
+    // AppLoggerCS.debugLog("AppController.nameUser ${AppController.nameUser}");
+    // AppLoggerCS.debugLog("AppController.usernameUser ${AppController.usernameUser}");
+
+    // }
+    // if (datas.session?.agent?.id == "00000000-0000-0000-0000-000000000000" && datas.fromType == "1" && datas.user?.name == AppController.nameUser) {
+    // if (datas.session?.agent?.id == "00000000-0000-0000-0000-000000000000" && datas.fromType == "1") {
+    // if (!(datas.user?.name == name) && !(datas.user?.username == username)) {
+    //  if (datas.createdBy == name) {
+    // if (datas.user?.name == AppController.nameUser && datas.user?.username == AppController.usernameUser) {
+    if (datas.fromType == "1") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.data.session?.agent?.id == "00000000-0000-0000-0000-000000000000" && widget.data.fromType == "1") {
+    if (chatCategoryValidation(widget.data)) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -177,7 +202,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     )
                   : CircleAvatar(
                       backgroundColor: Colors.purpleAccent,
-                      child: Text("FM"),
+                      child: Text("SZ"),
                     ),
             ],
           ),
