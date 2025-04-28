@@ -21,7 +21,7 @@ interface ApiService {
     @GET("room/conversation/{roomId}")
     suspend fun getConversation(
         @Path("roomId") roomId: String,
-        @Query("currentPage") currentPage: String,
+        @Query("page") currentPage: String,
         @Query("limit") limit: String,
         @Query("sessionId") sessionId: String,
         @Header("Authorization") token: String,
