@@ -153,7 +153,7 @@ class AppImagePickerServiceCS {
 
     final lowerPath = path.toLowerCase();
     bool result = imageExtensions.any((ext) => lowerPath.endsWith(ext));
-    AppLoggerCS.debugLog("result: $result");
+    // AppLoggerCS.debugLog("result: $result");
     return result;
   }
 

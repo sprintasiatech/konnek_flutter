@@ -205,10 +205,10 @@ class ChatRepositoryImpl extends ChatRepository {
         'clientId': clientId,
       };
       reqData.addAll(request.toJson());
-      AppLoggerCS.debugLog("[sendChat] reqData: $reqData");
+      // AppLoggerCS.debugLog("[sendChat] reqData: $reqData");
 
       String? response = await KonnekFlutter().sendChat(reqData);
-      AppLoggerCS.debugLog("Flutter [sendChat] result: $response");
+      // AppLoggerCS.debugLog("Flutter [sendChat] result: $response");
       if (response == null) {
         return null;
       }

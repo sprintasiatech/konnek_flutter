@@ -42,8 +42,8 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
           token: KonnekFlutter.accessToken,
           // token: token ?? "",
         );
-        AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
-        AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
+        // AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
+        // AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
         return socket;
       }
     } catch (e) {
