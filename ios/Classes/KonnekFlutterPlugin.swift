@@ -421,7 +421,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             ) {
                 var urlComponents = URLComponents(string: "\(baseUrl)room/conversation/\(roomId)")!
                 urlComponents.queryItems = [
-                    URLQueryItem(name: "currentPage", value: currentPage),
+                    URLQueryItem(name: "page", value: currentPage),
                     URLQueryItem(name: "limit", value: limit),
                     URLQueryItem(name: "sessionId", value: sessionId)
                 ]
