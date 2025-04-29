@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:konnek_flutter/assets/assets.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
-import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/support/app_file_helper.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
@@ -63,6 +63,14 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
     }
   }
 
+  String handleIcon(int status) {
+    if (status > 0) {
+      return Assets.icDoubleTick;
+    } else {
+      return Assets.icClock;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (chatCategoryValidation(widget.data)) {
@@ -89,83 +97,97 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                   color: const Color(0xff2a55a4),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.data.payload != null && widget.data.payload != "")
-                      if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) ...[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                // "https://cms.shootingstar.id/74/main.jpg",
-                                // jsonDecode(widget.data.payload ?? "")['url'],
-                                AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
-                              ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (widget.data.payload != null && widget.data.payload != "")
+                          if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) ...[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    // "https://cms.shootingstar.id/74/main.jpg",
+                                    // jsonDecode(widget.data.payload ?? "")['url'],
+                                    AppFileHelper.getUrlName(widget.data.payload ?? ""),
+                                    height: 80,
+                                    width: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  // "${widget.data.payload}",
+                                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                                  textAlign: TextAlign.right,
+                                  style: GoogleFonts.lato(
+                                    color: Colors.black45,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                              ],
                             ),
-                            SizedBox(height: 2),
-                            Text(
-                              // "${widget.data.payload}",
-                              AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                              textAlign: TextAlign.right,
-                              style: GoogleFonts.lato(
-                                color: Colors.black45,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          ] else ...[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Icon(
+                                    Icons.file_copy_rounded,
+                                    size: 60,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  // "${widget.data.payload}",
+                                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                                  textAlign: TextAlign.right,
+                                  style: GoogleFonts.lato(
+                                    color: Colors.black45,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                              ],
                             ),
-                            SizedBox(height: 5),
                           ],
+                        Text(
+                          // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
+                          widget.data.text ?? "null",
+                          style: GoogleFonts.lato(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ] else ...[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Icon(
-                                Icons.file_copy_rounded,
-                                size: 60,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              // "${widget.data.payload}",
-                              AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                              textAlign: TextAlign.right,
-                              style: GoogleFonts.lato(
-                                color: Colors.black45,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                          ],
+                        SizedBox(height: 5),
+                        Text(
+                          // "15:29",
+                          // "${DateTime.now().hour}:${DateTime.now().minute}",
+                          DateFormat("hh:mm").format(widget.data.messageTime!.toLocal()),
+                          style: GoogleFonts.lato(
+                            color: Colors.white54,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
-                    Text(
-                      // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
-                      widget.data.text ?? "null",
-                      style: GoogleFonts.lato(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      // "15:29",
-                      // "${DateTime.now().hour}:${DateTime.now().minute}",
-                      DateFormat("hh:mm").format(widget.data.messageTime!.toLocal()),
-                      style: GoogleFonts.lato(
-                        color: Colors.white38,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    SizedBox(width: 10),
+                    Image.asset(
+                      handleIcon(widget.data.status ?? 0),
+                      package: "konnek_flutter",
+                      color: Colors.white54,
+                      height: 15,
+                      width: 15,
                     ),
                   ],
                 ),
