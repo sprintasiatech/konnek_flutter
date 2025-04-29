@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/request/send_chat_request_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/send_chat_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/socket_chat_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/socket_chat_status_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
 import 'package:konnek_flutter/src/data/repositories/chat_repository_impl.dart';
 import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
@@ -14,6 +16,7 @@ import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:konnek_flutter/src/support/jwt_converter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:uuid/uuid.dart';
 
 class AppController {
   static bool isLoading = false;
@@ -34,21 +37,9 @@ class AppController {
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      AppLoggerCS.debugLog("Call here AppController startWebSocketIO");
-      await sendChat(
-        onSuccess: () {
-          io.Socket? data = ChatRepositoryImpl().startWebSocketIO();
-          if (data == null) {
-            onSuccess?.call();
-          } else {
-            AppLoggerCS.debugLog("empty socket");
-            onFailed?.call("empty socket");
-          }
-        },
-        onFailed: (errorMessage) {
-          onFailed?.call(errorMessage);
-        },
-      );
+      AppLoggerCS.debugLog("[AppController][startWebSocketIO] called");
+      io.Socket? data = ChatRepositoryImpl().startWebSocketIO();
+      onSuccess?.call();
     } catch (e) {
       AppLoggerCS.debugLog('[startWebSocketIO] e: $e');
       onFailed?.call(e.toString());
@@ -73,14 +64,17 @@ class AppController {
     );
   }
 
+  static void Function() onSocketChatCalled = () {};
+  static void Function() onSocketChatStatusCalled = () {};
+
   Future<void> handleWebSocketIO({
-    void Function()? onSuccess,
+    // void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      AppSocketioService.socket.onConnect((_) {
-        AppLoggerCS.debugLog("onConnect: ${AppSocketioService.socket.toString()}");
-      });
+      // AppSocketioService.socket.onConnect((_) {
+      //   AppLoggerCS.debugLog("onConnect: ${AppSocketioService.socket.toString()}");
+      // });
 
       AppSocketioService.socket.on("chat", (output) async {
         AppLoggerCS.debugLog("socket output: ${jsonEncode(output)}");
@@ -116,7 +110,22 @@ class AppController {
           type: socket.message?.type,
         );
         conversationList.add(chatModel);
-        onSuccess?.call();
+        // onSuccess?.call();
+        onSocketChatCalled.call();
+      });
+
+      AppSocketioService.socket.on("chat.status", (output) async {
+        AppLoggerCS.debugLog("socket chat.status output: ${jsonEncode(output)}");
+        SocketChatStatusResponseModel socket = SocketChatStatusResponseModel.fromJson(output);
+        conversationList = conversationList.map((element) {
+          if (element.messageId == socket.data?.messageId) {
+            element.status = socket.data?.status;
+            return element;
+          } else {
+            return element;
+          }
+        }).toList();
+        onSocketChatStatusCalled.call();
       });
     } catch (e) {
       AppLoggerCS.debugLog('[handleWebSocketIO] e: $e');
@@ -214,6 +223,8 @@ class AppController {
     }
   }
 
+  static bool isWebSocketStart = false;
+
   Future<void> sendChat({
     String? text,
     void Function()? onSuccess,
@@ -260,6 +271,45 @@ class AppController {
         KonnekFlutter.accessToken = output.data!.token!;
         await ChatLocalSource().setAccessToken(output.data!.token!);
 
+        if (!isWebSocketStart) {
+          await startWebSocketIO();
+          await handleWebSocketIO();
+          isWebSocketStart = true;
+        }
+
+        String uuid = const Uuid().v4();
+        AppSocketioService.socket.emit(
+          "chat",
+          {
+            "message_id": uuid,
+            "reply_id": null,
+            "ttl": 5,
+            "text": "write",
+            "time": getDateTimeFormatted(),
+            "type": "text",
+            "room_id": jwtValue["payload"]["data"]["room_id"],
+            "session_id": jwtValue["payload"]["data"]["session_id"],
+            "channel_code": checkPlatform(),
+            "reply_token": "",
+            "from_type": 1,
+            // "data": {
+            //   {
+            //     "message_id": uuid,
+            //     "reply_id": null,
+            //     "ttl": 5,
+            //     "text": "write",
+            //     "time": getDateTimeFormatted(),
+            //     "type": "text",
+            //     "room_id": jwtValue["payload"]["data"]["room_id"],
+            //     "session_id": jwtValue["payload"]["data"]["session_id"],
+            //     "channel_code": checkPlatform(),
+            //     "reply_token": "",
+            //     "from_type": 1,
+            //   },
+            // },
+          },
+        );
+
         conversationData = null;
         conversationList = [];
         currentPage = 1;
@@ -267,6 +317,23 @@ class AppController {
         await _getConversation(
           roomId: jwtValue["payload"]["data"]["room_id"],
           onSuccess: () async {
+            AppLoggerCS.debugLog("conversationList.last: ${jsonEncode(conversationList.last)}");
+            if (isWebSocketStart) {
+              AppSocketioService.socket.emit(
+                "chat.status",
+                {
+                  "data": {
+                    "message_id": conversationList.first.messageId,
+                    "room_id": conversationList.first.roomId,
+                    "session_id": conversationList.first.sessionId,
+                    "status": 2,
+                    "times": (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+                    "timestamp": getDateTimeFormatted(),
+                  },
+                },
+              );
+              isWebSocketStart = true;
+            }
             onSuccess?.call();
           },
           onFailed: (errorMessage) {
@@ -280,6 +347,28 @@ class AppController {
       onFailed?.call(e.toString());
       isLoading = false;
     }
+  }
+
+  String checkPlatform() {
+    String platform = "webhook";
+    if (Platform.isAndroid) {
+      platform = "android";
+    } else if (Platform.isIOS) {
+      platform = "ios";
+    } else {
+      platform = "web";
+    }
+    return platform;
+  }
+
+  String getDateTimeFormatted() {
+    String date1 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+    // AppLoggerCS.debugLog("date1: $date1");
+    String time1 = DateFormat("hh:mm:ss.").format(DateTime.now());
+    // AppLoggerCS.debugLog("time1: $time1");
+    String concatDateTime = "${date1}T${time1}992Z";
+    AppLoggerCS.debugLog("concatDateTime: $concatDateTime");
+    return concatDateTime;
   }
 
   static GetConversationResponseModel? conversationData;

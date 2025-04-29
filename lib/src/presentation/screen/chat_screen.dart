@@ -43,29 +43,47 @@ class _ChatScreenState extends State<ChatScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToBottom();
-      if (AppController.socketReady == false) {
-        _checkAccessTokenAndFetch();
+      // if (AppController.socketReady == false) {
+      if (AppController.isWebSocketStart == false) {
+        // _checkAccessTokenAndFetch();
+
+        AppController.onSocketChatCalled = () async {
+          AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
+          await ChatLocalSource().setSocketReady(true);
+          AppController.socketReady = true;
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          if (mounted) {
+            setState(() {});
+          }
+        };
+        AppController.onSocketChatStatusCalled = () {
+          AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          if (mounted) {
+            setState(() {});
+          }
+        };
       }
     });
   }
 
-  void _checkAccessTokenAndFetch() async {
-    await AppController().startWebSocketIO();
-    await AppController().handleWebSocketIO(
-      onSuccess: () async {
-        await ChatLocalSource().setSocketReady(true);
-        AppController.socketReady = true;
-        _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-        if (mounted) {
-          setState(() {});
-        }
-      },
-      onFailed: (errorMessage) async {
-        await ChatLocalSource().setSocketReady(false);
-        AppController.socketReady = false;
-      },
-    );
-  }
+  // void _checkAccessTokenAndFetch() async {
+  //   await AppController().startWebSocketIO();
+  //   await AppController().handleWebSocketIO(
+  //     onSuccess: () async {
+  //       await ChatLocalSource().setSocketReady(true);
+  //       AppController.socketReady = true;
+  //       _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+  //       if (mounted) {
+  //         setState(() {});
+  //       }
+  //     },
+  //     onFailed: (errorMessage) async {
+  //       await ChatLocalSource().setSocketReady(false);
+  //       AppController.socketReady = false;
+  //     },
+  //   );
+  // }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -436,9 +454,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                                 await AppController().sendChat(
                                                   text: textController.text,
                                                   onSuccess: () async {
-                                                    if (AppController.socketReady == false) {
-                                                      _checkAccessTokenAndFetch();
-                                                    }
+                                                    // if (AppController.socketReady == false) {
+                                                    //   _checkAccessTokenAndFetch();
+                                                    // }
                                                     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                     setState(() {});
                                                   },
@@ -489,9 +507,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                                           await AppController().sendChat(
                                                             text: textController.text,
                                                             onSuccess: () async {
-                                                              if (AppController.socketReady == false) {
-                                                                _checkAccessTokenAndFetch();
-                                                              }
+                                                              // if (AppController.socketReady == false) {
+                                                              //   _checkAccessTokenAndFetch();
+                                                              // }
                                                               _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                               setState(() {});
                                                             },

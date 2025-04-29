@@ -64,6 +64,8 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   }
 
   String handleIcon(int status) {
+    // AppLoggerCS.debugLog('status: $status text: ${widget.data.text} messageId: ${widget.data.messageId}');
+    // AppLoggerCS.debugLog('text: ${widget.data.text}');
     if (status > 0) {
       return Assets.icDoubleTick;
     } else {
