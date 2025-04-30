@@ -335,7 +335,8 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     SizedBox(height: 5),
                     Text(
                       // "15:29",
-                      "${DateTime.now().hour}:${DateTime.now().minute}",
+                      // "${DateTime.now().hour}:${DateTime.now().minute}",
+                      DateFormat("hh:mm").format(widget.data.messageTime!.toLocal()),
                       style: GoogleFonts.lato(
                         color: Colors.black45,
                         fontSize: 10,

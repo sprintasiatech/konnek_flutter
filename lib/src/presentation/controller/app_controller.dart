@@ -74,6 +74,7 @@ class AppController {
   static void Function() onSocketRoomHandoverCalled = () {};
   static void Function() onSocketRoomClosedCalled = () {};
 
+  static bool isCSATOpen = false;
   static bool isRoomClosed = false;
 
   Future<void> handleWebSocketIO({
@@ -213,8 +214,10 @@ class AppController {
       "message_id": uuid,
       "reply_id": null,
       "ttl": 5,
-      "time": getDateTimeFormatted(),
-      "type": "postback",
+      // "time": getDateTimeFormatted(),
+      "time": DateTime.now().toUtc().toIso8601String(),
+      // "type": "postback",
+      "type": postbackDataChosen.type,
       "text": postbackDataChosen.title,
       // "postback": postbackDataChosen.toJson(),
       "postback": {
@@ -240,6 +243,9 @@ class AppController {
     AppSocketioService.socket.emit(
       "chat",
       dataEmit,
+      // ack: (values) {
+      //   AppLoggerCS.debugLog("acknowledge: $values");
+      // },
     );
 
     String uuid2 = const Uuid().v4();
@@ -279,6 +285,49 @@ class AppController {
 //   "room_id": "a5a8eb2e-2550-4c28-ad6e-e42f5178b146",
 //   "session_id": "2792eb5e-4266-48a5-b28a-e241a65c932a"
 // }
+  }
+
+  void emitCsatText({
+    required String text,
+    void Function()? onSent,
+  }) {
+    String uuid = const Uuid().v4();
+    Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
+    Map<String, dynamic> dataEmit = {
+      "message_id": uuid,
+      "reply_id": null,
+      "ttl": 5,
+      "time": DateTime.now().toUtc().toIso8601String(),
+      "type": "text",
+      "text": text,
+      "channel_code": checkPlatform(),
+      "from_type": 1,
+      "room_id": jwtValue["payload"]["data"]["room_id"],
+      "session_id": sessionId,
+    };
+
+    AppLoggerCS.debugLog("dataEmit emitCsatText: ${jsonEncode(dataEmit)}");
+
+    AppSocketioService.socket.emit(
+      "chat",
+      dataEmit,
+    );
+
+    String uuid2 = const Uuid().v4();
+
+    ConversationList? chatModel;
+    chatModel = null;
+
+    chatModel = ConversationList(
+      fromType: "1",
+      text: text,
+      type: "text",
+      messageId: uuid2,
+      status: 2,
+      messageTime: DateTime.now().toUtc(),
+    );
+    conversationList.add(chatModel);
+    onSent?.call();
   }
 
   Future<void> getConfig({
@@ -456,9 +505,11 @@ class AppController {
             "message_id": uuid,
             "reply_id": null,
             "ttl": 5,
-            "text": "text",
+            // "text": "text",
+            "text": text,
             "time": getDateTimeFormatted(),
-            "type": text,
+            // "type": text,
+            "type": "text",
             "room_id": jwtValue["payload"]["data"]["room_id"],
             "session_id": jwtValue["payload"]["data"]["session_id"],
             "channel_code": checkPlatform(),
@@ -480,6 +531,9 @@ class AppController {
             //   },
             // },
           },
+          // ack: (values) {
+          //   AppLoggerCS.debugLog("acknowledge 0: $values");
+          // },
         );
 
         conversationData = null;
