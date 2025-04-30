@@ -135,35 +135,39 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             SizedBox(height: 5),
           ],
         );
-      } else if (widget.data.type == "media") {
+      } else if (widget.data.type == "image") {
         if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  // "https://cms.shootingstar.id/74/main.jpg",
-                  // jsonDecode(widget.data.payload ?? "")['url'],
-                  AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                  height: 80,
-                  width: 80,
-                  fit: BoxFit.cover,
+          return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: Column(
+              crossAxisAlignment: chatCategoryValidation(widget.data) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    // "https://cms.shootingstar.id/74/main.jpg",
+                    // jsonDecode(widget.data.payload ?? "")['url'],
+                    AppFileHelper.getUrlName(widget.data.payload ?? ""),
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                // "${widget.data.payload}",
-                AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                textAlign: TextAlign.right,
-                style: GoogleFonts.lato(
-                  color: Colors.black45,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
+                SizedBox(height: 2),
+                Text(
+                  // "${widget.data.payload}",
+                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                  textAlign: chatCategoryValidation(widget.data) ? TextAlign.right : TextAlign.left,
+                  style: GoogleFonts.lato(
+                    color: Colors.black45,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              SizedBox(height: 5),
-            ],
+                SizedBox(height: 5),
+              ],
+            ),
           );
         } else {
           return Column(
@@ -212,10 +216,12 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               onTap: () {
                 AppLoggerCS.debugLog("call here");
                 if (widget.data.payload != null || widget.data.payload != "") {
-                  // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
-                  // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
-                  widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
-                  // }
+                  if (widget.data.type == "image") {
+                    // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
+                    // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
+                    widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
+                    // }
+                  }
                 }
               },
               child: Container(
@@ -307,10 +313,12 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               onTap: () {
                 AppLoggerCS.debugLog("call here 2");
                 if (widget.data.payload != null || widget.data.payload != "") {
-                  // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
-                  // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
-                  widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
-                  // }
+                  if (widget.data.type == "image") {
+                    // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
+                    // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
+                    widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
+                    // }
+                  }
                 }
               },
               child: Container(
