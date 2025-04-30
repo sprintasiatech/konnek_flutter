@@ -135,7 +135,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             SizedBox(height: 5),
           ],
         );
-      } else if (widget.data.type == "image") {
+      } else if (widget.data.type == "image" || widget.data.type == "document") {
         if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) {
           return SizedBox(
             width: MediaQuery.of(context).size.width * 0.6,
@@ -149,12 +149,12 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     // "https://cms.shootingstar.id/74/main.jpg",
                     // jsonDecode(widget.data.payload ?? "")['url'],
                     AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                    height: 80,
-                    width: 80,
+                    height: 100,
+                    width: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(height: 2),
+                SizedBox(height: 4),
                 Text(
                   // "${widget.data.payload}",
                   AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
@@ -216,7 +216,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               onTap: () {
                 AppLoggerCS.debugLog("call here");
                 if (widget.data.payload != null || widget.data.payload != "") {
-                  if (widget.data.type == "image") {
+                  if (widget.data.type == "image" || widget.data.type == "document") {
                     // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
                     // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
                     widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
@@ -313,7 +313,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               onTap: () {
                 AppLoggerCS.debugLog("call here 2");
                 if (widget.data.payload != null || widget.data.payload != "") {
-                  if (widget.data.type == "image") {
+                  if (widget.data.type == "image" || widget.data.type == "document") {
                     // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
                     // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
                     widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);

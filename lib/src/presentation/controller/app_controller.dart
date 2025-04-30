@@ -498,43 +498,43 @@ class AppController {
           isWebSocketStart = true;
         }
 
-        String uuid = const Uuid().v4();
-        AppSocketioService.socket.emit(
-          "chat",
-          {
-            "message_id": uuid,
-            "reply_id": null,
-            "ttl": 5,
-            // "text": "text",
-            "text": text,
-            "time": getDateTimeFormatted(),
-            // "type": text,
-            "type": "text",
-            "room_id": jwtValue["payload"]["data"]["room_id"],
-            "session_id": jwtValue["payload"]["data"]["session_id"],
-            "channel_code": checkPlatform(),
-            "reply_token": "",
-            "from_type": 1,
-            // "data": {
-            //   {
-            //     "message_id": uuid,
-            //     "reply_id": null,
-            //     "ttl": 5,
-            //     "text": "write",
-            //     "time": getDateTimeFormatted(),
-            //     "type": "text",
-            //     "room_id": jwtValue["payload"]["data"]["room_id"],
-            //     "session_id": jwtValue["payload"]["data"]["session_id"],
-            //     "channel_code": checkPlatform(),
-            //     "reply_token": "",
-            //     "from_type": 1,
-            //   },
-            // },
-          },
-          // ack: (values) {
-          //   AppLoggerCS.debugLog("acknowledge 0: $values");
-          // },
-        );
+        // String uuid = const Uuid().v4();
+        // AppSocketioService.socket.emit(
+        //   "chat",
+        //   {
+        //     "message_id": uuid,
+        //     "reply_id": null,
+        //     "ttl": 5,
+        //     "text": "text",
+        //     // "text": text,
+        //     "time": getDateTimeFormatted(),
+        //     "type": text,
+        //     // "type": "text",
+        //     "room_id": jwtValue["payload"]["data"]["room_id"],
+        //     "session_id": jwtValue["payload"]["data"]["session_id"],
+        //     "channel_code": checkPlatform(),
+        //     "reply_token": "",
+        //     "from_type": 1,
+        //     // "data": {
+        //     //   {
+        //     //     "message_id": uuid,
+        //     //     "reply_id": null,
+        //     //     "ttl": 5,
+        //     //     "text": "write",
+        //     //     "time": getDateTimeFormatted(),
+        //     //     "type": "text",
+        //     //     "room_id": jwtValue["payload"]["data"]["room_id"],
+        //     //     "session_id": jwtValue["payload"]["data"]["session_id"],
+        //     //     "channel_code": checkPlatform(),
+        //     //     "reply_token": "",
+        //     //     "from_type": 1,
+        //     //   },
+        //     // },
+        //   },
+        //   // ack: (values) {
+        //   //   AppLoggerCS.debugLog("acknowledge 0: $values");
+        //   // },
+        // );
 
         conversationData = null;
         conversationList = [];
@@ -734,6 +734,22 @@ class AppController {
         await _getConversation(
           roomId: decodeJwt!["payload"]["data"]["room_id"],
           onSuccess: () {
+            if (isWebSocketStart) {
+              AppSocketioService.socket.emit(
+                "chat.status",
+                {
+                  "data": {
+                    "message_id": conversationList.first.messageId,
+                    "room_id": conversationList.first.roomId,
+                    "session_id": conversationList.first.sessionId,
+                    "status": 2,
+                    "times": (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+                    "timestamp": getDateTimeFormatted(),
+                  },
+                },
+              );
+              isWebSocketStart = true;
+            }
             isLoading = false;
             onSuccess?.call();
           },
