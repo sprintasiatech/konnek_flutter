@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:konnek_flutter/assets/assets.dart';
+import 'package:konnek_flutter/src/data/models/response/csat_payload_data_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
@@ -15,11 +16,13 @@ class ChatBubbleWidget extends StatefulWidget {
   final ConversationList data;
   final DataGetConfig? dataGetConfig;
   final void Function(String srcImage)? openImageCallback;
+  final void Function(BodyCsatPayload csatData, ConversationList chatData)? onChooseCsat;
 
   const ChatBubbleWidget({
     required this.data,
     required this.dataGetConfig,
     this.openImageCallback,
+    this.onChooseCsat,
     super.key,
   });
 
@@ -73,6 +76,129 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
     }
   }
 
+  Widget typeChatHandler() {
+    if (widget.data.payload != null && widget.data.payload != "") {
+      if (widget.data.type == "button") {
+        CsatPayloadDataModel csatPayloadData = CsatPayloadDataModel.fromJson(jsonDecode(widget.data.payload!));
+        return Column(
+          crossAxisAlignment: chatCategoryValidation(widget.data) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Text(
+              "${widget.data.text}",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lato(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 5),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: (csatPayloadData.body == null || csatPayloadData.body!.isEmpty) ? 0 : csatPayloadData.body!.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      // AppController.isRoomClosed = false;
+                      widget.onChooseCsat?.call(
+                        csatPayloadData.body![index],
+                        widget.data,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(6),
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff203080).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "${csatPayloadData.body?[index].title}",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                          color: Colors.black87,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(height: 8);
+                },
+              ),
+            ),
+            SizedBox(height: 5),
+          ],
+        );
+      } else if (widget.data.type == "media") {
+        if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  // "https://cms.shootingstar.id/74/main.jpg",
+                  // jsonDecode(widget.data.payload ?? "")['url'],
+                  AppFileHelper.getUrlName(widget.data.payload ?? ""),
+                  height: 80,
+                  width: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                // "${widget.data.payload}",
+                AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                textAlign: TextAlign.right,
+                style: GoogleFonts.lato(
+                  color: Colors.black45,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 5),
+            ],
+          );
+        } else {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Icon(
+                  Icons.file_copy_rounded,
+                  size: 60,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                // "${widget.data.payload}",
+                AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                textAlign: TextAlign.right,
+                style: GoogleFonts.lato(
+                  color: Colors.black45,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 5),
+            ],
+          );
+        }
+      } else {
+        return SizedBox();
+      }
+    } else {
+      return SizedBox();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (chatCategoryValidation(widget.data)) {
@@ -106,62 +232,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        if (widget.data.payload != null && widget.data.payload != "")
-                          if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) ...[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    // "https://cms.shootingstar.id/74/main.jpg",
-                                    // jsonDecode(widget.data.payload ?? "")['url'],
-                                    AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                                    height: 80,
-                                    width: 80,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  // "${widget.data.payload}",
-                                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                                  textAlign: TextAlign.right,
-                                  style: GoogleFonts.lato(
-                                    color: Colors.black45,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                              ],
-                            ),
-                          ] else ...[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Icon(
-                                    Icons.file_copy_rounded,
-                                    size: 60,
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  // "${widget.data.payload}",
-                                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                                  textAlign: TextAlign.right,
-                                  style: GoogleFonts.lato(
-                                    color: Colors.black45,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                              ],
-                            ),
-                          ],
+                        typeChatHandler(),
                         Text(
                           // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
                           widget.data.text ?? "null",
@@ -252,63 +323,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.data.payload != null && widget.data.payload != "")
-                      if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) ...[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                // "https://cms.shootingstar.id/74/main.jpg",
-                                // jsonDecode(widget.data.payload ?? "")['url'],
-                                AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              // "${widget.data.payload}",
-                              AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.lato(
-                                color: Colors.black45,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                          ],
-                        ),
-                      ] else ...[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Icon(
-                                Icons.file_copy_sharp,
-                                color: Colors.grey.shade800,
-                                size: 60,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              // "${widget.data.payload}",
-                              AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.lato(
-                                color: Colors.black45,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                          ],
-                        ),
-                      ],
+                    typeChatHandler(),
                     Text(
                       widget.data.text ?? "null",
                       // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",

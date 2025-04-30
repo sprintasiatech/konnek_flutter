@@ -41,12 +41,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
 
+    AppController.isRoomClosed = true;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToBottom();
-      // if (AppController.socketReady == false) {
-      if (AppController.isWebSocketStart == false) {
-        // _checkAccessTokenAndFetch();
 
+      if (AppController.isWebSocketStart == false) {
         AppController.onSocketChatCalled = () async {
           AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
           await ChatLocalSource().setSocketReady(true);
@@ -63,27 +63,40 @@ class _ChatScreenState extends State<ChatScreen> {
             setState(() {});
           }
         };
+        AppController.onSocketRoomHandoverCalled = () {
+          AppLoggerCS.debugLog("[onSocketRoomHandoverCalled]");
+          // _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          // if (mounted) {
+          //   setState(() {});
+          // }
+        };
+        AppController.onSocketRoomClosedCalled = () {
+          AppLoggerCS.debugLog("[onSocketRoomClosedCalled]");
+          // _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          AppController.isRoomClosed = false;
+          if (mounted) {
+            setState(() {});
+          }
+        };
+        AppController.onSocketCSATCalled = () {
+          AppLoggerCS.debugLog("[onSocketCSATCalled]");
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          AppController.isRoomClosed = false;
+          if (mounted) {
+            setState(() {});
+          }
+        };
+        AppController.onSocketCSATCloseCalled = () {
+          AppLoggerCS.debugLog("[onSocketCSATCloseCalled]");
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          AppController.isRoomClosed = true;
+          if (mounted) {
+            setState(() {});
+          }
+        };
       }
     });
   }
-
-  // void _checkAccessTokenAndFetch() async {
-  //   await AppController().startWebSocketIO();
-  //   await AppController().handleWebSocketIO(
-  //     onSuccess: () async {
-  //       await ChatLocalSource().setSocketReady(true);
-  //       AppController.socketReady = true;
-  //       _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-  //       if (mounted) {
-  //         setState(() {});
-  //       }
-  //     },
-  //     onFailed: (errorMessage) async {
-  //       await ChatLocalSource().setSocketReady(false);
-  //       AppController.socketReady = false;
-  //     },
-  //   );
-  // }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -169,14 +182,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                        // child: Text(
-                        //   "App!",
-                        //   textAlign: TextAlign.center,
-                        //   style: GoogleFonts.inter(
-                        //     fontSize: 16,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        // ),
                       ),
                       centerTitle: false,
                       title: Text(
@@ -275,6 +280,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                           vertical: 5,
                                         ),
                                         child: ChatBubbleWidget(
+                                          onChooseCsat: (csatData, chatPayload) {
+                                            AppController().emitCsat(
+                                              postbackDataChosen: csatData,
+                                              chatData: chatPayload,
+                                              onSent: () {
+                                                AppLoggerCS.debugLog("[onSent]");
+                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                if (mounted) {
+                                                  setState(() {});
+                                                }
+                                              },
+                                            );
+                                          },
                                           openImageCallback: (src) async {
                                             if (src != "") {
                                               AppLoggerCS.debugLog("src: $src");
@@ -407,198 +425,217 @@ class _ChatScreenState extends State<ChatScreen> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 50,
-                                      child: FocusScope(
-                                        child: Focus(
-                                          onFocusChange: (focus) {
-                                            setState(() {
-                                              isTextFieldFocused = focus;
-                                            });
-                                          },
-                                          child: TextField(
-                                            style: GoogleFonts.lato(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            controller: textController,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                if (value == "") {
-                                                  isTextFieldEmpty = true;
-                                                } else {
-                                                  isTextFieldEmpty = false;
-                                                }
-                                              });
-                                            },
-                                            onSubmitted: (value) async {
-                                              if (uploadFile != null) {
-                                                await AppController().uploadMedia(
-                                                  text: textController.text,
-                                                  mediaData: uploadFile!,
-                                                  onSuccess: () {
-                                                    uploadFile = null;
-                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                    setState(() {});
-                                                  },
-                                                  onFailed: (errorMessage) {
-                                                    uploadFile = null;
-                                                    setState(() {});
-                                                  },
-                                                );
-                                              } else {
-                                                await AppController().sendChat(
-                                                  text: textController.text,
-                                                  onSuccess: () async {
-                                                    // if (AppController.socketReady == false) {
-                                                    //   _checkAccessTokenAndFetch();
-                                                    // }
-                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                    setState(() {});
-                                                  },
-                                                  onChatSentFirst: () {
-                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                    setState(() {});
-                                                  },
-                                                  onGreetingsFailed: (value) {
-                                                    setState(() {
-                                                      _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                      isTextFieldFocused = true;
-                                                      isTextFieldEmpty = false;
-                                                      String valueGreetings = value.message!.split(' ').last;
-                                                      textController.text = valueGreetings;
-                                                    });
-                                                  },
-                                                );
-                                              }
-
-                                              textController.clear();
-                                              isTextFieldEmpty = true;
-                                              FocusManager.instance.primaryFocus?.unfocus();
-                                            },
-                                            decoration: InputDecoration(
-                                              suffixIcon: (isTextFieldFocused && !isTextFieldEmpty)
-                                                  ? InkWell(
-                                                      onTap: () async {
-                                                        if (uploadFile != null) {
-                                                          await AppController().uploadMedia(
-                                                            text: textController.text,
-                                                            mediaData: uploadFile!,
-                                                            onSuccess: () {
-                                                              uploadFile = null;
-                                                              _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                              setState(() {});
-                                                            },
-                                                            onFailed: (errorMessage) {
-                                                              uploadFile = null;
-                                                              setState(() {});
-                                                            },
-                                                          );
-                                                        } else {
-                                                          await AppController().sendChat(
-                                                            text: textController.text,
-                                                            onSuccess: () async {
-                                                              // if (AppController.socketReady == false) {
-                                                              //   _checkAccessTokenAndFetch();
-                                                              // }
-                                                              _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                              setState(() {});
-                                                            },
-                                                            onChatSentFirst: () {
-                                                              _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                              setState(() {});
-                                                            },
-                                                            onGreetingsFailed: (value) {
-                                                              setState(() {
-                                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-                                                                isTextFieldFocused = true;
-                                                                isTextFieldEmpty = false;
-                                                                String valueGreetings = value.message!.split(' ').last;
-                                                                textController.text = valueGreetings;
-                                                              });
-                                                            },
-                                                          );
-                                                        }
-
-                                                        textController.clear();
-                                                        isTextFieldEmpty = true;
-                                                        FocusManager.instance.primaryFocus?.unfocus();
-                                                      },
-                                                      child: Container(
-                                                        padding: EdgeInsets.all(8),
-                                                        child: CircleAvatar(
-                                                          backgroundColor: Colors.white,
-                                                          radius: 20,
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons.send,
-                                                              size: 16,
-                                                              color: isTextFieldFocused ? Colors.green : Colors.black,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : null,
-                                              hintText: "Type something...",
-                                              hintStyle: GoogleFonts.lato(
-                                                color: Colors.black38,
-                                                fontSize: 14,
-                                              ),
-                                              filled: true,
-                                              fillColor: Colors.grey.shade300,
-                                              border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
-                                            ),
+                              !AppController.isRoomClosed
+                                  ? InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          AppController.isRoomClosed = !AppController.isRoomClosed;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xff2a55a4),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          "Start Chat",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.lato(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
+                                    )
+                                  : Row(
+                                      children: [
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: SizedBox(
+                                            height: 50,
+                                            child: FocusScope(
+                                              child: Focus(
+                                                onFocusChange: (focus) {
+                                                  setState(() {
+                                                    isTextFieldFocused = focus;
+                                                  });
+                                                },
+                                                child: TextField(
+                                                  style: GoogleFonts.lato(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                  controller: textController,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      if (value == "") {
+                                                        isTextFieldEmpty = true;
+                                                      } else {
+                                                        isTextFieldEmpty = false;
+                                                      }
+                                                    });
+                                                  },
+                                                  onSubmitted: (value) async {
+                                                    if (uploadFile != null) {
+                                                      await AppController().uploadMedia(
+                                                        text: textController.text,
+                                                        mediaData: uploadFile!,
+                                                        onSuccess: () {
+                                                          uploadFile = null;
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                          setState(() {});
+                                                        },
+                                                        onFailed: (errorMessage) {
+                                                          uploadFile = null;
+                                                          setState(() {});
+                                                        },
+                                                      );
+                                                    } else {
+                                                      await AppController().sendChat(
+                                                        text: textController.text,
+                                                        onSuccess: () async {
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                          setState(() {});
+                                                        },
+                                                        onChatSentFirst: () {
+                                                          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                          setState(() {});
+                                                        },
+                                                        onGreetingsFailed: (value) {
+                                                          setState(() {
+                                                            _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                            isTextFieldFocused = true;
+                                                            isTextFieldEmpty = false;
+                                                            String valueGreetings = value.message!.split(' ').last;
+                                                            textController.text = valueGreetings;
+                                                          });
+                                                        },
+                                                      );
+                                                    }
+
+                                                    textController.clear();
+                                                    isTextFieldEmpty = true;
+                                                    FocusManager.instance.primaryFocus?.unfocus();
+                                                  },
+                                                  decoration: InputDecoration(
+                                                    suffixIcon: (isTextFieldFocused && !isTextFieldEmpty)
+                                                        ? InkWell(
+                                                            onTap: () async {
+                                                              if (uploadFile != null) {
+                                                                await AppController().uploadMedia(
+                                                                  text: textController.text,
+                                                                  mediaData: uploadFile!,
+                                                                  onSuccess: () {
+                                                                    uploadFile = null;
+                                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                                    setState(() {});
+                                                                  },
+                                                                  onFailed: (errorMessage) {
+                                                                    uploadFile = null;
+                                                                    setState(() {});
+                                                                  },
+                                                                );
+                                                              } else {
+                                                                await AppController().sendChat(
+                                                                  text: textController.text,
+                                                                  onSuccess: () async {
+                                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                                    setState(() {});
+                                                                  },
+                                                                  onChatSentFirst: () {
+                                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                                    setState(() {});
+                                                                  },
+                                                                  onGreetingsFailed: (value) {
+                                                                    setState(() {
+                                                                      _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                                      isTextFieldFocused = true;
+                                                                      isTextFieldEmpty = false;
+                                                                      String valueGreetings = value.message!.split(' ').last;
+                                                                      textController.text = valueGreetings;
+                                                                    });
+                                                                  },
+                                                                );
+                                                              }
+
+                                                              textController.clear();
+                                                              isTextFieldEmpty = true;
+                                                              FocusManager.instance.primaryFocus?.unfocus();
+                                                            },
+                                                            child: Container(
+                                                              padding: EdgeInsets.all(8),
+                                                              child: CircleAvatar(
+                                                                backgroundColor: Colors.white,
+                                                                radius: 20,
+                                                                child: Center(
+                                                                  child: Icon(
+                                                                    Icons.send,
+                                                                    size: 16,
+                                                                    color: isTextFieldFocused ? Colors.green : Colors.black,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : null,
+                                                    hintText: "Type something...",
+                                                    hintStyle: GoogleFonts.lato(
+                                                      color: Colors.black38,
+                                                      fontSize: 14,
+                                                    ),
+                                                    filled: true,
+                                                    fillColor: Colors.grey.shade300,
+                                                    border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(12)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // SizedBox(width: 12),
+                                        InkWell(
+                                          onTap: () async {
+                                            uploadFile = await AppImagePickerServiceCS().getImageAsFile(
+                                              quality: 60,
+                                              onFileName: (fileNameValue) {
+                                                fileName = fileNameValue;
+                                              },
+                                              onSizeFile: (sizeFileValue) {
+                                                fileSize = sizeFileValue;
+                                              },
+                                            );
+                                            metaFile = "File Name: $fileName\nSize File: ${fileSize.toStringAsFixed(3)} MB";
+                                            setState(() {});
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(12),
+                                            child: Icon(
+                                              Icons.image,
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
+                                        // SizedBox(width: 12),
+                                        InkWell(
+                                          onTap: () async {
+                                            uploadFile = await AppFilePickerServiceCS().pickFiles();
+                                            setState(() {});
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(12),
+                                            child: Icon(
+                                              // Icons.send,
+                                              Icons.attach_file_rounded,
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
+                                        // SizedBox(width: 12),
+                                      ],
                                     ),
-                                  ),
-                                  // SizedBox(width: 12),
-                                  InkWell(
-                                    onTap: () async {
-                                      uploadFile = await AppImagePickerServiceCS().getImageAsFile(
-                                        quality: 60,
-                                        onFileName: (fileNameValue) {
-                                          fileName = fileNameValue;
-                                        },
-                                        onSizeFile: (sizeFileValue) {
-                                          fileSize = sizeFileValue;
-                                        },
-                                      );
-                                      metaFile = "File Name: $fileName\nSize File: ${fileSize.toStringAsFixed(3)} MB";
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(12),
-                                      child: Icon(
-                                        Icons.image,
-                                        size: 24,
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(width: 12),
-                                  InkWell(
-                                    onTap: () async {
-                                      uploadFile = await AppFilePickerServiceCS().pickFiles();
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(12),
-                                      child: Icon(
-                                        // Icons.send,
-                                        Icons.attach_file_rounded,
-                                        size: 24,
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(width: 12),
-                                ],
-                              ),
                               SizedBox(height: 5),
                               Center(
                                 child: Row(
