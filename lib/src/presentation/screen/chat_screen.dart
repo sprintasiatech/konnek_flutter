@@ -460,23 +460,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                     setState(() {});
                                                   },
+                                                  onChatSentFirst: () {
+                                                    _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                    setState(() {});
+                                                  },
                                                   onGreetingsFailed: (value) {
-                                                    AppDialogActionCS.showWarningPopup(
-                                                      context: context,
-                                                      title: "Warning",
-                                                      description: "#${value.code}\n${value.message}",
-                                                      mainButtonTitle: "Kembali",
-                                                      mainButtonColor: Colors.green,
-                                                      mainButtonAction: () {
-                                                        Navigator.pop(context);
-                                                        setState(() {
-                                                          isTextFieldFocused = true;
-                                                          isTextFieldEmpty = false;
-                                                          String valueGreetings = value.message!.split(' ').last;
-                                                          textController.text = valueGreetings;
-                                                        });
-                                                      },
-                                                    );
+                                                    setState(() {
+                                                      _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                      isTextFieldFocused = true;
+                                                      isTextFieldEmpty = false;
+                                                      String valueGreetings = value.message!.split(' ').last;
+                                                      textController.text = valueGreetings;
+                                                    });
                                                   },
                                                 );
                                               }
@@ -513,23 +508,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                                               _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                               setState(() {});
                                                             },
+                                                            onChatSentFirst: () {
+                                                              _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                              setState(() {});
+                                                            },
                                                             onGreetingsFailed: (value) {
-                                                              AppDialogActionCS.showWarningPopup(
-                                                                context: context,
-                                                                title: "Warning",
-                                                                description: "#${value.code}\n${value.message}",
-                                                                mainButtonTitle: "Kembali",
-                                                                mainButtonColor: Colors.green,
-                                                                mainButtonAction: () {
-                                                                  Navigator.pop(context);
-                                                                  setState(() {
-                                                                    isTextFieldFocused = true;
-                                                                    isTextFieldEmpty = false;
-                                                                    String valueGreetings = value.message!.split(' ').last;
-                                                                    textController.text = valueGreetings;
-                                                                  });
-                                                                },
-                                                              );
+                                                              setState(() {
+                                                                _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+                                                                isTextFieldFocused = true;
+                                                                isTextFieldEmpty = false;
+                                                                String valueGreetings = value.message!.split(' ').last;
+                                                                textController.text = valueGreetings;
+                                                              });
                                                             },
                                                           );
                                                         }

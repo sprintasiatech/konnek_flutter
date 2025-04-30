@@ -230,10 +230,23 @@ class AppController {
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
     void Function(MetaSendChat value)? onGreetingsFailed,
+    void Function()? onChatSentFirst,
   }) async {
     isLoading = true;
     try {
       Map<String, dynamic>? localDataFormatted = await ChatLocalSource().getClientData();
+
+      String uuid = const Uuid().v4();
+      ConversationList? chatModel0;
+      chatModel0 = null;
+      chatModel0 = ConversationList(
+        fromType: "1",
+        text: text,
+        messageId: uuid,
+        messageTime: DateTime.now().toUtc(),
+      );
+      conversationList.add(chatModel0);
+      onChatSentFirst?.call();
 
       SendChatRequestModel requestBody = SendChatRequestModel(
         name: localDataFormatted?["name"],
@@ -255,6 +268,17 @@ class AppController {
         return;
       }
       if (output.meta?.code == 403) {
+        String uuid = const Uuid().v4();
+        ConversationList? chatModel;
+        chatModel = null;
+
+        chatModel = ConversationList(
+          fromType: "2",
+          text: "${output.meta?.message}",
+          messageId: uuid,
+          messageTime: DateTime.now().toUtc(),
+        );
+        conversationList.add(chatModel);
         onGreetingsFailed?.call(output.meta!);
         return;
       }
