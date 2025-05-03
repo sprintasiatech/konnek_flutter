@@ -170,29 +170,32 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             ),
           );
         } else {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Icon(
-                  Icons.file_copy_rounded,
-                  size: 60,
+          return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Icon(
+                    Icons.file_copy_rounded,
+                    size: 60,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                // "${widget.data.payload}",
-                AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                textAlign: TextAlign.right,
-                style: GoogleFonts.lato(
-                  color: Colors.black45,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
+                SizedBox(height: 2),
+                Text(
+                  // "${widget.data.payload}",
+                  AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.lato(
+                    color: Colors.black45,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              SizedBox(height: 5),
-            ],
+                SizedBox(height: 5),
+              ],
+            ),
           );
         }
       } else {
