@@ -355,6 +355,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                   height: 70,
                                   width: 70,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Icon(
+                                        Icons.file_copy_rounded,
+                                        size: 60,
+                                      ),
+                                    );
+                                  },
                                 ),
                                 SizedBox(width: 12),
                                 Expanded(
