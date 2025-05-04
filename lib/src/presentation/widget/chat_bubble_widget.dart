@@ -173,20 +173,21 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
           return SizedBox(
             width: MediaQuery.of(context).size.width * 0.6,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: chatCategoryValidation(widget.data) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: Icon(
                     Icons.file_copy_rounded,
-                    size: 60,
+                    color: Colors.black54,
+                    size: 100,
                   ),
                 ),
                 SizedBox(height: 2),
                 Text(
                   // "${widget.data.payload}",
                   AppFileHelper.getFileNameFromUrl(widget.data.payload ?? ""),
-                  textAlign: TextAlign.right,
+                  textAlign: chatCategoryValidation(widget.data) ? TextAlign.right : TextAlign.left,
                   style: GoogleFonts.lato(
                     color: Colors.black45,
                     fontSize: 10,
