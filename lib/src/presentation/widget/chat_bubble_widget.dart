@@ -7,6 +7,7 @@ import 'package:konnek_flutter/assets/assets.dart';
 import 'package:konnek_flutter/src/data/models/response/csat_payload_data_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_config_response_model.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
+import 'package:konnek_flutter/src/data/models/response/socket_csat_response_model.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/support/app_file_helper.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
@@ -239,30 +240,33 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        typeChatHandler(),
-                        Text(
-                          // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
-                          widget.data.text ?? "null",
-                          style: GoogleFonts.lato(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          typeChatHandler(),
+                          Text(
+                            // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
+                            widget.data.text ?? "null",
+                            textAlign: TextAlign.end,
+                            style: GoogleFonts.lato(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          // "15:29",
-                          // "${DateTime.now().hour}:${DateTime.now().minute}",
-                          DateFormat("hh:mm").format(widget.data.messageTime!.toLocal()),
-                          style: GoogleFonts.lato(
-                            color: Colors.white54,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
+                          SizedBox(height: 5),
+                          Text(
+                            // "15:29",
+                            // "${DateTime.now().hour}:${DateTime.now().minute}",
+                            DateFormat("hh:mm").format(widget.data.messageTime!.toLocal()),
+                            style: GoogleFonts.lato(
+                              color: Colors.white54,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     SizedBox(width: 10),
                     Image.asset(
