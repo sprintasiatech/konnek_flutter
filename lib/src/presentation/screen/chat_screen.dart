@@ -622,7 +622,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Material(
                 color: Colors.transparent,
                 child: Container(
-                  color: Colors.black38,
+                  color: Colors.black54,
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Stack(
