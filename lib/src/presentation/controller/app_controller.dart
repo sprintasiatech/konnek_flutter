@@ -141,15 +141,16 @@ class AppController {
           },
         );
 
-        _getConversation(
-          roomId: socket.session!.roomId!,
-          onSuccess: () {
-            onSocketChatCalled.call();
-          },
-          onFailed: (errorMessage) {
-            onFailed?.call(errorMessage);
-          },
-        );
+        // _getConversation(
+        //   roomId: socket.session!.roomId!,
+        //   onSuccess: () {
+        //     onSocketChatCalled.call();
+        //   },
+        //   onFailed: (errorMessage) {
+        //     onFailed?.call(errorMessage);
+        //   },
+        // );
+        onSocketChatCalled.call();
       });
 
       AppSocketioService.socket.on("chat.status", (output) async {
@@ -186,11 +187,7 @@ class AppController {
       AppSocketioService.socket.on("csat", (output) async {
         AppLoggerCS.debugLog("[socket][csat] output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
-        // AppLoggerCS.debugLog("data payload: ${socket.message!.payload!}");
-        // AppLoggerCS.debugLog("data payload: ${jsonDecode(socket.message!.payload!)}");
-        // dynamic data = jsonDecode(socket.message!.payload!);
-        // AppLoggerCS.debugLog("data payload: $data");
-        // CsatPayloadDataModel csatData = CsatPayloadDataModel.fromJson(jsonDecode(socket.message!.payload!));
+
         sessionId = socket.session!.id!;
         roomId = socket.session!.roomId!;
 
@@ -325,127 +322,107 @@ class AppController {
     required BodyCsatPayload postbackDataChosen,
     required ConversationList chatData,
     void Function()? onSent,
+    void Function()? onFailed,
   }) {
-    String uuid = const Uuid().v4();
-    Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-    Map<String, dynamic> dataEmit = {
-      "message_id": uuid,
-      "reply_id": null,
-      "ttl": 5,
-      // "time": getDateTimeFormatted(),
-      "time": DateTime.now().toUtc().toIso8601String(),
-      // "type": "postback",
-      "type": postbackDataChosen.type,
-      "text": postbackDataChosen.title,
-      // "postback": postbackDataChosen.toJson(),
-      "postback": {
-        "type": postbackDataChosen.type,
-        "key": postbackDataChosen.key,
-        "value": postbackDataChosen.value,
-        "title": postbackDataChosen.title,
-        "description": postbackDataChosen.description,
-        "media_url": postbackDataChosen.mediaUrl,
-        "url": postbackDataChosen.url,
-      },
-      "channel_code": checkPlatform(),
-      "from_type": 1,
-      // "room_id": chatData.session?.roomId,
-      // "session_id": chatData.session?.id,
-      "room_id": jwtValue["payload"]["data"]["room_id"],
-      // "session_id": jwtValue["payload"]["data"]["session_id"],
-      "session_id": sessionId,
-    };
+    try {
+      String uuid = const Uuid().v4();
+      Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
+      DateTime currentDateValue = DateTime.now();
+      Map<String, dynamic> dataEmit = {
+        "message_id": uuid,
+        "reply_id": null,
+        "ttl": 5,
+        "time": currentDateValue.toUtc().toIso8601String(),
+        "type": "postback",
+        // "type": (postbackDataChosen.type != "" || postbackDataChosen.type != null) ? postbackDataChosen.type : "button",
+        "text": postbackDataChosen.title,
+        "postback": {
+          "type": postbackDataChosen.type,
+          "key": postbackDataChosen.key,
+          "value": postbackDataChosen.value,
+          "title": postbackDataChosen.title,
+          "description": postbackDataChosen.description,
+          "media_url": postbackDataChosen.mediaUrl,
+          "url": postbackDataChosen.url,
+        },
+        "channel_code": checkPlatform(),
+        "from_type": 1,
+        "room_id": jwtValue["payload"]["data"]["room_id"],
+        "session_id": jwtValue["payload"]["data"]["session_id"],
+      };
 
-    AppLoggerCS.debugLog("dataEmit: ${jsonEncode(dataEmit)}");
+      AppLoggerCS.debugLog("[emitCsat] dataEmit: ${jsonEncode(dataEmit)}");
 
-    AppSocketioService.socket.emit(
-      "chat",
-      dataEmit,
-      // ack: (values) {
-      //   AppLoggerCS.debugLog("acknowledge: $values");
-      // },
-    );
+      AppSocketioService.socket.emit(
+        "chat",
+        dataEmit,
+      );
 
-    String uuid2 = const Uuid().v4();
+      ConversationList? chatModel;
+      chatModel = null;
 
-    ConversationList? chatModel;
-    chatModel = null;
-
-    chatModel = ConversationList(
-      fromType: "1",
-      text: postbackDataChosen.title,
-      type: "postback",
-      messageId: uuid2,
-      status: 2,
-      messageTime: DateTime.now().toUtc(),
-    );
-    conversationList.add(chatModel);
-    onSent?.call();
-
-// {
-//   "message_id": "1cfc055a-4b91-4b91-8825-69c0483a0148",
-//   "reply_id": null,
-//   "ttl": 5,
-//   "time": "2025-04-30T17:42:51+07:00",
-//   "type": "postback",
-//   "text": "",
-//   "postback": {
-//     "type": "postback",
-//     "key": "csat:b035e66e-6233-433f-8444-acad77b56f98:0",
-//     "value": "",
-//     "title": "",
-//     "description": "",
-//     "media_url": "",
-//     "url": ""
-//   },
-//   "channel_code": "web",
-//   "from_type": 1,
-//   "room_id": "a5a8eb2e-2550-4c28-ad6e-e42f5178b146",
-//   "session_id": "2792eb5e-4266-48a5-b28a-e241a65c932a"
-// }
+      chatModel = ConversationList(
+        fromType: "1",
+        text: postbackDataChosen.title,
+        type: "postback",
+        messageId: uuid,
+        status: 2,
+        messageTime: currentDateValue.toUtc(),
+      );
+      conversationList.add(chatModel);
+      onSent?.call();
+    } catch (e) {
+      AppController.isCSATOpen = false;
+      onFailed?.call();
+    }
   }
 
   void emitCsatText({
     required String text,
     void Function()? onSent,
+    void Function()? onFailed,
   }) {
-    String uuid = const Uuid().v4();
-    Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-    Map<String, dynamic> dataEmit = {
-      "message_id": uuid,
-      "reply_id": null,
-      "ttl": 5,
-      "time": DateTime.now().toUtc().toIso8601String(),
-      "type": "text",
-      "text": text,
-      "channel_code": checkPlatform(),
-      "from_type": 1,
-      "room_id": jwtValue["payload"]["data"]["room_id"],
-      "session_id": sessionId,
-    };
+    try {
+      String uuid = const Uuid().v4();
+      Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
+      DateTime currentDateValue = DateTime.now();
+      Map<String, dynamic> dataEmit = {
+        "message_id": uuid,
+        "reply_id": null,
+        "ttl": 5,
+        "time": currentDateValue.toUtc().toIso8601String(),
+        "type": "text",
+        "text": text,
+        "channel_code": checkPlatform(),
+        "from_type": 1,
+        "room_id": jwtValue["payload"]["data"]["room_id"],
+        "session_id": jwtValue["payload"]["data"]["session_id"],
+      };
 
-    AppLoggerCS.debugLog("dataEmit emitCsatText: ${jsonEncode(dataEmit)}");
+      AppLoggerCS.debugLog("[emitCsatText] dataEmit: ${jsonEncode(dataEmit)}");
 
-    AppSocketioService.socket.emit(
-      "chat",
-      dataEmit,
-    );
+      AppSocketioService.socket.emit(
+        "chat",
+        dataEmit,
+      );
 
-    String uuid2 = const Uuid().v4();
+      ConversationList? chatModel;
+      chatModel = null;
 
-    ConversationList? chatModel;
-    chatModel = null;
-
-    chatModel = ConversationList(
-      fromType: "1",
-      text: text,
-      type: "text",
-      messageId: uuid2,
-      status: 2,
-      messageTime: DateTime.now().toUtc(),
-    );
-    conversationList.add(chatModel);
-    onSent?.call();
+      chatModel = ConversationList(
+        fromType: "1",
+        text: text,
+        type: "text",
+        messageId: uuid,
+        status: 2,
+        messageTime: currentDateValue.toUtc(),
+      );
+      conversationList.add(chatModel);
+      onSent?.call();
+    } catch (e) {
+      AppController.isCSATOpen = false;
+      onFailed?.call();
+    }
   }
 
   Future<void> getConfig({

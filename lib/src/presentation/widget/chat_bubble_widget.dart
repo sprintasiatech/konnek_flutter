@@ -157,54 +157,65 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
         } else {
           CsatPayloadDataModel csatPayloadData = CsatPayloadDataModel.fromJson(jsonDecode(widget.data.payload!));
           return Column(
+            // crossAxisAlignment: CrossAxisAlignment.center,
             crossAxisAlignment: chatCategoryValidation(widget.data) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 5),
-              Text(
-                "${widget.data.text}",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.lato(
-                  color: Colors.black87,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              IntrinsicWidth(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "${widget.data.text}",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.lato(
+                      color: Colors.black87,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 5),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: (csatPayloadData.body == null || csatPayloadData.body!.isEmpty) ? 0 : csatPayloadData.body!.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        widget.onChooseCsat?.call(
-                          csatPayloadData.body![index],
-                          widget.data,
+              IntrinsicWidth(
+                child: Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: (csatPayloadData.body == null || csatPayloadData.body!.isEmpty) ? 0 : csatPayloadData.body!.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            widget.onChooseCsat?.call(
+                              csatPayloadData.body![index],
+                              widget.data,
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(6),
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xff203080).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "${csatPayloadData.body?[index].title}",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lato(
+                                color: Colors.black87,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         );
                       },
-                      child: Container(
-                        padding: EdgeInsets.all(6),
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xff203080).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          "${csatPayloadData.body?[index].title}",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(
-                            color: Colors.black87,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return SizedBox(height: 8);
-                  },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(height: 8);
+                      },
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 5),
@@ -479,7 +490,24 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
           );
         }
       } else {
-        return SizedBox();
+        // Type: text
+        // AppLoggerCS.debugLog("Panggil di sini: ${widget.data.text}");
+        return SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                // (index.isEven) ? "Here we go $index" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
+                widget.data.text ?? "null",
+                textAlign: TextAlign.left,
+                style: GoogleFonts.lato(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
       }
     } else {
       return SizedBox(

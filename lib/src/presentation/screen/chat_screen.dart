@@ -352,6 +352,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         setState(() {});
                                                       }
                                                     },
+                                                    onFailed: () {
+                                                      AppController.clear();
+                                                      ChatLocalSource.localServiceHive.user.clear();
+                                                      Navigator.pop(context);
+                                                    },
                                                   );
                                                 },
                                                 onChooseCarousel: (carouselData, chatPayload) {
@@ -772,6 +777,11 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
+        },
+        onFailed: () async {
+          AppController.clear();
+          ChatLocalSource.localServiceHive.user.clear();
+          Navigator.pop(context);
         },
       );
     } else {
