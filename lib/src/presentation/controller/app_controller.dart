@@ -35,6 +35,14 @@ class AppController {
     limit = 20;
     conversationData = null;
     conversationList = [];
+    conversationDataFirstChat = null;
+    conversationListFirstChat = [];
+    KonnekFlutter.accessToken = "";
+  }
+
+  static void clearRoomClosed() {
+    currentPage = 1;
+    limit = 20;
     KonnekFlutter.accessToken = "";
   }
 
@@ -141,16 +149,16 @@ class AppController {
           },
         );
 
-        // _getConversation(
-        //   roomId: socket.session!.roomId!,
-        //   onSuccess: () {
-        //     onSocketChatCalled.call();
-        //   },
-        //   onFailed: (errorMessage) {
-        //     onFailed?.call(errorMessage);
-        //   },
-        // );
-        onSocketChatCalled.call();
+        _getConversation(
+          roomId: socket.session!.roomId!,
+          onSuccess: () {
+            onSocketChatCalled.call();
+          },
+          onFailed: (errorMessage) {
+            onFailed?.call(errorMessage);
+          },
+        );
+        // onSocketChatCalled.call();
       });
 
       AppSocketioService.socket.on("chat.status", (output) async {
@@ -159,7 +167,15 @@ class AppController {
         sessionId = socket.data!.sessionId!;
         roomId = socket.data!.roomId!;
 
-        conversationList = conversationList.map((element) {
+        // conversationList = conversationList.map((element) {
+        //   if (element.messageId == socket.data?.messageId) {
+        //     element.status = socket.data?.status;
+        //     return element;
+        //   } else {
+        //     return element;
+        //   }
+        // }).toList();
+        conversationList.map((element) {
           if (element.messageId == socket.data?.messageId) {
             element.status = socket.data?.status;
             return element;
@@ -167,6 +183,7 @@ class AppController {
             return element;
           }
         }).toList();
+        conversationList = removeDuplicatesById(conversationList);
         onSocketChatStatusCalled.call();
       });
 
@@ -181,6 +198,7 @@ class AppController {
       AppSocketioService.socket.on("room.closed", (output) async {
         AppLoggerCS.debugLog("[socket][room.closed] output: ${jsonEncode(output)}");
         SocketRoomClosedResponseModel socket = SocketRoomClosedResponseModel.fromJson(output);
+        isWebSocketStart = false;
         onSocketRoomClosedCalled.call();
       });
 
@@ -225,6 +243,7 @@ class AppController {
 
       AppSocketioService.socket.on("csat.close", (output) async {
         AppLoggerCS.debugLog("[socket][csat.close] output: ${jsonEncode(output)}");
+        isWebSocketStart = false;
         onSocketCSATCloseCalled.call();
       });
     } catch (e) {
@@ -265,15 +284,15 @@ class AppController {
       dataEmit,
     );
 
-    ConversationList? chatModel = ConversationList(
-      fromType: "1",
-      text: botDataChosen.title,
-      type: "postback",
-      messageId: uuid,
-      status: 2,
-      messageTime: currentDateValue.toUtc(),
-    );
-    conversationList.add(chatModel);
+    // ConversationList? chatModel = ConversationList(
+    //   fromType: "1",
+    //   text: botDataChosen.title,
+    //   type: "postback",
+    //   messageId: uuid,
+    //   status: 2,
+    //   messageTime: currentDateValue.toUtc(),
+    // );
+    // conversationList.add(chatModel);
     onSent?.call();
   }
 
@@ -306,15 +325,15 @@ class AppController {
       dataEmit,
     );
 
-    ConversationList? chatModel = ConversationList(
-      fromType: "1",
-      text: carouselDataChosen.actions?[0].title,
-      type: carouselDataChosen.actions?[0].type,
-      messageId: uuid,
-      status: 2,
-      messageTime: currentDateValue.toUtc(),
-    );
-    conversationList.add(chatModel);
+    // ConversationList? chatModel = ConversationList(
+    //   fromType: "1",
+    //   text: carouselDataChosen.actions?[0].title,
+    //   type: carouselDataChosen.actions?[0].type,
+    //   messageId: uuid,
+    //   status: 2,
+    //   messageTime: currentDateValue.toUtc(),
+    // );
+    // conversationList.add(chatModel);
     onSent?.call();
   }
 
@@ -562,6 +581,7 @@ class AppController {
           return;
         }
         if (output.meta?.code == 403) {
+          conversationListFirstChat = removeDuplicatesById(conversationListFirstChat);
           String uuid = const Uuid().v4();
           ConversationList? chatModel;
           chatModel = null;
@@ -573,6 +593,7 @@ class AppController {
             messageTime: DateTime.now().toUtc(),
           );
           conversationList.add(chatModel);
+          conversationListFirstChat.addAll(conversationList);
           onGreetingsFailed?.call(output.meta!);
           return;
         }
@@ -699,6 +720,9 @@ class AppController {
   static GetConversationResponseModel? conversationData;
   static List<ConversationList> conversationList = [];
 
+  static GetConversationResponseModel? conversationDataFirstChat;
+  static List<ConversationList> conversationListFirstChat = [];
+
   List<ConversationList> removeDuplicatesById(List<ConversationList> originalList) {
     final seenIds = <String>{};
     return originalList.where((item) {
@@ -753,6 +777,8 @@ class AppController {
 
       conversationData = output;
       conversationList.addAll(output.data!.conversations!);
+      conversationList.addAll(conversationListFirstChat);
+      conversationList.sort((a, b) => a.messageTime!.compareTo(b.messageTime!));
       conversationList = removeDuplicatesById(conversationList);
       // conversationList = conversationList.reversed.toList();
 

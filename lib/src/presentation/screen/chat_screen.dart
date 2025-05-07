@@ -8,7 +8,6 @@ import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/presentation/controller/chat_controller.dart';
 import 'package:konnek_flutter/src/presentation/widget/chat_bubble_widget.dart';
 import 'package:konnek_flutter/src/presentation/widget/show_image_widget.dart';
-import 'package:konnek_flutter/src/support/app_dialog_action.dart';
 import 'package:konnek_flutter/src/support/app_file_picker.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
@@ -90,6 +89,8 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
+          AppController.clearRoomClosed();
+          disconnectSocket();
         };
         AppController.onSocketCSATCalled = () {
           AppLoggerCS.debugLog("[onSocketCSATCalled]");
@@ -108,6 +109,8 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
+          AppController.clearRoomClosed();
+          disconnectSocket();
         };
       }
     });
