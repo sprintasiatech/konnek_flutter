@@ -670,7 +670,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                         // SizedBox(width: 12),
                                         InkWell(
                                           onTap: () async {
-                                            uploadFile = await AppFilePickerServiceCS().pickFiles();
+                                            uploadFile = await AppFilePickerServiceCS().pickFiles(
+                                              onFileName: (fileNameValue) {
+                                                fileName = fileNameValue;
+                                              },
+                                              onSizeFile: (sizeFileValue) {
+                                                fileSize = sizeFileValue;
+                                              },
+                                            );
                                             buttonValidation();
                                             setState(() {});
                                           },
