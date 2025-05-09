@@ -21,6 +21,7 @@ import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:konnek_flutter/src/support/jwt_converter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class AppController {
@@ -78,6 +79,27 @@ class AppController {
     );
   }
 
+  static void disconnectSocket() async {
+    try {
+      AppController.socketReady = false;
+      await ChatLocalSource().setSocketReady(false);
+      AppSocketioService.socket.disconnect();
+      AppSocketioService.socket.onDisconnect((_) {
+        AppLoggerCS.debugLog("disconnected");
+        AppLoggerCS.debugLog("disconnected id: ${AppSocketioService.socket.id}");
+      });
+    } catch (e) {
+      AppController.socketReady = false;
+      await ChatLocalSource().setSocketReady(false);
+    }
+  }
+
+  static Future<void> launchUrlChat(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      AppLoggerCS.debugLog('Could not launch $url');
+    }
+  }
+
   static void Function() onSocketChatCalled = () {};
   static void Function() onSocketChatStatusCalled = () {};
   static void Function() onSocketCSATCalled = () {};
@@ -85,6 +107,7 @@ class AppController {
   static void Function() onSocketRoomHandoverCalled = () {};
   static void Function() onSocketRoomClosedCalled = () {};
   static void Function() onSocketCustomerIsBlockedCalled = () {};
+  static void Function() onSocketDisconnectCalled = () {};
 
   static bool isCustomerBlocked = false;
   static bool isCSATOpen = false;
@@ -169,14 +192,6 @@ class AppController {
         sessionId = socket.data!.sessionId!;
         roomId = socket.data!.roomId!;
 
-        // conversationList = conversationList.map((element) {
-        //   if (element.messageId == socket.data?.messageId) {
-        //     element.status = socket.data?.status;
-        //     return element;
-        //   } else {
-        //     return element;
-        //   }
-        // }).toList();
         conversationList.map((element) {
           if (element.messageId == socket.data?.messageId) {
             element.status = socket.data?.status;
@@ -201,6 +216,13 @@ class AppController {
         AppLoggerCS.debugLog("[socket][room.closed] output: ${jsonEncode(output)}");
         SocketRoomClosedResponseModel socket = SocketRoomClosedResponseModel.fromJson(output);
         // isWebSocketStart = false;
+        if (socket.data?.csat != null) {
+          isRoomClosed = false;
+        } else {
+          isRoomClosed = true;
+          disconnectSocket();
+          KonnekFlutter.accessToken = "";
+        }
         onSocketRoomClosedCalled.call();
       });
 
@@ -258,6 +280,12 @@ class AppController {
           KonnekFlutter.accessToken = "";
         }
         onSocketCustomerIsBlockedCalled.call();
+      });
+      AppSocketioService.socket.on("disconnect", (output) async {
+        AppLoggerCS.debugLog("[socket][disconnect] output: ${jsonEncode(output)}");
+        isWebSocketStart = false;
+        KonnekFlutter.accessToken = "";
+        onSocketDisconnectCalled.call();
       });
     } catch (e) {
       AppLoggerCS.debugLog('[handleWebSocketIO] e: $e');
