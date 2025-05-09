@@ -126,64 +126,66 @@ class AppController {
         AppLoggerCS.debugLog("[socket][chat] output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
 
-        sessionId = socket.session!.id!;
-        roomId = socket.session!.roomId!;
+        if (!isRoomClosed) {
+          sessionId = socket.session!.id!;
+          roomId = socket.session!.roomId!;
 
-        ConversationList? chatModel;
-        chatModel = null;
+          ConversationList? chatModel;
+          chatModel = null;
 
-        chatModel = ConversationList(
-          session: SessionGetConversation(
-            botStatus: socket.session?.botStatus,
-            agent: UserGetConversation(
-              id: socket.agent?.userId,
-              name: socket.agent?.name,
-              username: socket.agent?.username,
+          chatModel = ConversationList(
+            session: SessionGetConversation(
+              botStatus: socket.session?.botStatus,
+              agent: UserGetConversation(
+                id: socket.agent?.userId,
+                name: socket.agent?.name,
+                username: socket.agent?.username,
+              ),
             ),
-          ),
-          fromType: socket.message?.fromType,
-          text: socket.message?.text,
-          messageId: socket.messageId,
-          user: UserGetConversation(
-            id: socket.customer?.userId,
-            username: socket.customer?.username,
-            name: socket.customer?.name,
-          ),
-          messageTime: socket.message?.time,
-          sessionId: socket.session?.id,
-          roomId: socket.session?.roomId,
-          replyId: socket.replyId,
-          payload: socket.message?.payload,
-          type: socket.message?.type,
-        );
-        conversationList.add(chatModel);
-        onSocketChatCalled.call();
+            fromType: socket.message?.fromType,
+            text: socket.message?.text,
+            messageId: socket.messageId,
+            user: UserGetConversation(
+              id: socket.customer?.userId,
+              username: socket.customer?.username,
+              name: socket.customer?.name,
+            ),
+            messageTime: socket.message?.time,
+            sessionId: socket.session?.id,
+            roomId: socket.session?.roomId,
+            replyId: socket.replyId,
+            payload: socket.message?.payload,
+            type: socket.message?.type,
+          );
+          conversationList.add(chatModel);
+          // onSocketChatCalled.call();
 
-        DateTime currentDateTime = DateTime.now();
-        AppSocketioService.socket.emit(
-          "chat.status",
-          {
-            "data": {
-              "message_id": conversationList.last.messageId,
-              "room_id": conversationList.last.roomId,
-              "session_id": conversationList.last.sessionId,
-              "status": 2,
-              "times": (currentDateTime.millisecondsSinceEpoch / 1000).floor(),
-              "timestamp": getDateTimeFormatted(value: currentDateTime),
+          DateTime currentDateTime = DateTime.now();
+          AppSocketioService.socket.emit(
+            "chat.status",
+            {
+              "data": {
+                "message_id": conversationList.last.messageId,
+                "room_id": conversationList.last.roomId,
+                "session_id": conversationList.last.sessionId,
+                "status": 2,
+                "times": (currentDateTime.millisecondsSinceEpoch / 1000).floor(),
+                "timestamp": getDateTimeFormatted(value: currentDateTime),
+              },
             },
-          },
-        );
+          );
 
-        _getConversation(
-          roomId: socket.session!.roomId!,
-          onSuccess: () {
-            onSocketChatCalled.call();
-          },
-          onFailed: (errorMessage) {
-            onFailed?.call(errorMessage);
-          },
-        );
-        // onSocketChatCalled.call();
+          _getConversation(
+            roomId: socket.session!.roomId!,
+            onSuccess: () {
+              onSocketChatCalled.call();
+            },
+            onFailed: (errorMessage) {
+              onFailed?.call(errorMessage);
+            },
+          );
+          // onSocketChatCalled.call();
+        }
       });
 
       AppSocketioService.socket.on("chat.status", (output) async {
@@ -220,7 +222,6 @@ class AppController {
           isRoomClosed = false;
         } else {
           isRoomClosed = true;
-          disconnectSocket();
           KonnekFlutter.accessToken = "";
         }
         onSocketRoomClosedCalled.call();
