@@ -112,6 +112,13 @@ class _ChatScreenState extends State<ChatScreen> {
           AppController.clearRoomClosed();
           disconnectSocket();
         };
+        AppController.onSocketCustomerIsBlockedCalled = () {
+          AppLoggerCS.debugLog("[onSocketCustomerIsBlockedCalled]");
+          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+          if (mounted) {
+            setState(() {});
+          }
+        };
       }
     });
   }
@@ -838,6 +845,10 @@ class _ChatScreenState extends State<ChatScreen> {
               String valueGreetings = value.message!.split(' ').last;
               textController.text = valueGreetings;
             });
+          },
+          onCustomerBlockedFailed: () {
+            _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+            setState(() {});
           },
         );
       }
