@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
@@ -17,6 +18,7 @@ import 'package:konnek_flutter/src/data/models/response/socket_room_handover_res
 import 'package:konnek_flutter/src/data/models/response/upload_media_response_model.dart';
 import 'package:konnek_flutter/src/data/repositories/chat_repository_impl.dart';
 import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
+import 'package:konnek_flutter/src/support/app_base64converter_helper.dart';
 import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/app_socketio_service.dart';
 import 'package:konnek_flutter/src/support/jwt_converter.dart';
@@ -519,12 +521,16 @@ class AppController {
       }
 
       if (getConfigResponseModel.meta?.code == 200) {
-        dataGetConfigValue = getConfigResponseModel.data;
+        DataGetConfig tempDataConfig = getConfigResponseModel.data!;
+        Uint8List dataAvatar = await AppBase64ConverterHelper().decodeBase64Cleaning(getConfigResponseModel.data!.avatarImage!);
+        tempDataConfig.avatarImageBit = dataAvatar;
+        dataGetConfigValue = tempDataConfig;
         await ChatLocalSource().setConfigData(getConfigResponseModel.data!);
         onSuccess?.call();
         return;
       }
     } catch (e) {
+      AppLoggerCS.debugLog("[getConfig] e: $e");
       onFailed?.call(e.toString());
       return;
     }
@@ -542,9 +548,12 @@ class AppController {
         onFailed?.call("empty data");
         return;
       }
-      dataGetConfigValue = data;
+      DataGetConfig tempDataConfig = data;
+      Uint8List dataAvatar = await AppBase64ConverterHelper().decodeBase64Cleaning(data.avatarImage!);
+      tempDataConfig.avatarImageBit = dataAvatar;
+      dataGetConfigValue = tempDataConfig;
 
-      onSuccess?.call(data);
+      onSuccess?.call(tempDataConfig);
       return;
     } catch (e) {
       onFailed?.call(e.toString());

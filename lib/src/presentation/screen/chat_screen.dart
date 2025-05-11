@@ -183,7 +183,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       leading: Center(
                         child: (AppController.dataGetConfigValue != null)
                             ? Image.memory(
-                                Uri.parse(AppController.dataGetConfigValue!.avatarImage!).data!.contentAsBytes(),
+                                AppController.dataGetConfigValue!.avatarImageBit!,
+                                // Uri.parse(AppController.dataGetConfigValue!.avatarImage!).data!.contentAsBytes(),
                                 // base64Decode(dataGetConfig!.avatarImage!),
                                 height: 50,
                                 width: 50,
