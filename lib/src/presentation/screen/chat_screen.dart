@@ -71,6 +71,12 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
+          if (AppController.isRoomClosed == RoomCloseState.closeWaiting) {
+            AppController.isWebSocketStart = false;
+            AppController.isRoomClosed = RoomCloseState.close;
+            AppController.clearRoomClosed();
+            AppController.disconnectSocket();
+          }
         };
         AppController.onSocketRoomHandoverCalled = () {
           AppLoggerCS.debugLog("[onSocketRoomHandoverCalled]");
@@ -85,14 +91,13 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
-          // AppController.clearRoomClosed();
-          // disconnectSocket();
         };
         AppController.onSocketCSATCalled = () {
           AppLoggerCS.debugLog("[onSocketCSATCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           AppController.isCSATOpen = true;
-          AppController.isRoomClosed = false;
+          AppController.isRoomClosed = RoomCloseState.open;
+          // AppController.isRoomClosed = false;
           if (mounted) {
             setState(() {});
           }
@@ -101,7 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
           AppLoggerCS.debugLog("[onSocketCSATCloseCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           AppController.isCSATOpen = false;
-          AppController.isRoomClosed = true;
+          AppController.isRoomClosed = RoomCloseState.close;
+          // AppController.isRoomClosed = true;
           if (mounted) {
             setState(() {});
           }
@@ -534,11 +540,17 @@ class _ChatScreenState extends State<ChatScreen> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              AppController.isRoomClosed
+                              // AppController.isRoomClosed
+                              AppController.isRoomClosed == RoomCloseState.close
                                   ? InkWell(
                                       onTap: () {
                                         setState(() {
-                                          AppController.isRoomClosed = !AppController.isRoomClosed;
+                                          // AppController.isRoomClosed = !AppController.isRoomClosed;
+                                          if (AppController.isRoomClosed == RoomCloseState.close) {
+                                            AppController.isRoomClosed = RoomCloseState.open;
+                                          } else {
+                                            AppController.isRoomClosed = RoomCloseState.close;
+                                          }
                                         });
                                       },
                                       child: Container(
