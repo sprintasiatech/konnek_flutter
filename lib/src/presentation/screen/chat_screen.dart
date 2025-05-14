@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:konnek_flutter/assets/assets.dart';
+import 'package:konnek_flutter/konnek_flutter.dart';
 import 'package:konnek_flutter/src/data/models/response/get_conversation_response_model.dart';
 import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
@@ -547,6 +548,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         setState(() {
                                           // AppController.isRoomClosed = !AppController.isRoomClosed;
                                           if (AppController.isRoomClosed == RoomCloseState.close) {
+                                            KonnekFlutter.accessToken = "";
                                             AppController.isRoomClosed = RoomCloseState.open;
                                           } else {
                                             AppController.isRoomClosed = RoomCloseState.close;
