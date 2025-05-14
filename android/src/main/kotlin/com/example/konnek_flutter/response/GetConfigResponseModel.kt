@@ -24,7 +24,7 @@ data class DataGetConfig(
 	@field:SerializedName("background_status")
 	val backgroundStatus: String? = null,
 
-	@field:SerializedName("widget_icon")
+	@field:SerializedName("ios_icon")
 	val widgetIcon: String? = null,
 
 	@field:SerializedName("company_id")

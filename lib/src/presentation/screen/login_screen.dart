@@ -8,7 +8,12 @@ import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/string_extension.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final void Function()? callback;
+
+  const LoginScreen({
+    super.key,
+    this.callback,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -39,6 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
     // nameController.text = "testV";
     // emailController.text = "testV@test.com";
 
+    // nameController.text = "testJ";
+    // emailController.text = "testJ@test.com";
+
+    // nameController.text = "testBlock";
+    // emailController.text = "testBlock@test.com";
+
     // nameController.text = "rabilsdkmobile";
     // emailController.text = "rabisdk@mail.com";
 
@@ -47,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onSuccess: () async {
           // AppLoggerCS.debugLog("[getConfig] success");
           setState(() {});
+          widget.callback?.call();
         },
         onFailed: (errorMessage) {
           // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
@@ -279,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onTap: () async {
                         if (errorText != "" || nameErrorText != "") {
-                          // 
+                          //
                         } else if (nameController.text.isEmpty || emailController.text.isEmpty) {
                           errorText = "email field is empty";
                           nameErrorText = "name field is empty";
