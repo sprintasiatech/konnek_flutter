@@ -17,6 +17,59 @@ class ChatButtonWidget extends StatefulWidget {
 
 class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // AppController.scaffoldMessengerCallback = (FetchingState state) {
+      //   Color colorState = Colors.white;
+      //   String statusState = "";
+      //   if (state == FetchingState.loading) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.blue;
+      //     statusState = "Fetching";
+      //   }
+      //   if (state == FetchingState.failed) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.red;
+      //     statusState = "Failed";
+      //   }
+      //   if (state == FetchingState.success) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.green;
+      //     statusState = "Success";
+      //   }
+      //   ScaffoldMessenger.of(
+      //     context,
+      //   ).showSnackBar(
+      //     SnackBar(
+      //       duration: const Duration(milliseconds: 800),
+      //       backgroundColor: colorState,
+      //       content: Text(
+      //         statusState,
+      //         style: GoogleFonts.inter(
+      //           fontSize: 14,
+      //           fontWeight: FontWeight.w500,
+      //         ),
+      //       ),
+      //     ),
+      //   );
+      // };
+
+      AppController().getConfig(
+        onSuccess: () {
+          // AppLoggerCS.debugLog("[getConfig] success");
+          setState(() {});
+          // widget.callback?.call();
+        },
+        onFailed: (errorMessage) {
+          // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+          setState(() {});
+        },
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
