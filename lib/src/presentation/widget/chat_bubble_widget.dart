@@ -39,19 +39,6 @@ class ChatBubbleWidget extends StatefulWidget {
 }
 
 class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
-  // String getUrlName(String payload) {
-  //   AppLoggerCS.debugLog("widget.data.payload: ${widget.data.payload}");
-  //   String data = jsonDecode(widget.data.payload ?? "")['url'];
-  //   AppLoggerCS.debugLog("getUrlName: $data");
-  //   return data;
-  // }
-
-  // String getFileNameFromUrl(String payload) {
-  //   String data = (jsonDecode(widget.data.payload ?? "")['url'] as String).split("/").last;
-  //   return data;
-  // }
-  // PageController _pageController = PageController();
-
   bool chatCategoryValidation(ConversationList datas) {
     // Map<String, dynamic>? userData = await ChatLocalSource().getClientData();
     String name = "";
@@ -401,7 +388,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             // ),
           ],
         );
-      } else if (widget.data.type == "image" || widget.data.type == "document") {
+      } else if (widget.data.type == "image" || widget.data.type == "document" || widget.data.type == "sticker") {
         if (AppImagePickerServiceCS().isImageFile(AppFileHelper.getFileNameFromUrl(widget.data.payload!))) {
           return ConstrainedBox(
             constraints: BoxConstraints(
@@ -546,7 +533,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                 onTap: () {
                   AppLoggerCS.debugLog("call here");
                   if (widget.data.payload != null || widget.data.payload != "") {
-                    if (widget.data.type == "image" || widget.data.type == "document") {
+                    if (widget.data.type == "image" || widget.data.type == "document" || widget.data.type == "sticker") {
                       // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
                       // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
                       widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
@@ -641,8 +628,8 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               SizedBox(height: 5),
               (widget.dataGetConfig != null)
                   ? ClipRRect(
-                    borderRadius: BorderRadius.circular(40),
-                    child: Image.memory(
+                      borderRadius: BorderRadius.circular(40),
+                      child: Image.memory(
                         AppController.dataGetConfigValue!.avatarImageBit!,
                         // Uri.parse(widget.dataGetConfig!.avatarImage!).data!.contentAsBytes(),
                         // base64Decode(dataGetConfig!.avatarImage!),
@@ -650,7 +637,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                         width: 50,
                         fit: BoxFit.cover,
                       ),
-                  )
+                    )
                   : CircleAvatar(
                       backgroundColor: Colors.purpleAccent,
                       child: Text("SZ"),
@@ -663,7 +650,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               onTap: () {
                 AppLoggerCS.debugLog("call here 2");
                 if (widget.data.payload != null || widget.data.payload != "") {
-                  if (widget.data.type == "image" || widget.data.type == "document") {
+                  if (widget.data.type == "image" || widget.data.type == "document" || widget.data.type == "sticker") {
                     // if ((jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".jpg") || (jsonDecode(widget.data.payload ?? "")['url'] as String).endsWith(".png")) {
                     // if (AppImagePickerServiceCS().isImageFile(getUrlName(widget.data.payload ?? ""))) {
                     widget.openImageCallback?.call(jsonDecode(widget.data.payload ?? "")['url']);
