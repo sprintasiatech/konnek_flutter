@@ -61,7 +61,8 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                         AppController.floatingText,
                         // "talk to us",
                         style: GoogleFonts.inter(
-                          color: Colors.green,
+                          color: AppController.floatingTextColor,
+                          // color: Colors.green,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
