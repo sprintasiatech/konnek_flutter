@@ -510,6 +510,12 @@ class AppController {
     try {
       scaffoldMessengerCallback.call(FetchingState.loading);
 
+      if (KonnekFlutter.clientId == "") {
+        onFailed?.call("empty data 0");
+        scaffoldMessengerCallback.call(FetchingState.failed);
+        return;
+      }
+
       AppController.socketReady = false;
 
       GetConfigResponseModel? getConfigResponseModel = await ChatRepositoryImpl().getConfig(
