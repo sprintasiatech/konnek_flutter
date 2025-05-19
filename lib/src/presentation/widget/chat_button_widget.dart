@@ -19,7 +19,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // AppController.scaffoldMessengerCallback = (FetchingState state) {
       //   Color colorState = Colors.white;
       //   String statusState = "";
@@ -55,11 +55,10 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
       //   );
       // };
 
-      AppController().getConfig(
+      await AppController().getConfig(
         onSuccess: () {
           // AppLoggerCS.debugLog("[getConfig] success");
           setState(() {});
-          // widget.callback?.call();
         },
         onFailed: (errorMessage) {
           // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
@@ -104,7 +103,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                     children: [
                       Image.memory(
                         AppController.iconWidget!,
-                        // AppController.iconWidget.value!,
+                      // AppController.iconWidget.value!,
                         // height: 50,
                         width: 50,
                         fit: BoxFit.cover,

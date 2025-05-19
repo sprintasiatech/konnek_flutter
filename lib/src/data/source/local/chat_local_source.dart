@@ -52,9 +52,9 @@ class ChatLocalSource {
   Future<void> setConfigData(DataGetConfig value) async {
     try {
       String data = jsonEncode(value.toJson());
-      await localServiceHive.config.putSecure(
-        key: LocalKey.configData,
-        data: data,
+      await localServiceHive.config.put(
+        LocalKey.configData,
+        data,
       );
     } catch (e) {
       AppLoggerCS.debugLog("[setConfigData] error: $e");
@@ -64,8 +64,8 @@ class ChatLocalSource {
 
   Future<DataGetConfig?> getConfigData() async {
     try {
-      String? value = await localServiceHive.config.getSecure(
-        key: LocalKey.configData,
+      String? value = await localServiceHive.config.get(
+        LocalKey.configData,
       );
       if (value != null) {
         Map<String, dynamic> formatMap = jsonDecode(value);
