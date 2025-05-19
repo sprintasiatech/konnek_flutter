@@ -33,6 +33,13 @@ enum RoomCloseState {
   open,
 }
 
+enum FetchingState {
+  loading,
+  failed,
+  success,
+  empty,
+}
+
 class AppController {
   static bool isLoading = false;
 
@@ -494,17 +501,20 @@ class AppController {
     }
   }
 
+  static void Function(FetchingState state) scaffoldMessengerCallback = (FetchingState state) {};
+
   Future<void> getConfig({
     void Function()? onSuccess,
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
-      // bool? valueSocketReady = await ChatLocalSource().getSocketReady();
-      // if (valueSocketReady != null) {
-      //   AppController.socketReady = valueSocketReady;
-      // } else {
-      //   AppController.socketReady = false;
-      // }
+      scaffoldMessengerCallback.call(FetchingState.loading);
+
+      if (KonnekFlutter.clientId == "") {
+        onFailed?.call("empty data 0");
+        scaffoldMessengerCallback.call(FetchingState.failed);
+        return;
+      }
 
       AppController.socketReady = false;
 
@@ -513,16 +523,19 @@ class AppController {
       );
       if (getConfigResponseModel == null) {
         onFailed?.call("empty data");
+        scaffoldMessengerCallback.call(FetchingState.failed);
         return;
       }
 
       if (getConfigResponseModel.meta == null || getConfigResponseModel.data == null) {
         onFailed?.call("empty data 2");
+        scaffoldMessengerCallback.call(FetchingState.failed);
         return;
       }
 
       if (getConfigResponseModel.meta?.code != 200) {
         onFailed?.call("${getConfigResponseModel.meta?.message}");
+        scaffoldMessengerCallback.call(FetchingState.failed);
         return;
       }
 
@@ -541,11 +554,13 @@ class AppController {
         
         await configValue();
         onSuccess?.call();
+        scaffoldMessengerCallback.call(FetchingState.success);
         return;
       }
     } catch (e) {
       AppLoggerCS.debugLog("[getConfig] e: $e");
       onFailed?.call(e.toString());
+      scaffoldMessengerCallback.call(FetchingState.failed);
       return;
     }
   }

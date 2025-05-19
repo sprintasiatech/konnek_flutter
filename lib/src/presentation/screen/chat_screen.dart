@@ -36,13 +36,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final ValueNotifier<bool> _showToggleButton = ValueNotifier(false);
 
   void scrollListenerFunc() {
-    AppLoggerCS.debugLog("Scroll position: ${_scrollController.position.pixels}");
+    // AppLoggerCS.debugLog("Scroll position: ${_scrollController.position.pixels}");
     if (_scrollController.position.pixels > 100.0) {
       _showToggleButton.value = true;
     } else {
       _showToggleButton.value = false;
     }
-    AppLoggerCS.debugLog("_showToggleButton.value: ${_showToggleButton.value}");
+    // AppLoggerCS.debugLog("_showToggleButton.value: ${_showToggleButton.value}");
   }
 
   @override
@@ -246,6 +246,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           scrollController: _scrollController,
                           enablePullUp: true,
                           enablePullDown: false,
+                          footer: const ClassicFooter(
+                            loadStyle: LoadStyle.ShowWhenLoading,
+                          ),
                           onLoading: () async {
                             await AppController().loadMoreConversation(
                               onSuccess: () {

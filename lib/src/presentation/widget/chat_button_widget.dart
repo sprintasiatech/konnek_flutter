@@ -17,6 +17,58 @@ class ChatButtonWidget extends StatefulWidget {
 
 class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // AppController.scaffoldMessengerCallback = (FetchingState state) {
+      //   Color colorState = Colors.white;
+      //   String statusState = "";
+      //   if (state == FetchingState.loading) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.blue;
+      //     statusState = "Fetching";
+      //   }
+      //   if (state == FetchingState.failed) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.red;
+      //     statusState = "Failed";
+      //   }
+      //   if (state == FetchingState.success) {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     colorState = Colors.green;
+      //     statusState = "Success";
+      //   }
+      //   ScaffoldMessenger.of(
+      //     context,
+      //   ).showSnackBar(
+      //     SnackBar(
+      //       duration: const Duration(milliseconds: 800),
+      //       backgroundColor: colorState,
+      //       content: Text(
+      //         statusState,
+      //         style: GoogleFonts.inter(
+      //           fontSize: 14,
+      //           fontWeight: FontWeight.w500,
+      //         ),
+      //       ),
+      //     ),
+      //   );
+      // };
+
+      await AppController().getConfig(
+        onSuccess: () {
+          // AppLoggerCS.debugLog("[getConfig] success");
+          setState(() {});
+        },
+        onFailed: (errorMessage) {
+          // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
+          setState(() {});
+        },
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
@@ -39,7 +91,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
             decoration: BoxDecoration(
               color: AppController.floatingButtonColor,
               // color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: Colors.grey.shade300,
               ),
@@ -51,7 +103,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                     children: [
                       Image.memory(
                         AppController.iconWidget!,
-                        // AppController.iconWidget.value!,
+                      // AppController.iconWidget.value!,
                         // height: 50,
                         width: 50,
                         fit: BoxFit.cover,
