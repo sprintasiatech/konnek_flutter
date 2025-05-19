@@ -91,7 +91,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
             decoration: BoxDecoration(
               color: AppController.floatingButtonColor,
               // color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: Colors.grey.shade300,
               ),

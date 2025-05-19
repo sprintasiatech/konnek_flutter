@@ -22,7 +22,7 @@ class LiveChatSdkScreen extends StatefulWidget {
 }
 
 class _LiveChatSdkScreenState extends State<LiveChatSdkScreen> {
-  Offset position = Offset(70, -40);
+  Offset position = Offset(90, -30);
 
   final LiveChatSdk liveChatSdk = LiveChatSdk();
 
