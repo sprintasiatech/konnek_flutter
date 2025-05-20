@@ -68,6 +68,66 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
     });
   }
 
+  Widget handlerWidget() {
+    Widget filledWidget = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        (AppController.iconWidget != null && AppController.dataGetConfigValue?.iosIcon != "")
+            ? Image.memory(
+                AppController.iconWidget!,
+                // AppController.iconWidget.value!,
+                // height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              )
+            : SizedBox(),
+        SizedBox(width: 10),
+        Text(
+          (AppController.floatingText != "") ? AppController.floatingText : "",
+          // "talk to us",
+          style: GoogleFonts.inter(
+            color: AppController.floatingTextColor,
+            // color: Colors.green,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        )
+      ],
+    );
+
+    Widget emptyWidget = RichText(
+      text: TextSpan(
+        // text: "       ",
+        text: "App! ",
+        style: GoogleFonts.inter(
+          color: Colors.green,
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+        ),
+        children: <TextSpan>[
+          TextSpan(
+            // text: "      ",
+            text: "Talk To Us",
+            style: GoogleFonts.inter(
+              color: Colors.green,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
+    );
+    if (AppController.iconWidget == null && AppController.floatingText == "") {
+      return emptyWidget;
+    } else if (AppController.iconWidget != null) {
+      return filledWidget;
+    } else if (AppController.floatingText != "") {
+      return filledWidget;
+    } else {
+      return filledWidget;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -88,6 +148,8 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
       child: widget.customFloatingWidget ??
           Container(
             padding: EdgeInsets.all(16),
+            width: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 180 : null,
+            height: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 70 : null,
             decoration: BoxDecoration(
               color: AppController.floatingButtonColor,
               // color: Colors.white,
@@ -96,51 +158,52 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                 color: Colors.grey.shade300,
               ),
             ),
-            child: AppController.iconWidget != null
-                // child: AppController.iconWidget.value != null
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.memory(
-                        AppController.iconWidget!,
-                      // AppController.iconWidget.value!,
-                        // height: 50,
-                        width: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        AppController.floatingText,
-                        // "talk to us",
-                        style: GoogleFonts.inter(
-                          color: AppController.floatingTextColor,
-                          // color: Colors.green,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    ],
-                  )
-                : RichText(
-                    text: TextSpan(
-                      text: "App! ",
-                      style: GoogleFonts.inter(
-                        color: Colors.green,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: "Talk To Us",
-                          style: GoogleFonts.inter(
-                            color: Colors.green,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+            child: handlerWidget(),
+            // child: (AppController.iconWidget != null)
+            //     // child: AppController.iconWidget.value != null
+            //     ? Row(
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           Image.memory(
+            //             AppController.iconWidget!,
+            //             // AppController.iconWidget.value!,
+            //             // height: 50,
+            //             width: 50,
+            //             fit: BoxFit.cover,
+            //           ),
+            //           SizedBox(width: 10),
+            //           Text(
+            //             AppController.floatingText,
+            //             // "talk to us",
+            //             style: GoogleFonts.inter(
+            //               color: AppController.floatingTextColor,
+            //               // color: Colors.green,
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.w700,
+            //             ),
+            //           )
+            //         ],
+            //       )
+            //     : RichText(
+            //         text: TextSpan(
+            //           text: "App! ",
+            //           style: GoogleFonts.inter(
+            //             color: Colors.green,
+            //             fontSize: 24,
+            //             fontWeight: FontWeight.w700,
+            //           ),
+            //           children: <TextSpan>[
+            //             TextSpan(
+            //               text: "Talk To Us",
+            //               style: GoogleFonts.inter(
+            //                 color: Colors.green,
+            //                 fontSize: 16,
+            //                 fontWeight: FontWeight.w700,
+            //               ),
+            //             )
+            //           ],
+            //         ),
+            //       ),
             // child: Text(
             //   "App! Talk To Us",
             //   style: GoogleFonts.inter(
