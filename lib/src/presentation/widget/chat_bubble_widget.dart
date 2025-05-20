@@ -96,6 +96,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: (botPayloadData.body == null || botPayloadData.body!.isEmpty) ? 0 : botPayloadData.body!.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
@@ -171,6 +172,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: (csatPayloadData.body == null || csatPayloadData.body!.isEmpty) ? 0 : csatPayloadData.body!.length,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
