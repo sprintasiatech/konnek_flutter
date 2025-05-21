@@ -150,7 +150,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
             padding: EdgeInsets.all(16),
             // width: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 180 : null,
             // height: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 70 : null,
-            width: 180,
+            width: 190,
             height: 70,
             decoration: BoxDecoration(
               color: AppController.floatingButtonColor,
