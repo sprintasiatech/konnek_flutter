@@ -733,6 +733,12 @@ class AppController {
             messageTime: DateTime.now().toUtc(),
           );
           conversationList.add(chatModel);
+          
+          conversationList.map((e) {
+            if (e.status == 0) {
+              return e.status = 1;
+            }
+          });
           conversationListFirstChat.addAll(conversationList);
           onGreetingsFailed?.call(output.meta!);
           return;
