@@ -57,6 +57,12 @@ class AppController {
     KonnekFlutter.accessToken = "";
   }
 
+  bool isOnlySpaces(TextEditingController textController) {
+    bool value = textController.text.trim().isEmpty && textController.text.isNotEmpty;
+    AppLoggerCS.debugLog("value: $value");
+    return value;
+  }
+
   static void clearRoomClosed() {
     currentPage = 1;
     limit = 20;
@@ -551,7 +557,7 @@ class AppController {
         }
         dataGetConfigValue = tempDataConfig;
         await ChatLocalSource().setConfigData(getConfigResponseModel.data!);
-        
+
         await configValue();
         onSuccess?.call();
         scaffoldMessengerCallback.call(FetchingState.success);
@@ -733,7 +739,7 @@ class AppController {
             messageTime: DateTime.now().toUtc(),
           );
           conversationList.add(chatModel);
-          
+
           conversationList.map((e) {
             if (e.status == 0) {
               return e.status = 1;
