@@ -71,6 +71,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   Widget handlerWidget() {
     Widget filledWidget = Row(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: (AppController.iconWidget == null || AppController.floatingText == "") ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
       children: [
         (AppController.iconWidget != null && AppController.dataGetConfigValue?.iosIcon != "")
             ? Image.memory(
@@ -88,8 +89,8 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
           style: GoogleFonts.inter(
             color: AppController.floatingTextColor,
             // color: Colors.green,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
           ),
         )
       ],
@@ -150,7 +151,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
             padding: EdgeInsets.all(16),
             // width: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 180 : null,
             // height: (AppController.dataGetConfigValue?.iosIcon == "" && AppController.dataGetConfigValue?.textButton == "") ? 70 : null,
-            width: 190,
+            width: 195,
             height: 70,
             decoration: BoxDecoration(
               color: AppController.floatingButtonColor,

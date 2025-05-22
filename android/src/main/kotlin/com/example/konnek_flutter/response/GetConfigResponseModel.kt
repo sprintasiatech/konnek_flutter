@@ -58,7 +58,10 @@ data class DataGetConfig(
 	val avatarName: String? = null,
 
 	@field:SerializedName("status")
-	val status: Boolean? = null
+	val status: Boolean? = null,
+
+	@field:SerializedName("text_status")
+	val textStatus: Boolean? = null
 ) : Parcelable
 
 @Parcelize
