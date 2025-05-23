@@ -75,8 +75,10 @@ class _ChatScreenState extends State<ChatScreen> {
           if (AppController.isRoomClosed == RoomCloseState.closeWaiting) {
             AppController.isWebSocketStart = false;
             AppController.isRoomClosed = RoomCloseState.close;
-            AppController.clearRoomClosed();
-            AppController.disconnectSocket();
+            Future.delayed(Duration(milliseconds: 700), () {
+              AppController.clearRoomClosed();
+              AppController.disconnectSocket();
+            });
           }
         };
         AppController.onSocketRoomHandoverCalled = () {
