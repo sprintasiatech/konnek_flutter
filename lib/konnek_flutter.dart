@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:konnek_flutter/src/support/app_api_service.dart';
 import 'package:konnek_flutter/src/support/app_connectivity_service.dart';
 import 'package:konnek_flutter/src/support/app_device_info.dart';
@@ -55,6 +56,7 @@ class KonnekFlutter {
     required String inputClientSecret,
     Flavor? flavor,
   }) async {
+    WidgetsFlutterBinding.ensureInitialized();
     clientId = inputClientId;
     clientSecret = inputClientSecret;
 
