@@ -70,10 +70,10 @@ class KonnekFlutter {
     String? result = await initialize(EnvironmentConfig.flavor.name);
     AppLoggerCS.debugLog("value methodChannel: $result");
 
+    await localServiceHive.init();
     await appInfoCS.init();
     await appConnectivityServiceCS.init();
     await appDeviceInfo.getDeviceData();
-    await localServiceHive.init();
   }
 
   // Widget entryPointWidget() {
