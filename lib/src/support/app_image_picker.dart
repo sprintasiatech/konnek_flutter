@@ -66,6 +66,8 @@ class AppImagePickerServiceCS {
 
   Future<File?> getImageAsFile({
     int imageQuality = 30,
+    double? maxHeight,
+    double? maxWidth,
     ImageSource imageSource = ImageSource.gallery,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     void Function(double sizeFileValue)? onSizeFile,
@@ -76,8 +78,8 @@ class AppImagePickerServiceCS {
         source: imageSource,
         preferredCameraDevice: preferredCameraDevice,
         imageQuality: imageQuality,
-        maxHeight: 400,
-        maxWidth: 400,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
       );
       File fileFormat = File(image!.path);
 
