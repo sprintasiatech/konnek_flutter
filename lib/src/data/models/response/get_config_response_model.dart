@@ -33,7 +33,7 @@ class DataGetConfig {
   String? iosIcon;
   String? preview;
   bool? status;
-  bool? textStatus;
+  dynamic? textStatus;
   String? textButton;
   String? textButtonColor;
   Uint8List? avatarImageBit;
@@ -71,6 +71,7 @@ class DataGetConfig {
         preview: json["preview"],
         status: json["status"],
         textStatus: json["text_status"],
+        // textStatus: (json["text_status"] is String) ? json["text_status"] as String? : json["text_status"] as bool?,
         textButton: json["text_button"],
         textButtonColor: json["text_button_color"],
       );

@@ -636,7 +636,7 @@ class AppController {
       headerBackgroundColor = hexToColor(dataGetConfigValue!.headerBackgroundColor!);
       floatingButtonColor = hexToColor(dataGetConfigValue!.buttonColor!);
       floatingTextColor = hexToColor(dataGetConfigValue!.textButtonColor!);
-      if (dataGetConfigValue!.textStatus != null && dataGetConfigValue!.textStatus!) {
+      if (dataGetConfigValue!.textStatus != null && (dataGetConfigValue!.textStatus! is String?) ? dataGetConfigValue!.textStatus! == "true" : dataGetConfigValue!.textStatus!) {
         floatingText = "${dataGetConfigValue!.textButton}";
       } else {
         floatingText = "";
