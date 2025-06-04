@@ -22,7 +22,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
     Map<String, dynamic> data = {
       'flavor': flavor,
     };
-    Map<String, dynamic> newData = checkPlatformWithData(data);
+    Map<String, dynamic> newData = _checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'initialize',
       newData,
@@ -35,7 +35,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
     Map<String, dynamic> data = {
       'clientId': clientId,
     };
-    Map<String, dynamic> newData = checkPlatformWithData(data);
+    Map<String, dynamic> newData = _checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'getConfig',
       newData,
@@ -45,7 +45,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
 
   @override
   Future<String?> sendChat(Map<String, dynamic> data) async {
-    Map<String, dynamic> newData = checkPlatformWithData(data);
+    Map<String, dynamic> newData = _checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'sendChat',
       newData,
@@ -55,7 +55,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
 
   @override
   Future<String?> getConversation(Map<String, dynamic> data) async {
-    Map<String, dynamic> newData = checkPlatformWithData(data);
+    Map<String, dynamic> newData = _checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'getConversation',
       newData,
@@ -65,7 +65,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
 
   @override
   Future<String?> uploadMedia(Map<String, dynamic> data) async {
-    Map<String, dynamic> newData = checkPlatformWithData(data);
+    Map<String, dynamic> newData = _checkPlatformWithData(data);
     final version = await methodChannel.invokeMethod<String>(
       'uploadMedia',
       newData,
@@ -73,19 +73,7 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
     return version;
   }
 
-  String checkPlatform() {
-    String platform = "webhook";
-    if (Platform.isAndroid) {
-      platform = "android";
-    } else if (Platform.isIOS) {
-      platform = "ios";
-    } else {
-      platform = "web";
-    }
-    return platform;
-  }
-
-  Map<String, dynamic> checkPlatformWithData(Map<String, dynamic> data) {
+  Map<String, dynamic> _checkPlatformWithData(Map<String, dynamic> data) {
     String platform = "web";
     if (Platform.isAndroid) {
       platform = "android";
@@ -102,9 +90,4 @@ class MethodChannelKonnekFlutter extends KonnekFlutterPlatform {
     );
     return newData;
   }
-
-  // @override
-  // Widget entryPointWidget() {
-  //   return ChatButtonWidget();
-  // }
 }

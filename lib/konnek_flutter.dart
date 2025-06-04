@@ -16,17 +16,15 @@ export 'package:konnek_flutter/src/env.dart';
 class KonnekFlutter {
   static String clientId = "";
   static String clientSecret = "";
-
   static String accessToken = "";
 
-  // static FamCodingSupply famCodingSupply = FamCodingSupply();
   static AppApiServiceCS appApiService = AppApiServiceCS(EnvironmentConfig.baseUrl());
 
   Future<String?> getPlatformVersion() {
     return KonnekFlutterPlatform.instance.getPlatformVersion();
   }
 
-  Future<String?> initialize(String flavor) {
+  Future<String?> _initializePlatform(String flavor) {
     return KonnekFlutterPlatform.instance.initialize(flavor);
   }
 
@@ -60,23 +58,15 @@ class KonnekFlutter {
     clientId = inputClientId;
     clientSecret = inputClientSecret;
 
-    // await LiveChatSdk().initialize();
     AppLoggerCS.useLogger = false;
-    //
     appApiService.useFoundation = false;
     appApiService.useLogger = false;
-    //
     EnvironmentConfig.flavor = flavor ?? Flavor.staging;
-    String? result = await initialize(EnvironmentConfig.flavor.name);
-    AppLoggerCS.debugLog("value methodChannel: $result");
+    await _initializePlatform(EnvironmentConfig.flavor.name);
 
     await localServiceHive.init();
     await appInfoCS.init();
     await appConnectivityServiceCS.init();
     await appDeviceInfo.getDeviceData();
   }
-
-  // Widget entryPointWidget() {
-  //   return KonnekFlutterPlatform.instance.entryPointWidget();
-  // }
 }

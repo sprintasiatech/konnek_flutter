@@ -31,24 +31,16 @@ class AppFilePickerServiceCS {
 
   String getFileName(File fileFormat) {
     String fileName = fileFormat.path.split('/').last;
-    AppLoggerCS.debugLog("[getFileName]: $fileName");
+    // AppLoggerCS.debugLog("[getFileName]: $fileName");
     return fileName;
-  }
-
-  Future<void> calculateSize(File fileFormat) async {
-    // Calculate the size in MB
-    int sizeInBytes = await fileFormat.length();
-    double sizeInMb = sizeInBytes / (1024 * 1024);
-    AppLoggerCS.debugLog("File Size MB: $sizeInMb");
-    AppLoggerCS.debugLog("File Size KB: ${sizeInMb * 1000}");
   }
 
   Future<double> calculateSizeWithValue(File fileFormat) async {
     // Calculate the size in MB
     int sizeInBytes = await fileFormat.length();
     double sizeInMb = sizeInBytes / (1024 * 1024);
-    AppLoggerCS.debugLog("Image Size MB: $sizeInMb");
-    AppLoggerCS.debugLog("Image Size KB: ${sizeInMb * 1000}");
+    // AppLoggerCS.debugLog("Image Size MB: $sizeInMb");
+    // AppLoggerCS.debugLog("Image Size KB: ${sizeInMb * 1000}");
     return sizeInMb;
   }
 }

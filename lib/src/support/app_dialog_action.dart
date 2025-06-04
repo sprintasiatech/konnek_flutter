@@ -312,11 +312,12 @@ class AppDialogActionCS {
     return await showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
-      builder: (context) => WillPopScope(
+      builder: (context) => PopScope(
         // onWillPop: () => Future.value(barrierDismissible),
-        onWillPop: () async {
-          return barrierDismissible;
-        },
+        // onWillPop: () async {
+        //   return barrierDismissible;
+        // },
+        canPop: barrierDismissible,
         child: Center(
           child: SingleChildScrollView(
             child: Material(

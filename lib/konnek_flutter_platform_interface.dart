@@ -46,8 +46,4 @@ abstract class KonnekFlutterPlatform extends PlatformInterface {
   Future<String?> uploadMedia(Map<String, dynamic> data) {
     throw UnimplementedError('getConversation() has not been implemented.');
   }
-
-  // Widget entryPointWidget() {
-  //   throw UnimplementedError("entryPointWidget() has not been implemented");
-  // }
 }

@@ -21,7 +21,6 @@ class JwtConverter {
       };
     } catch (e) {
       AppLoggerCS.debugLog("[decodeJwt] error: $e");
-      // throw FormatException('Failed to decode JWT: ${e.toString()}');
       rethrow;
     }
   }

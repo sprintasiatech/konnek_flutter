@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:konnek_flutter/src/support/app_logger.dart';
-
 class AppFileHelper {
   static String getUrlName(String payload) {
     // AppLoggerCS.debugLog("widget.data.payload: $payload");

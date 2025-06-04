@@ -40,10 +40,7 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
         io.Socket socket = AppSocketioService.connect(
           url: baseUrlSocket,
           token: KonnekFlutter.accessToken,
-          // token: token ?? "",
         );
-        // AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.connected: ${socket.connected}");
-        // AppLoggerCS.debugLog("[ChatRemoteSourceImpl][startWebSocketIO] socket.acks: ${socket.acks}");
         return socket;
       }
     } catch (e) {
@@ -74,7 +71,6 @@ class ChatRemoteSourceImpl extends ChatRemoteSource {
     required String sesionId,
   }) async {
     try {
-      AppLoggerCS.debugLog("[remoteSource] currentPage: $currentPage");
       String url = "$baseUrl/room/conversation/$roomId?page=$currentPage&limit=20&session_id=$sesionId";
       Response? response = await apiService.call(
         url,
