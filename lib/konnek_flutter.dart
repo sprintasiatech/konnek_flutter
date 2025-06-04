@@ -61,7 +61,7 @@ class KonnekFlutter {
     AppLoggerCS.useLogger = false;
     appApiService.useFoundation = false;
     appApiService.useLogger = false;
-    EnvironmentConfig.flavor = flavor ?? Flavor.staging;
+    EnvironmentConfig.flavor = flavor ?? Flavor.production;
     await _initializePlatform(EnvironmentConfig.flavor.name);
 
     await localServiceHive.init();

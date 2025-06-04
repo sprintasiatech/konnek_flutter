@@ -4,8 +4,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:konnek_flutter/konnek_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
+  await KonnekFlutter().initKonnek(
+    inputClientId: 'your-client-id',
+    inputClientSecret: 'your-client-secret',
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -50,12 +55,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+      home: LiveChatSdkScreen(
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Konnek Example App'),
+          ),
+          body: Center(
+            child: Text('Running on: $_platformVersion\n'),
+          ),
         ),
       ),
     );
