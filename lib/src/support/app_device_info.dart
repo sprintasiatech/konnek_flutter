@@ -8,7 +8,6 @@ import 'package:uuid/uuid.dart';
 
 class AppDeviceInfoCS {
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  // final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static DeviceInfoData? deviceInfoData;
 
   Future<DeviceInfoData> getDeviceData() async {

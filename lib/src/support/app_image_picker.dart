@@ -134,19 +134,19 @@ class AppImagePickerServiceCS {
 
   String getFileName(File fileFormat) {
     String fileName = fileFormat.path.split('/').last;
-    AppLoggerCS.debugLog("[getFileName]: $fileName");
+    // AppLoggerCS.debugLog("[getFileName]: $fileName");
     return fileName;
   }
 
   String getExtensionFile(File fileFormat) {
     String fileName = (fileFormat.path.split('/').last).split('.').last;
-    AppLoggerCS.debugLog("[getExtensionFile]: $fileName");
+    // AppLoggerCS.debugLog("[getExtensionFile]: $fileName");
     return fileName;
   }
 
   String getExtensionFileFromPath(String filePath) {
     String fileName = (filePath.split('/').last).split('.').last;
-    AppLoggerCS.debugLog("[getExtensionFileFromPath]: $fileName");
+    // AppLoggerCS.debugLog("[getExtensionFileFromPath]: $fileName");
     return fileName;
   }
 
@@ -160,20 +160,12 @@ class AppImagePickerServiceCS {
     return result;
   }
 
-  Future<void> calculateSize(File fileFormat) async {
-    // Calculate the size in MB
-    int sizeInBytes = await fileFormat.length();
-    double sizeInMb = sizeInBytes / (1024 * 1024);
-    AppLoggerCS.debugLog("Image Size MB: $sizeInMb");
-    AppLoggerCS.debugLog("Image Size KB: ${sizeInMb * 1000}");
-  }
-
   Future<double> calculateSizeWithValue(File fileFormat) async {
     // Calculate the size in MB
     int sizeInBytes = await fileFormat.length();
     double sizeInMb = sizeInBytes / (1024 * 1024);
-    AppLoggerCS.debugLog("Image Size MB: $sizeInMb");
-    AppLoggerCS.debugLog("Image Size KB: ${sizeInMb * 1000}");
+    // AppLoggerCS.debugLog("Image Size MB: $sizeInMb");
+    // AppLoggerCS.debugLog("Image Size KB: ${sizeInMb * 1000}");
     return sizeInMb;
   }
 }

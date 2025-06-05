@@ -20,20 +20,16 @@ class CarouselChatBubbleWidget extends StatefulWidget {
 }
 
 class _CarouselChatBubbleWidgetState extends State<CarouselChatBubbleWidget> {
-  int _currentPage = 0;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         SizedBox(
-          // width: MediaQuery.of(context).size.width * 0.6,
           height: 350,
           child: PageView.builder(
-            // child: ListView.separated(
             controller: _pageController,
-            // shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemCount: (widget.carouselPayloadData.body == null || widget.carouselPayloadData.body!.isEmpty) ? 0 : widget.carouselPayloadData.body!.length,
             itemBuilder: (context, index) {
@@ -44,10 +40,7 @@ class _CarouselChatBubbleWidgetState extends State<CarouselChatBubbleWidget> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
                         "${widget.carouselPayloadData.body?[index].mediaUrl}",
-                        // AppFileHelper.getUrlName(widget.data.payload ?? ""),
-                        // AppFileHelper.getUrlName(widget.data.payload ?? ""),
                         height: 200,
-                        // width: 100,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -74,7 +67,6 @@ class _CarouselChatBubbleWidgetState extends State<CarouselChatBubbleWidget> {
                     SizedBox(height: 15),
                     InkWell(
                       onTap: () {
-                        // AppController.isRoomClosed = false;
                         widget.onChooseCarousel?.call(
                           widget.carouselPayloadData.body![index],
                           widget.data,
@@ -87,7 +79,7 @@ class _CarouselChatBubbleWidgetState extends State<CarouselChatBubbleWidget> {
                         ),
                         height: 40,
                         decoration: BoxDecoration(
-                          color: const Color(0xff203080).withOpacity(0.1),
+                          color: const Color(0xff203080).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -105,13 +97,9 @@ class _CarouselChatBubbleWidgetState extends State<CarouselChatBubbleWidget> {
                 ),
               );
             },
-            // separatorBuilder: (context, index) {
-            //   return SizedBox(width: 10);
-            // },
           ),
         ),
-        Container(
-          // color: Colors.red,
+        SizedBox(
           height: 350,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

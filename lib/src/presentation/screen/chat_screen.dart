@@ -11,7 +11,6 @@ import 'package:konnek_flutter/src/presentation/widget/chat_bubble_widget.dart';
 import 'package:konnek_flutter/src/presentation/widget/show_image_widget.dart';
 import 'package:konnek_flutter/src/support/app_file_picker.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
-import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -36,13 +35,11 @@ class _ChatScreenState extends State<ChatScreen> {
   final ValueNotifier<bool> _showToggleButton = ValueNotifier(false);
 
   void scrollListenerFunc() {
-    // AppLoggerCS.debugLog("Scroll position: ${_scrollController.position.pixels}");
     if (_scrollController.position.pixels > 100.0) {
       _showToggleButton.value = true;
     } else {
       _showToggleButton.value = false;
     }
-    // AppLoggerCS.debugLog("_showToggleButton.value: ${_showToggleButton.value}");
   }
 
   @override
@@ -58,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (AppController.isWebSocketStart == false) {
         AppController.onSocketChatCalled = () async {
-          AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
+          // AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
           await ChatLocalSource().setSocketReady(true);
           AppController.socketReady = true;
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
@@ -67,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         };
         AppController.onSocketChatStatusCalled = () {
-          AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
+          // AppLoggerCS.debugLog("[onSocketChatStatusCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           if (mounted) {
             setState(() {});
@@ -82,21 +79,21 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         };
         AppController.onSocketRoomHandoverCalled = () {
-          AppLoggerCS.debugLog("[onSocketRoomHandoverCalled]");
+          // AppLoggerCS.debugLog("[onSocketRoomHandoverCalled]");
           // _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           // if (mounted) {
           //   setState(() {});
           // }
         };
         AppController.onSocketRoomClosedCalled = () {
-          AppLoggerCS.debugLog("[onSocketRoomClosedCalled]");
+          // AppLoggerCS.debugLog("[onSocketRoomClosedCalled]");
           // _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           if (mounted) {
             setState(() {});
           }
         };
         AppController.onSocketCSATCalled = () {
-          AppLoggerCS.debugLog("[onSocketCSATCalled]");
+          // AppLoggerCS.debugLog("[onSocketCSATCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           AppController.isCSATOpen = true;
           AppController.isRoomClosed = RoomCloseState.open;
@@ -106,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         };
         AppController.onSocketCSATCloseCalled = () {
-          AppLoggerCS.debugLog("[onSocketCSATCloseCalled]");
+          // AppLoggerCS.debugLog("[onSocketCSATCloseCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           AppController.isCSATOpen = false;
           AppController.isRoomClosed = RoomCloseState.close;
@@ -118,14 +115,14 @@ class _ChatScreenState extends State<ChatScreen> {
           AppController.disconnectSocket();
         };
         AppController.onSocketCustomerIsBlockedCalled = () {
-          AppLoggerCS.debugLog("[onSocketCustomerIsBlockedCalled]");
+          // AppLoggerCS.debugLog("[onSocketCustomerIsBlockedCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           if (mounted) {
             setState(() {});
           }
         };
         AppController.onSocketDisconnectCalled = () {
-          AppLoggerCS.debugLog("[onSocketDisconnectCalled]");
+          // AppLoggerCS.debugLog("[onSocketDisconnectCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           if (mounted) {
             setState(() {});
@@ -133,12 +130,6 @@ class _ChatScreenState extends State<ChatScreen> {
         };
       }
     });
-  }
-
-  void _scrollToTop() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    }
   }
 
   void _scrollToBottom() {
@@ -171,13 +162,11 @@ class _ChatScreenState extends State<ChatScreen> {
       canPop: (openImage && srcImage != "") ? false : true,
       onPopInvokedWithResult: (didPop, result) async {
         if (openImage && srcImage != "") {
-          AppLoggerCS.debugLog("close");
           setState(() {
             openImage = false;
             srcImage = "";
           });
         } else {
-          AppLoggerCS.debugLog("Here");
           isLoading = false;
           AppController.clear();
           await ChatLocalSource.localServiceHive.user.clear();
@@ -321,7 +310,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     chatData: chatData,
                                                     // plainData: plainData,
                                                     onSent: () {
-                                                      AppLoggerCS.debugLog("[onSent][emitBotChat]");
                                                       _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                       if (mounted) {
                                                         setState(() {});
@@ -334,7 +322,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     postbackDataChosen: csatData,
                                                     chatData: chatPayload,
                                                     onSent: () {
-                                                      AppLoggerCS.debugLog("[onSent][emitCsat]");
                                                       _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                       if (mounted) {
                                                         setState(() {});
@@ -352,7 +339,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     carouselDataChosen: carouselData,
                                                     chatData: chatPayload,
                                                     onSent: () {
-                                                      AppLoggerCS.debugLog("[onSent][emitCarousel]");
                                                       _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
                                                       if (mounted) {
                                                         setState(() {});
@@ -362,7 +348,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                                 },
                                                 openImageCallback: (src) async {
                                                   if (src != "") {
-                                                    AppLoggerCS.debugLog("src: $src");
                                                     if (AppImagePickerServiceCS().isImageFile(src)) {
                                                       setState(() {
                                                         openImage = true;
@@ -420,13 +405,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                         // AppLoggerCS.debugLog("up");
                                         _scrollToBottom();
                                       },
-                                      child: Container(
+                                      child: SizedBox(
                                         // color: Colors.blue,
                                         // margin: EdgeInsets.all(20),
                                         height: 50,
                                         width: 50,
                                         child: CircleAvatar(
-                                          backgroundColor: const Color(0xff2a55a4).withOpacity(0.6),
+                                          backgroundColor: const Color(0xff2a55a4).withValues(alpha: 0.6),
                                           child: Icon(
                                             Icons.keyboard_arrow_down_outlined,
                                             size: 35,
@@ -776,7 +761,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: ShowImageWidget(
                             image: srcImage,
                             confirmDismiss: (direction) async {
-                              AppLoggerCS.debugLog("close");
                               setState(() {
                                 openImage = false;
                                 srcImage = "";
@@ -791,7 +775,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         top: 50,
                         child: GestureDetector(
                           onTap: () {
-                            AppLoggerCS.debugLog("close");
                             setState(() {
                               openImage = false;
                               srcImage = "";
@@ -829,7 +812,6 @@ class _ChatScreenState extends State<ChatScreen> {
       AppController().emitCsatText(
         text: textController.text,
         onSent: () {
-          AppLoggerCS.debugLog("[onSent][emitCsatText]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
           if (mounted) {
             setState(() {});

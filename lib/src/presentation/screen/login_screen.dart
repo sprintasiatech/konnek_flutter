@@ -4,7 +4,6 @@ import 'package:konnek_flutter/assets/assets.dart';
 import 'package:konnek_flutter/src/data/source/local/chat_local_source.dart';
 import 'package:konnek_flutter/src/presentation/controller/app_controller.dart';
 import 'package:konnek_flutter/src/presentation/screen/chat_screen.dart';
-import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:konnek_flutter/src/support/string_extension.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,89 +21,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // nameController.text = "test";
-    // emailController.text = "test@test.com";
-
-    // nameController.text = "test1";
-    // emailController.text = "test1@test.com";
-
-    // nameController.text = "testX";
-    // emailController.text = "testX@test.com";
-
-    // nameController.text = "testT";
-    // emailController.text = "testT@test.com";
-
-    // nameController.text = "testZ";
-    // emailController.text = "testZ@test.com";
-
-    // nameController.text = "testV";
-    // emailController.text = "testV@test.com";
-
-    // nameController.text = "testJ";
-    // emailController.text = "testJ@test.com";
-
-    // nameController.text = "testN";
-    // emailController.text = "testN@test.com";
-
-    // nameController.text = "testBlock";
-    // emailController.text = "testBlock@test.com";
-
-    // nameController.text = "rabilsdkmobile";
-    // emailController.text = "rabisdk@mail.com";
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   AppController.scaffoldMessengerCallback = (FetchingState state) {
-    //     Color colorState = Colors.white;
-    //     String statusState = "";
-    //     if (state == FetchingState.loading) {
-    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    //       colorState = Colors.blue;
-    //       statusState = "Fetching";
-    //     }
-    //     if (state == FetchingState.failed) {
-    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    //       colorState = Colors.red;
-    //       statusState = "Failed";
-    //     }
-    //     if (state == FetchingState.success) {
-    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    //       colorState = Colors.green;
-    //       statusState = "Success";
-    //     }
-    //     ScaffoldMessenger.of(
-    //       context,
-    //     ).showSnackBar(
-    //       SnackBar(
-    //         duration: const Duration(milliseconds: 800),
-    //         backgroundColor: colorState,
-    //         content: Text(
-    //           statusState,
-    //           style: GoogleFonts.inter(
-    //             fontSize: 14,
-    //             fontWeight: FontWeight.w500,
-    //           ),
-    //         ),
-    //       ),
-    //     );
-    //   };
-
-    //   AppController().getConfig(
-    //     onSuccess: () {
-    //       // AppLoggerCS.debugLog("[getConfig] success");
-    //       setState(() {});
-    //       widget.callback?.call();
-    //     },
-    //     onFailed: (errorMessage) {
-    //       // AppLoggerCS.debugLog("[getConfig] onFailed $errorMessage");
-    //       setState(() {});
-    //     },
-    //   );
-    // });
-  }
 
   String nameErrorText = "";
   void _validateName(String name) {
@@ -134,8 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
-        AppLoggerCS.debugLog("didPop: $didPop");
-        AppLoggerCS.debugLog("result: $result");
+        // AppLoggerCS.debugLog("didPop: $didPop");
+        // AppLoggerCS.debugLog("result: $result");
       },
       child: GestureDetector(
         onTap: () {
@@ -154,23 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   SizedBox(height: 100),
                   Center(
-                    // child: (AppController.dataGetConfigValue != null)
-                    //     ? Image.memory(
-                    //         Uri.parse(AppController.dataGetConfigValue!.avatarImage!).data!.contentAsBytes(),
-                    //         // base64Decode(dataGetConfig!.avatarImage!),
-                    //         height: 100,
-                    //         width: 100,
-                    //         fit: BoxFit.cover,
-                    //       )
-                    //     : Text(
-                    //         // "App!",
-                    //         (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
-                    //         textAlign: TextAlign.center,
-                    //         style: GoogleFonts.lato(
-                    //           fontSize: 34,
-                    //           fontWeight: FontWeight.w700,
-                    //         ),
-                    //       ),
                     child: (AppController.dataGetConfigValue != null)
                         ? Text(
                             (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
@@ -188,14 +87,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                    // child: Text(
-                    //   "App!",
-                    //   textAlign: TextAlign.center,
-                    //   style: GoogleFonts.lato(
-                    //     fontSize: 34,
-                    //     fontWeight: FontWeight.w700,
-                    //   ),
-                    // ),
                   ),
                   SizedBox(height: 80),
                   Text(
@@ -312,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           boxShadow: [
                             BoxShadow(
                               offset: Offset(2, 2),
-                              color: Colors.lightBlue.shade100.withOpacity(0.5),
+                              color: Colors.lightBlue.shade100.withValues(alpha: 0.5),
                               blurRadius: 2,
                               spreadRadius: 1,
                             ),
@@ -346,6 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               .then((value) {
                             AppController.isWebSocketStart = false;
                             Navigator.push(
+                              // ignore: use_build_context_synchronously
                               context,
                               MaterialPageRoute(
                                 builder: (context) {

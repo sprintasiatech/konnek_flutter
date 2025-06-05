@@ -1,4 +1,3 @@
-import 'package:hex/hex.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:konnek_flutter/src/support/encrypt_utils.dart';
 export 'package:hive_flutter/hive_flutter.dart';
