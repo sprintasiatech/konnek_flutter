@@ -1,15 +1,54 @@
 # konnek_flutter
 
-A new Flutter plugin project.
+Konnek SDK for Flutter tools
 
-## Getting Started
+## Usage/Examples
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/to/develop-plugins),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+How to use `konnek_flutter` package
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+There are two setups should be added
+1. Initialize method (`initKonnek()`) with a clientId and clientSecret parameter
+2. Floating Button Widget to screen
 
+First you should add `initKonnek()` method with clientId and clientSecret. Don't forget to use `WidgetsFlutterBinding.ensureInitialized()` before calling `initKonnek()` method
+Example as below:
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+  await KonnekFlutter.initKonnek(
+    inputClientId: 'your-client-id',
+    inputClientSecret: 'your-client-secret',
+  );
+}
+```
+
+Example as below:
+Add `LiveChatSdkScreen` Widget on the top of your screen which exampled below is using `Scaffold`
+```dart
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LiveChatSdkScreen(
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Konnek Example App'),
+          ),
+          body: Center(
+            child: Text('Your screen'),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```
