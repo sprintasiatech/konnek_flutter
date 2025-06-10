@@ -20,12 +20,12 @@ dependencies:
   intl: ^0.20.2
   image_picker: ^1.1.2
   file_picker: ^10.1.2
-  dio: 4.0.6
-  connectivity_plus: 5.0.0
-  hive_flutter: 1.1.0
+  dio: ^4.0.6
+  connectivity_plus: ^5.0.0
+  hive_flutter: ^1.1.0
   hex: ^0.2.0
-  pointycastle:
-  encrypt: 5.0.2
+  pointycastle: ^3.9.1
+  encrypt: ^5.0.2
   device_info_plus: ^11.4.0
   package_info_plus: ^8.3.0
   url_launcher: ^6.3.1
