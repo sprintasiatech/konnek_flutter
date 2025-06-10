@@ -24,7 +24,7 @@ class KonnekFlutter {
     return KonnekFlutterPlatform.instance.getPlatformVersion();
   }
 
-  Future<String?> _initializePlatform(String flavor) {
+  static Future<String?> _initializePlatform(String flavor) {
     return KonnekFlutterPlatform.instance.initialize(flavor);
   }
 
@@ -49,7 +49,7 @@ class KonnekFlutter {
   static AppInfoCS appInfoCS = AppInfoCS();
   static LocalServiceHive localServiceHive = LocalServiceHive();
 
-  Future<void> initKonnek({
+  static Future<void> initKonnek({
     required String inputClientId,
     required String inputClientSecret,
     Flavor? flavor,

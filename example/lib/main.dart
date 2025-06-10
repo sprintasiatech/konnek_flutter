@@ -7,7 +7,7 @@ import 'package:konnek_flutter/konnek_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
-  await KonnekFlutter().initKonnek(
+  await KonnekFlutter.initKonnek(
     inputClientId: 'your-client-id',
     inputClientSecret: 'your-client-secret',
   );
