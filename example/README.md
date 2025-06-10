@@ -1,16 +1,54 @@
-# flutter_plugin_test2_example
+# konnek_flutter
 
-Demonstrates how to use the flutter_plugin_test2 plugin.
+Konnek SDK for Flutter tools
 
-## Getting Started
+## Usage/Examples
 
-This project is a starting point for a Flutter application.
+How to use `konnek_flutter` package
 
-A few resources to get you started if this is your first Flutter project:
+There are two setups should be added
+1. Initialize method (`initKonnek()`) with a clientId and clientSecret parameter
+2. Floating Button Widget to screen
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+First you should add `initKonnek()` method with clientId and clientSecret. Don't forget to use `WidgetsFlutterBinding.ensureInitialized()` before calling `initKonnek()` method
+Example as below:
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+  await KonnekFlutter.initKonnek(
+    inputClientId: 'your-client-id',
+    inputClientSecret: 'your-client-secret',
+  );
+}
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Example as below:
+Add `LiveChatSdkScreen` Widget on the top of your screen which exampled below is using `Scaffold`
+```dart
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LiveChatSdkScreen(
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Konnek Example App'),
+          ),
+          body: Center(
+            child: Text('Your screen'),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```
