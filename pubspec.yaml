@@ -1,7 +1,7 @@
 name: konnek_flutter
 description: "Konnek SDK for Flutter"
 version: 0.0.1
-homepage: https://github.com/fauzanakmalmahdi/konnek_flutter
+homepage: https://github.com/sprintasiatech/konnek_flutter
 
 environment:
   sdk: ^3.6.0
