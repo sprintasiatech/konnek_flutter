@@ -140,7 +140,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.lato(
                       color: Colors.black87,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -214,7 +214,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
               textAlign: TextAlign.center,
               style: GoogleFonts.lato(
                 color: Colors.black87,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
