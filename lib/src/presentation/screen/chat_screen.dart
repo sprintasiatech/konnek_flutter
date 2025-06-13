@@ -111,8 +111,10 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
-          AppController.clearRoomClosed();
-          AppController.disconnectSocket();
+          Future.delayed(Duration(milliseconds: 700), () {
+            AppController.clearRoomClosed();
+            AppController.disconnectSocket();
+          });
         };
         AppController.onSocketCustomerIsBlockedCalled = () {
           // AppLoggerCS.debugLog("[onSocketCustomerIsBlockedCalled]");
