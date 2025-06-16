@@ -1,3 +1,7 @@
+## 0.0.5
+
+* update: fix handle completion message close
+
 ## 0.0.4
 
 * update: fix swift code
