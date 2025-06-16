@@ -95,8 +95,13 @@ class _ChatScreenState extends State<ChatScreen> {
         AppController.onSocketCSATCalled = () {
           // AppLoggerCS.debugLog("[onSocketCSATCalled]");
           _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-          AppController.isCSATOpen = true;
-          AppController.isRoomClosed = RoomCloseState.open;
+          if (AppController.isAnyCompletionMessage) {
+            AppController.isCSATOpen = false;
+            AppController.isRoomClosed = RoomCloseState.close;
+          } else {
+            AppController.isCSATOpen = true;
+            AppController.isRoomClosed = RoomCloseState.open;
+          }
           // AppController.isRoomClosed = false;
           if (mounted) {
             setState(() {});
