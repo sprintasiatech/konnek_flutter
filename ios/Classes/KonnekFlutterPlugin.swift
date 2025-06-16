@@ -172,7 +172,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func getConversation(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                       let limit = args["limit"] as? String,
@@ -223,7 +223,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func sendChat(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                     let clientId = args["clientId"] as? String,
@@ -269,7 +269,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func uploadMedia(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                       let filePath = args["fileData"] as? String,
