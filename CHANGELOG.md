@@ -1,3 +1,7 @@
+## 0.0.4
+
+* update: fix swift code
+
 ## 0.0.3
 
 * update: add process completion message
