@@ -1,3 +1,7 @@
+## 0.0.6
+
+* update: fix handle completion message close in swift
+
 ## 0.0.5
 
 * update: fix handle completion message close
