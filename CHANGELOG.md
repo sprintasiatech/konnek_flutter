@@ -1,3 +1,8 @@
+## 0.0.7
+
+* update: handle upload image flow CSAT
+* update: handle duplicate message in CSAT
+
 ## 0.0.6
 
 * update: fix handle completion message close in swift
