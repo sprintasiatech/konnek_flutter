@@ -1,3 +1,10 @@
+## 0.0.8
+
+* update: handle try catch in android native
+* update: toast in uploadMedia failed
+* update: add limit pickFile 30mb
+* update: add maxSize params in pickFiles function
+
 ## 0.0.7
 
 * update: handle upload image flow CSAT
