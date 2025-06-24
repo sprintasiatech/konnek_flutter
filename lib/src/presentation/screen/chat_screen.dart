@@ -687,6 +687,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                 fileMaxSize: 30,
                                                 onFailed: (errorMessage) {
                                                   AppLoggerCS.debugLog("[pickFiles] failed: $errorMessage");
+                                                  toastFailedUploadMedia("not allowed more than 30mb");
                                                 },
                                                 onFileName: (fileNameValue) {
                                                   fileName = fileNameValue;
