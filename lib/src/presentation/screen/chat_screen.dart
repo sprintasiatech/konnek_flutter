@@ -686,8 +686,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                               uploadFile = await AppFilePickerServiceCS().pickFiles(
                                                 fileMaxSize: 30,
                                                 onFailed: (errorMessage) {
-                                                  AppLoggerCS.debugLog("[pickFiles] failed: $errorMessage");
-                                                  toastFailedUploadMedia("not allowed more than 30mb");
+                                                  toastFailedUploadMedia(errorMessage);
                                                 },
                                                 onFileName: (fileNameValue) {
                                                   fileName = fileNameValue;
