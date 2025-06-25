@@ -1,3 +1,7 @@
+## 0.0.9
+
+* update: fix
+
 ## 0.0.8
 
 * update: handle try catch in android native
