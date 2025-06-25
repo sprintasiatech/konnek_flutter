@@ -1,5 +1,9 @@
 ## 0.0.9
 
+* update: file picker error flow
+
+## 0.0.9
+
 * update: fix
 
 ## 0.0.8
