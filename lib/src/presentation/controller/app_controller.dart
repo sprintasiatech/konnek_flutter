@@ -122,8 +122,12 @@ class AppController {
   }
 
   static Future<void> launchUrlChat(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      AppLoggerCS.debugLog('Could not launch $url');
+    try {
+      if (!await launchUrl(Uri.parse(url))) {
+        AppLoggerCS.debugLog('Could not launch $url');
+      }
+    } catch (e) {
+      AppLoggerCS.debugLog("error here: $e");
     }
   }
 
