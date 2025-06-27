@@ -420,7 +420,7 @@ class AppController {
     try {
       String uuid = const Uuid().v4();
       Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-      DateTime currentDateValue = DateTime.now();
+      DateTime currentDateValue = DateTime.now().subtract(const Duration(milliseconds: 400));
       Map<String, dynamic> dataEmit = {
         "message_id": uuid,
         "reply_id": null,
@@ -478,7 +478,7 @@ class AppController {
     try {
       String uuid = const Uuid().v4();
       Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-      DateTime currentDateValue = DateTime.now();
+      DateTime currentDateValue = DateTime.now().subtract(const Duration(milliseconds: 400));
       Map<String, dynamic> dataEmit = {
         "message_id": uuid,
         "reply_id": null,
