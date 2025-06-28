@@ -1,4 +1,11 @@
-## 0.0.9
+## 0.0.11
+
+* update: handle catch launchUrlChat
+* update: handle onFailed pickFiles
+* update: handle CSAT overlap
+* update: csat close timer
+
+## 0.0.10
 
 * update: file picker error flow
 
