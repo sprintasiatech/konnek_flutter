@@ -6,24 +6,37 @@ import 'package:konnek_flutter/src/support/app_logger.dart';
 class AppFilePickerServiceCS {
   Future<File?> pickFiles({
     bool allowMultiples = false,
+    double? fileMaxSize,
     void Function(double sizeFileValue)? onSizeFile,
     void Function(String fileNameValue)? onFileName,
+    void Function(String errorMessage)? onFailed,
   }) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null) {
         File fileFormat = File(result.files.single.path!);
-        
+
         String fileName = getFileName(fileFormat);
         onFileName?.call(fileName);
 
         double sizeFile = await calculateSizeWithValue(fileFormat);
-        onSizeFile?.call(sizeFile);
-        return fileFormat;
+        if (fileMaxSize == null) {
+          onSizeFile?.call(sizeFile);
+          return fileFormat;
+        } else {
+          if (sizeFile > fileMaxSize) {
+            onFailed?.call("file exceeds limit, not allowed more than $fileMaxSize MB");
+            return null;
+          } else {
+            onSizeFile?.call(sizeFile);
+            return fileFormat;
+          }
+        }
       } else {
         return null;
       }
     } catch (e) {
+      onFailed?.call("[pickFiles] $e");
       AppLoggerCS.debugLog("[AppFilePickerServiceCS][pickFiles] $e");
       return null;
     }

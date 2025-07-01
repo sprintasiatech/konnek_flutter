@@ -33,7 +33,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                     //                    print("Error: \(error.localizedDescription)")
                     result(FlutterError(code: "API_ERROR",
                                         message: error.localizedDescription,
-                                        details: nil,
+                                        details: nil
                                        )
                     )
                 }
@@ -47,7 +47,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 case .failure(let error):
                     result(FlutterError(code: "API_ERROR",
                                         message: error.localizedDescription,
-                                        details: nil,
+                                        details: nil
                                        )
                     )
                 }
@@ -76,7 +76,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 case .failure(let error):
                     result(FlutterError(code: "API_ERROR",
                                         message: error.localizedDescription,
-                                        details: nil,
+                                        details: nil
                                        )
                     )
                 }
@@ -90,7 +90,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 case .failure(let error):
                     result(FlutterError(code: "API_ERROR",
                                         message: error.localizedDescription,
-                                        details: nil,
+                                        details: nil
                                        )
                     )
                 }
@@ -172,7 +172,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func getConversation(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                       let limit = args["limit"] as? String,
@@ -223,7 +223,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func sendChat(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                     let clientId = args["clientId"] as? String,
@@ -237,15 +237,17 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                 KonnekFlutterPlugin.clientId = clientId
                 let text = args["text"] as? String
                 
-                var payload: [String: Any] = [
-                    "name": name,
-                    "username": username
-                ]
-                if let text = text {
-                    payload["text"] = text
-                }
-                
                 Task {
+                    lazy var payload: [String: Any] = [:]
+
+                    payload = [
+                        "name": name,
+                        "username": username
+                    ]
+                    if let text = text {
+                        payload["text"] = text
+                    }
+
                     do {
                         var apiService = try await ApiConfig().provideApiService()
                         var data = try await apiService.sendChat(
@@ -269,7 +271,7 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
             func uploadMedia(
                 call: FlutterMethodCall,
                 result: @escaping FlutterResult,
-                completion: @escaping (Result<String, Error>) -> Void,
+                completion: @escaping (Result<String, Error>) -> Void
             ) {
                 guard let args = call.arguments as? Dictionary<String, Any>,
                       let filePath = args["fileData"] as? String,
@@ -286,16 +288,18 @@ public class KonnekFlutterPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "FILE_NOT_FOUND", message: "File not found at path", details: filePath))
                     return
                 }
-                lazy var dataFile = Data()
-                do {
-                    let fileData = try Data(contentsOf: fileUrl)
-                    dataFile = fileData
-                    // Now you can upload or manipulate `fileData`
-                } catch {
-                    print("Error reading file: \(error)")
-                }
                 
                 Task {
+                    lazy var dataFile = Data()
+                    
+                    do {
+                        let fileData = try Data(contentsOf: fileUrl)
+                        dataFile = fileData
+                        // Now you can upload or manipulate `fileData`
+                    } catch {
+                        print("Error reading file: \(error)")
+                    }
+                    
                     do {
                         var apiService = try await ApiConfig().provideApiService()
                         let data = try await apiService.uploadMedia(

@@ -35,19 +35,23 @@ class KonnekService {
             KonnekFlutterPlugin.clientId = clientId ?: ""
 
             CoroutineScope(Dispatchers.IO).launch {
-                val apiService = ApiConfig.provideApiService()
-                val response = apiService.getConfig(
-                    clientId ?: "",
-                    platform = platform ?: "",
-                )
+                try {
+                    val apiService = ApiConfig.provideApiService()
+                    val response = apiService.getConfig(
+                        clientId ?: "",
+                        platform = platform ?: "",
+                    )
 //                println("[getConfig] response: $response")
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    val json: String = gson.toJson(data)
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        val json: String = gson.toJson(data)
 //                    println("[getConfig] json: $json")
-                    onSuccess.invoke(json)
-                } else {
-                    onFailed.invoke(response.message())
+                        onSuccess.invoke(json)
+                    } else {
+                        onFailed.invoke(response.message())
+                    }
+                } catch (e: Exception) {
+                    onFailed(e.toString())
                 }
             }
         } catch (e: Exception) {
@@ -70,20 +74,24 @@ class KonnekService {
             val sessionId: String? = map.get("sessionId") as String?
 
             CoroutineScope(Dispatchers.IO).launch {
-                val apiService = ApiConfig.provideApiService()
-                val response = apiService.getConversation(
-                    roomId ?: "",
-                    currentPage ?: "",
-                    limit ?: "",
-                    sessionId ?: "",
-                    KonnekFlutterPlugin.access,
-                )
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    val json: String = gson.toJson(data)
-                    onSuccess(json)
-                } else {
-                    onFailed(response.message())
+                try {
+                    val apiService = ApiConfig.provideApiService()
+                    val response = apiService.getConversation(
+                        roomId ?: "",
+                        currentPage ?: "",
+                        limit ?: "",
+                        sessionId ?: "",
+                        KonnekFlutterPlugin.access,
+                    )
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        val json: String = gson.toJson(data)
+                        onSuccess(json)
+                    } else {
+                        onFailed(response.message())
+                    }
+                } catch (e: Exception) {
+                    onFailed(e.toString())
                 }
             }
         } catch (e: Exception) {
@@ -144,21 +152,25 @@ class KonnekService {
             val requestBody = convertMapToJsonRequestBody(reqBody)
 
             CoroutineScope(Dispatchers.IO).launch {
-                val apiService = ApiConfig.provideApiService()
-                val response = apiService.sendChat(
-                    KonnekFlutterPlugin.clientId,
-                    platform = platform ?: "",
-                    requestBody,
-                )
-                // println("[sendChat] response: $response")
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    val json: String = gson.toJson(data)
-                    // println("[sendChat] json: $json")
-                    KonnekFlutterPlugin.access = "${data?.data?.token}"
-                    onSuccess(json)
-                } else {
-                    onFailed(response.message())
+                try {
+                    val apiService = ApiConfig.provideApiService()
+                    val response = apiService.sendChat(
+                        KonnekFlutterPlugin.clientId,
+                        platform = platform ?: "",
+                        requestBody,
+                    )
+                    // println("[sendChat] response: $response")
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        val json: String = gson.toJson(data)
+                        // println("[sendChat] json: $json")
+                        KonnekFlutterPlugin.access = "${data?.data?.token}"
+                        onSuccess(json)
+                    } else {
+                        onFailed(response.message())
+                    }
+                } catch (e: Exception) {
+                    onFailed(e.toString())
                 }
             }
         } catch (e: Exception) {
@@ -199,24 +211,30 @@ class KonnekService {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                val response = apiService.uploadMedia(
-                    media = multipartBodyData,
-                    messageId = messageId!!.toRequestBody("text/plain".toMediaType()),
-                    replyId = replyId!!.toRequestBody("text/plain".toMediaType()),
-                    text = text!!.toRequestBody("text/plain".toMediaType()),
-                    time = time!!.toRequestBody("text/plain".toMediaType()),
-                    KonnekFlutterPlugin.access,
-                    null,
-                )
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    val json: String = gson.toJson(data)
-                    onSuccess(json)
-                } else {
-                    onFailed(response.message())
+                try {
+                    val response = apiService.uploadMedia(
+                        media = multipartBodyData,
+                        messageId = messageId!!.toRequestBody("text/plain".toMediaType()),
+                        replyId = replyId!!.toRequestBody("text/plain".toMediaType()),
+                        text = text!!.toRequestBody("text/plain".toMediaType()),
+                        time = time!!.toRequestBody("text/plain".toMediaType()),
+                        KonnekFlutterPlugin.access,
+                        null,
+                    )
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        val json: String = gson.toJson(data)
+                        onSuccess(json)
+                    } else {
+                        onFailed(response.message())
+                    }
+                } catch (e: Exception) {
+                    println("[uploadMedia] error0: $e")
+                    onFailed(e.toString())
                 }
             }
         } catch (e: Exception) {
+            println("[uploadMedia] error1: $e")
             onFailed(e.toString())
             return
         }

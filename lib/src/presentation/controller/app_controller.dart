@@ -59,6 +59,7 @@ class AppController {
     conversationList = [];
     conversationDataFirstChat = null;
     conversationListFirstChat = [];
+    conversationCsat = [];
     isAnyCompletionMessage = false;
     KonnekFlutter.accessToken = "";
   }
@@ -121,8 +122,12 @@ class AppController {
   }
 
   static Future<void> launchUrlChat(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      AppLoggerCS.debugLog('Could not launch $url');
+    try {
+      if (!await launchUrl(Uri.parse(url))) {
+        AppLoggerCS.debugLog('Could not launch $url');
+      }
+    } catch (e) {
+      AppLoggerCS.debugLog("error here: $e");
     }
   }
 
@@ -252,6 +257,12 @@ class AppController {
         // AppLoggerCS.debugLog("[socket][csat] output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
 
+        if (socket.csat != null) {
+          if (socket.csat == true && socket.message?.interactive == null) {
+            isAnyCompletionMessage = true;
+          }
+        }
+
         sessionId = socket.session!.id!;
         roomId = socket.session!.roomId!;
 
@@ -284,6 +295,7 @@ class AppController {
         );
         conversationList.add(chatModel);
 
+        conversationList = removeDuplicatesById(conversationList);
         onSocketCSATCalled.call();
       });
 
@@ -408,7 +420,7 @@ class AppController {
     try {
       String uuid = const Uuid().v4();
       Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-      DateTime currentDateValue = DateTime.now();
+      DateTime currentDateValue = DateTime.now().subtract(const Duration(milliseconds: 400));
       Map<String, dynamic> dataEmit = {
         "message_id": uuid,
         "reply_id": null,
@@ -466,7 +478,7 @@ class AppController {
     try {
       String uuid = const Uuid().v4();
       Map jwtValue = JwtConverter().decodeJwt(KonnekFlutter.accessToken);
-      DateTime currentDateValue = DateTime.now();
+      DateTime currentDateValue = DateTime.now().subtract(const Duration(milliseconds: 400));
       Map<String, dynamic> dataEmit = {
         "message_id": uuid,
         "reply_id": null,
@@ -499,6 +511,9 @@ class AppController {
         messageTime: currentDateValue.toUtc(),
       );
       conversationList.add(chatModel);
+
+      conversationCsat.addAll(conversationList);
+      conversationCsat = removeDuplicatesById(conversationCsat);
       onSent?.call();
     } catch (e) {
       AppController.isCSATOpen = false;
@@ -876,6 +891,8 @@ class AppController {
   static GetConversationResponseModel? conversationDataFirstChat;
   static List<ConversationList> conversationListFirstChat = [];
 
+  static List<ConversationList> conversationCsat = [];
+
   List<ConversationList> removeDuplicatesById(List<ConversationList> originalList) {
     final seenIds = <String>{};
     return originalList.where((item) {
@@ -930,6 +947,7 @@ class AppController {
       conversationData = output;
       conversationList.addAll(output.data!.conversations!);
       conversationList.addAll(conversationListFirstChat);
+      conversationList.addAll(conversationCsat);
       conversationList.sort((a, b) => a.messageTime!.compareTo(b.messageTime!));
       conversationList = removeDuplicatesById(conversationList);
       // conversationList = conversationList.reversed.toList();
@@ -994,6 +1012,7 @@ class AppController {
     onLoading?.call(true);
     isLoading = true;
     try {
+      DateTime currentDateValue = DateTime.now();
       await Future.delayed(Duration(milliseconds: 100));
       UploadFilesResponseModel? output = await ChatRepositoryImpl().uploadMedia(
         text: text,
@@ -1024,41 +1043,81 @@ class AppController {
       if (output.meta?.code == 201) {
         Map<String, dynamic>? decodeJwt = await _decodeJwt();
 
-        conversationData = null;
-        conversationList = [];
-        currentPage = 1;
+        if (isCSATOpen) {
+          ConversationList? chatModel;
+          chatModel = null;
 
-        _getConversation(
-          roomId: decodeJwt!["payload"]["data"]["room_id"],
-          onLoading: onLoading,
-          onSuccess: () {
-            if (isWebSocketStart) {
-              AppSocketioService.socket.emit(
-                "chat.status",
-                {
-                  "data": {
-                    "message_id": conversationList.first.messageId,
-                    "room_id": conversationList.first.roomId,
-                    "session_id": conversationList.first.sessionId,
-                    "status": 2,
-                    "times": (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
-                    "timestamp": getDateTimeFormatted(),
+          chatModel = ConversationList(
+            session: SessionGetConversation(
+              botStatus: output.data?.session?.botStatus,
+              agent: UserGetConversation(
+                id: output.data?.agent?.userId,
+                name: output.data?.agent?.name,
+                username: output.data?.agent?.username,
+              ),
+            ),
+            fromType: output.data?.message?.fromType,
+            text: output.data?.message?.text,
+            messageId: output.data?.messageId,
+            user: UserGetConversation(
+              id: output.data?.customer?.userId,
+              username: output.data?.customer?.username,
+              name: output.data?.customer?.name,
+            ),
+            messageTime: currentDateValue.toUtc(),
+            sessionId: output.data?.session?.id,
+            roomId: output.data?.session?.roomId,
+            replyId: output.data?.replyId,
+            payload: jsonEncode(output.data?.message?.media?.toJson()),
+            type: output.data?.message?.type,
+          );
+          AppLoggerCS.debugLog("data0: ${jsonEncode(chatModel.messageId)}");
+          conversationList.add(chatModel);
+
+          AppLoggerCS.debugLog("data1: ${jsonEncode(conversationList.first.messageId)}");
+          conversationCsat.addAll(conversationList);
+          conversationCsat = removeDuplicatesById(conversationCsat);
+
+          isLoading = false;
+          onLoading?.call(false);
+          onSuccess?.call();
+        } else {
+          conversationData = null;
+          conversationList = [];
+          currentPage = 1;
+
+          _getConversation(
+            roomId: decodeJwt!["payload"]["data"]["room_id"],
+            onLoading: onLoading,
+            onSuccess: () {
+              if (isWebSocketStart) {
+                AppSocketioService.socket.emit(
+                  "chat.status",
+                  {
+                    "data": {
+                      "message_id": conversationList.first.messageId,
+                      "room_id": conversationList.first.roomId,
+                      "session_id": conversationList.first.sessionId,
+                      "status": 2,
+                      "times": (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+                      "timestamp": getDateTimeFormatted(),
+                    },
                   },
-                },
-              );
-              isWebSocketStart = true;
-            }
+                );
+                isWebSocketStart = true;
+              }
 
-            isLoading = false;
-            onLoading?.call(false);
-            onSuccess?.call();
-          },
-          onFailed: (errorMessage) {
-            isLoading = false;
-            onLoading?.call(false);
-            onFailed?.call(errorMessage);
-          },
-        );
+              isLoading = false;
+              onLoading?.call(false);
+              onSuccess?.call();
+            },
+            onFailed: (errorMessage) {
+              isLoading = false;
+              onLoading?.call(false);
+              onFailed?.call(errorMessage);
+            },
+          );
+        }
       }
     } catch (e) {
       isLoading = false;

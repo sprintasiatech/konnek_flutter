@@ -12,6 +12,7 @@ import 'package:konnek_flutter/src/presentation/widget/show_image_widget.dart';
 import 'package:konnek_flutter/src/support/app_file_picker.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -116,7 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) {
             setState(() {});
           }
-          Future.delayed(Duration(milliseconds: 700), () {
+          Future.delayed(Duration(milliseconds: 1000), () {
             AppController.clearRoomClosed();
             AppController.disconnectSocket();
           });
@@ -418,7 +419,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                         height: 50,
                                         width: 50,
                                         child: CircleAvatar(
-                                          backgroundColor: const Color(0xff2a55a4).withValues(alpha: 0.6),
+                                          backgroundColor: const Color(0xff2a55a4).withOpacity(0.6),
+                                          // backgroundColor: const Color(0xff2a55a4).withValues(alpha: 0.6),
                                           child: Icon(
                                             Icons.keyboard_arrow_down_outlined,
                                             size: 35,
@@ -562,6 +564,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           if (AppController.isRoomClosed == RoomCloseState.close) {
                                             KonnekFlutter.accessToken = "";
                                             AppController.isRoomClosed = RoomCloseState.open;
+                                            AppController.isAnyCompletionMessage = false;
                                           } else {
                                             AppController.isRoomClosed = RoomCloseState.close;
                                           }
@@ -681,6 +684,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                           InkWell(
                                             onTap: () async {
                                               uploadFile = await AppFilePickerServiceCS().pickFiles(
+                                                fileMaxSize: 30,
+                                                onFailed: (errorMessage) {
+                                                  toastFailedUploadMedia(errorMessage);
+                                                },
                                                 onFileName: (fileNameValue) {
                                                   fileName = fileNameValue;
                                                 },
@@ -814,22 +821,63 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void toastFailedUploadMedia(String errorMessage) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 1500),
+        backgroundColor: Colors.red.shade500,
+        content: Text(
+          errorMessage,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
   void textFieldInputAction() {
     if (AppController.isCSATOpen) {
-      AppController().emitCsatText(
-        text: textController.text,
-        onSent: () {
-          _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
-          if (mounted) {
+      if (uploadFile != null) {
+        AppController().uploadMedia(
+          text: textController.text,
+          mediaData: uploadFile!,
+          onLoading: (bool loadingIndicator) {
+            setState(() {
+              isLoading = loadingIndicator;
+            });
+          },
+          onSuccess: () {
+            uploadFile = null;
+            _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
             setState(() {});
-          }
-        },
-        onFailed: () async {
-          AppController.clear();
-          ChatLocalSource.localServiceHive.user.clear();
-          Navigator.pop(context);
-        },
-      );
+          },
+          onFailed: (errorMessage) {
+            uploadFile = null;
+            toastFailedUploadMedia(errorMessage);
+            setState(() {});
+          },
+        );
+      } else {
+        AppController().emitCsatText(
+          text: textController.text,
+          onSent: () {
+            _chatItems = ChatController.buildChatListWithSeparators(AppController.conversationList);
+            if (mounted) {
+              setState(() {});
+            }
+          },
+          onFailed: () async {
+            AppController.clear();
+            ChatLocalSource.localServiceHive.user.clear();
+            Navigator.pop(context);
+          },
+        );
+      }
     } else {
       if (uploadFile != null) {
         AppController().uploadMedia(
@@ -847,6 +895,7 @@ class _ChatScreenState extends State<ChatScreen> {
           },
           onFailed: (errorMessage) {
             uploadFile = null;
+            toastFailedUploadMedia(errorMessage);
             setState(() {});
           },
         );
