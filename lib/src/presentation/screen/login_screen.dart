@@ -72,7 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: (AppController.dataGetConfigValue != null)
                         ? Text(
-                            (AppController.dataGetConfigValue != null) ? "${AppController.dataGetConfigValue?.avatarName}" : "Cust Service",
+                            (AppController.dataGetConfigValue != null)
+                                ? (AppController.dataGetConfigValue?.avatarName != null)
+                                    ? "${AppController.dataGetConfigValue?.avatarName}"
+                                    : "Konnek!"
+                                : "Konnek!",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.lato(
                               fontSize: 34,
@@ -80,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )
                         : Text(
-                            "App!",
+                            "Konnek!",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.lato(
                               fontSize: 34,
