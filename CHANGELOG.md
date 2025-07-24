@@ -1,3 +1,7 @@
+## 0.0.12
+
+* update: fix chatbot
+
 ## 0.0.11
 
 * update: handle catch launchUrlChat
