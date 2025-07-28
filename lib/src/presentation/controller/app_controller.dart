@@ -146,12 +146,20 @@ class AppController {
   static RoomCloseState isRoomClosed = RoomCloseState.open;
   static bool isAnyCompletionMessage = false;
 
+  bool isSocketLoggingActive = false;
+
+  void socketLogging(String input) {
+    if (isSocketLoggingActive) {
+      AppLoggerCS.debugLog(input);
+    }
+  }
+
   Future<void> handleWebSocketIO({
     void Function(String errorMessage)? onFailed,
   }) async {
     try {
       AppSocketioService.socket.on("chat", (output) async {
-        // AppLoggerCS.debugLog("[socket][chat] output: ${jsonEncode(output)}");
+        socketLogging("[socket][chat] output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
 
         sessionId = socket.session!.id!;
@@ -215,7 +223,7 @@ class AppController {
       });
 
       AppSocketioService.socket.on("chat.status", (output) async {
-        // AppLoggerCS.debugLog("[socket][chat.status] output: ${jsonEncode(output)}");
+        socketLogging("[socket][chat.status] output: ${jsonEncode(output)}");
         SocketChatStatusResponseModel socket = SocketChatStatusResponseModel.fromJson(output);
         sessionId = socket.data!.sessionId!;
         roomId = socket.data!.roomId!;
@@ -233,7 +241,7 @@ class AppController {
       });
 
       AppSocketioService.socket.on("room.handover", (output) async {
-        // AppLoggerCS.debugLog("[socket][room.handover] output: ${jsonEncode(output)}");
+        socketLogging("[socket][room.handover] output: ${jsonEncode(output)}");
         SocketRoomHandoverResponseModel socket = SocketRoomHandoverResponseModel.fromJson(output);
         sessionId = socket.data!.session!.id!;
         roomId = socket.data!.session!.roomId!;
@@ -241,7 +249,7 @@ class AppController {
       });
 
       AppSocketioService.socket.on("room.closed", (output) async {
-        // AppLoggerCS.debugLog("[socket][room.closed] output: ${jsonEncode(output)}");
+        socketLogging("[socket][room.closed] output: ${jsonEncode(output)}");
         SocketRoomClosedResponseModel socket = SocketRoomClosedResponseModel.fromJson(output);
         // isWebSocketStart = false;
         if (socket.data?.csat != null) {
@@ -254,7 +262,7 @@ class AppController {
       });
 
       AppSocketioService.socket.on("csat", (output) async {
-        // AppLoggerCS.debugLog("[socket][csat] output: ${jsonEncode(output)}");
+        socketLogging("[socket][csat] output: ${jsonEncode(output)}");
         SocketChatResponseModel socket = SocketChatResponseModel.fromJson(output);
 
         if (socket.csat != null) {
@@ -300,13 +308,13 @@ class AppController {
       });
 
       AppSocketioService.socket.on("csat.close", (output) async {
-        // AppLoggerCS.debugLog("[socket][csat.close] output: ${jsonEncode(output)}");
+        socketLogging("[socket][csat.close] output: ${jsonEncode(output)}");
         isWebSocketStart = false;
         onSocketCSATCloseCalled.call();
       });
 
       AppSocketioService.socket.on("customer.is_blocked", (output) async {
-        // AppLoggerCS.debugLog("[socket][customer.is_blocked] output: ${jsonEncode(output)}");
+        socketLogging("[socket][customer.is_blocked] output: ${jsonEncode(output)}");
         Map<String, dynamic> result = jsonDecode(output);
         isCustomerBlocked = result['is_blocked'];
         if (isCustomerBlocked) {
@@ -315,13 +323,13 @@ class AppController {
         onSocketCustomerIsBlockedCalled.call();
       });
       AppSocketioService.socket.on("disconnect", (output) async {
-        // AppLoggerCS.debugLog("[socket][disconnect] output: ${jsonEncode(output)}");
+        socketLogging("[socket][disconnect] output: ${jsonEncode(output)}");
         isWebSocketStart = false;
         KonnekFlutter.accessToken = "";
         onSocketDisconnectCalled.call();
       });
     } catch (e) {
-      AppLoggerCS.debugLog('[handleWebSocketIO] e: $e');
+      socketLogging('[handleWebSocketIO] e: $e');
       onFailed?.call(e.toString());
     }
   }
