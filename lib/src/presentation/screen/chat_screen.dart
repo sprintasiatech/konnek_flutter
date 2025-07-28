@@ -12,7 +12,6 @@ import 'package:konnek_flutter/src/presentation/widget/show_image_widget.dart';
 import 'package:konnek_flutter/src/support/app_file_picker.dart';
 import 'package:konnek_flutter/src/support/app_image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:konnek_flutter/src/support/app_logger.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -75,7 +74,8 @@ class _ChatScreenState extends State<ChatScreen> {
             AppController.isRoomClosed = RoomCloseState.close;
             Future.delayed(Duration(milliseconds: 700), () {
               AppController.clearRoomClosed();
-              AppController.disconnectSocket();
+              // 
+              // AppController.disconnectSocket();
             });
           }
         };
@@ -119,7 +119,8 @@ class _ChatScreenState extends State<ChatScreen> {
           }
           Future.delayed(Duration(milliseconds: 1000), () {
             AppController.clearRoomClosed();
-            AppController.disconnectSocket();
+            // 
+            // AppController.disconnectSocket();
           });
         };
         AppController.onSocketCustomerIsBlockedCalled = () {
